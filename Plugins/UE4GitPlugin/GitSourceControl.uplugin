@@ -1,0 +1,25 @@
+{
+	"FileVersion" : 3,
+	"Version" : 23,
+	"VersionName" : "2.3",
+	"FriendlyName" : "Git (dev)",
+	"Description" : "Git source control management (dev)",
+	"Category" : "Source Control",
+	"CreatedBy" : "SRombauts",
+	"CreatedByURL" : "http://srombauts.github.com",
+	"DocsURL" : "",
+	"MarketplaceURL" : "",
+	"SupportURL" : "",
+	"EnabledByDefault" : true,
+	"CanContainContent" : false,
+	"IsBetaVersion" : true,
+	"Installed" : false,
+	"Modules" :
+	[
+		{
+			"Name" : "GitSourceControl",
+			"Type" : "Editor",
+			"LoadingPhase" : "Default"
+		}
+	]
+}
