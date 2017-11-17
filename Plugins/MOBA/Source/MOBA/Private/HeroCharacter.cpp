@@ -145,8 +145,7 @@ void AHeroCharacter::BeginPlay()
 	CurrentSpellingAnimationTimeLength = BaseSpellingAnimationTimeLength;
 	CurrentSpellingBeginingTimeLength = BaseSpellingBeginingTimeLength;
 	CurrentSpellingEndingTimeLength = BaseSpellingEndingTimeLength;
-	DazzingRotationCounting = 0;
-	DazzingRotationSpeed = 10;
+
 
 	MinimumDontMoveDistance = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 30;
 }
@@ -734,10 +733,12 @@ void AHeroCharacter::DoNothing()
 		break;
 	case EHeroBodyStatus::Moving:
 	{
-		//AMOBAPlayerController* acontrol =
-		//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-		//AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		//acontrol->CharacterStopMove(this);
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (ags)
+		{
+			ags->CharacterStopMove(this);
+		}
+		
 		BodyStatus = EHeroBodyStatus::Standing;
 	}
 	break;
@@ -762,9 +763,11 @@ void AHeroCharacter::DoAction_MoveToPosition(const FHeroAction& CurrentAction)
 {
 	if (BodyStatus == EHeroBodyStatus::Dazzing && GetVelocity().Size() > 5)
 	{
-		//AMOBAPlayerController* acontrol =
-		//   Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-		//acontrol->CharacterStopMove(this);
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (ags)
+		{
+			ags->CharacterStopMove(this);
+		}
 		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
 		if (NavSys && this->GetController())
 		{
@@ -780,9 +783,7 @@ void AHeroCharacter::DoAction_MoveToPosition(const FHeroAction& CurrentAction)
 
 void AHeroCharacter::DoAction_MoveToPositionImpl(const FHeroAction& CurrentAction)
 {
-	//AMOBAPlayerController* acontrol =
-	//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	//AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+
 	switch (BodyStatus)
 	{
 	case EHeroBodyStatus::AttackWating:
@@ -856,9 +857,11 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		}
 		else
 		{
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterMove(this, TargetActor->GetActorLocation());
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, TargetActor->GetActorLocation());
+			}
 			BodyStatus = EHeroBodyStatus::Moving;
 		}
 	}
@@ -868,18 +871,22 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
 		if (CurrentAttackRadius > DistanceToTargetActor)
 		{
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterStopMove(this);
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterStopMove(this);
+			}
 			BodyStatus = EHeroBodyStatus::AttackWating;
 			IsAttacked = false;
 		}
 		else if (FollowActorUpdateCounting > FollowActorUpdateTimeGap)
 		{
 			FollowActorUpdateCounting = 0;
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterMove(this, TargetActor->GetActorLocation());
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, TargetActor->GetActorLocation());
+			}
 		}
 	}
 	break;
@@ -965,9 +972,11 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 	{
 	case EHeroBodyStatus::Moving:
 	{
-		//AMOBAPlayerController* acontrol =
-		//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-		//acontrol->CharacterStopMove(this);
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (ags)
+		{
+			ags->CharacterStopMove(this);
+		}
 	}
 	// no break;
 	case EHeroBodyStatus::Standing:
@@ -1003,9 +1012,11 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 				{
 					BodyStatus = EHeroBodyStatus::SpellEnding;
 					SpellingCounting = 0;
-					//AMOBAPlayerController* acontrol =
-					//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-					//acontrol->HeroUseSkill(this, CurrentAction.TargetIndex1, CurrentAction.TargetVec1, CurrentAction.TargetVec2);
+					AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+					if (ags)
+					{
+						ags->HeroUseSkill(this, CurrentAction.TargetIndex1, CurrentAction.TargetVec1, CurrentAction.TargetVec2);
+					}
 				}
 				LastUseSkill = CurrentAction;
 			}
@@ -1044,10 +1055,11 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 		}
 		else
 		{
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			//acontrol->CharacterMove(this, TargetActor->GetActorLocation());
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, TargetActor->GetActorLocation());
+			}
 			BodyStatus = EHeroBodyStatus::Moving;
 		}
 	}
@@ -1057,18 +1069,22 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
 		if (CurrentAttackRadius > DistanceToTargetActor)
 		{
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterStopMove(this);
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterStopMove(this);
+			}
 			BodyStatus = EHeroBodyStatus::AttackWating;
 			IsAttacked = false;
 		}
 		else if (FollowActorUpdateCounting > FollowActorUpdateTimeGap)
 		{
 			FollowActorUpdateCounting = 0;
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterMove(this, TargetActor->GetActorLocation());
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, TargetActor->GetActorLocation());
+			}
 		}
 	}
 	break;
@@ -1149,9 +1165,11 @@ void AHeroCharacter::DoAction_MoveToPickup(const FHeroAction& CurrentAction)
 		}
 		else
 		{
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterMove(this, TargetActor->GetActorLocation());
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, TargetActor->GetActorLocation());
+			}
 			BodyStatus = EHeroBodyStatus::Moving;
 		}
 	}
@@ -1162,9 +1180,11 @@ void AHeroCharacter::DoAction_MoveToPickup(const FHeroAction& CurrentAction)
 		{
 			if (Pickup(TargetActor))
 			{
-				//AMOBAPlayerController* acontrol =
-				//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-				//acontrol->CharacterStopMove(this);
+				AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+				if (ags)
+				{
+					ags->CharacterStopMove(this);
+				}
 				BodyStatus = EHeroBodyStatus::Standing;
 			}
 		}
@@ -1202,9 +1222,11 @@ void AHeroCharacter::DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction)
 		else
 		{
 			LastMoveTarget = CurrentAction.TargetVec1;
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterMove(this, CurrentAction.TargetVec1);
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, CurrentAction.TargetVec1);
+			}
 			BodyStatus = EHeroBodyStatus::Moving;
 		}
 	}
@@ -1214,16 +1236,20 @@ void AHeroCharacter::DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction)
 		if (LastMoveTarget != CurrentAction.TargetVec1)
 		{
 			LastMoveTarget = CurrentAction.TargetVec1;
-			//AMOBAPlayerController* acontrol =
-			//	Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterMove(this, CurrentAction.TargetVec1);
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, CurrentAction.TargetVec1);
+			}
 		}
 		if (PickupObjectDistance > DistanceToTargetActor && LastMoveTarget == CurrentAction.TargetVec1)
 		{
 			ThrowEquipment(TargetActor, CurrentAction.TargetVec1);
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterStopMove(this);
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterStopMove(this);
+			}
 			BodyStatus = EHeroBodyStatus::Standing;
 		}
 	}

@@ -16,22 +16,22 @@ class MOBA_API AMOBAGameState : public AGameStateBase
 	GENERATED_BODY()
 public:
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void SetObjectLocation(AActor* actor, const FVector& pos);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void CharacterMove(AHeroCharacter* hero, const FVector& action);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void CharacterStopMove(AHeroCharacter* hero);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void HeroUseSkill(AHeroCharacter* hero, int32 index, const FVector& VFaceTo, const FVector& Pos);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void SetHeroAction(AHeroCharacter* hero, const FHeroAction& action);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void AppendHeroAction(AHeroCharacter* hero, const FHeroAction& action);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")

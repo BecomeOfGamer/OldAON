@@ -16,7 +16,10 @@ bool AMOBAGameState::SetObjectLocation_Validate(AActor* actor, const FVector& po
 
 void AMOBAGameState::SetObjectLocation_Implementation(AActor* actor, const FVector& pos)
 {
-	actor->SetActorLocation(pos);
+	if (Role == ROLE_Authority)
+	{
+		actor->SetActorLocation(pos);
+	}
 }
 
 float AMOBAGameState::ArmorConvertToInjuryPersent(float armor)
@@ -31,8 +34,11 @@ bool AMOBAGameState::SetHeroAction_Validate(AHeroCharacter* hero, const FHeroAct
 
 void AMOBAGameState::SetHeroAction_Implementation(AHeroCharacter* hero, const FHeroAction& action)
 {
-	hero->ActionQueue.Empty();
-	hero->ActionQueue.Add(action);
+	if (Role == ROLE_Authority)
+	{
+		hero->ActionQueue.Empty();
+		hero->ActionQueue.Add(action);
+	}
 }
 
 bool AMOBAGameState::AppendHeroAction_Validate(AHeroCharacter* hero, const FHeroAction& action)
@@ -42,7 +48,10 @@ bool AMOBAGameState::AppendHeroAction_Validate(AHeroCharacter* hero, const FHero
 
 void AMOBAGameState::AppendHeroAction_Implementation(AHeroCharacter* hero, const FHeroAction& action)
 {
-	hero->ActionQueue.Add(action);
+	if (Role == ROLE_Authority)
+	{
+		hero->ActionQueue.Add(action);
+	}
 }
 
 
@@ -53,7 +62,10 @@ bool AMOBAGameState::ClearHeroAction_Validate(AHeroCharacter* hero, const FHeroA
 
 void AMOBAGameState::ClearHeroAction_Implementation(AHeroCharacter* hero, const FHeroAction& action)
 {
-	hero->ActionQueue.Empty();
+	if (Role == ROLE_Authority)
+	{
+		hero->ActionQueue.Empty();
+	}
 }
 
 bool AMOBAGameState::CharacterMove_Validate(AHeroCharacter* actor, const FVector& pos)
@@ -63,18 +75,21 @@ bool AMOBAGameState::CharacterMove_Validate(AHeroCharacter* actor, const FVector
 
 void AMOBAGameState::CharacterMove_Implementation(AHeroCharacter* actor, const FVector& pos)
 {
-	UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
-	if (NavSys && actor->GetController())
+	if (Role == ROLE_Authority)
 	{
-		NavSys->SimpleMoveToLocation(actor->GetController(), pos);
-	}
-	if (actor->WalkAI)
-	{
-		actor->WalkAI->MoveToLocation(pos);
-	}
-	else
-	{
-		UE_LOG(MOBA_Log, Log, TEXT("%s WalkAI->MoveToLocation FAIL"), *(actor->GetFullName()));
+		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+		if (NavSys && actor->GetController())
+		{
+			NavSys->SimpleMoveToLocation(actor->GetController(), pos);
+		}
+		if (actor->WalkAI)
+		{
+			actor->WalkAI->MoveToLocation(pos);
+		}
+		else
+		{
+			UE_LOG(MOBA_Log, Log, TEXT("%s WalkAI->MoveToLocation FAIL"), *(actor->GetFullName()));
+		}
 	}
 }
 
@@ -85,13 +100,16 @@ bool AMOBAGameState::CharacterStopMove_Validate(AHeroCharacter* actor)
 
 void AMOBAGameState::CharacterStopMove_Implementation(AHeroCharacter* actor)
 {
-	if (actor->WalkAI)
+	if (Role == ROLE_Authority)
 	{
-		actor->WalkAI->StopMovement();
-	}
-	else
-	{
-		UE_LOG(MOBA_Log, Log, TEXT("%s WalkAI->StopMovement FAIL"), *(actor->GetFullName()));
+		if (actor->WalkAI)
+		{
+			actor->WalkAI->StopMovement();
+		}
+		else
+		{
+			UE_LOG(MOBA_Log, Log, TEXT("%s WalkAI->StopMovement FAIL"), *(actor->GetFullName()));
+		}
 	}
 }
 
@@ -103,5 +121,8 @@ bool AMOBAGameState::HeroUseSkill_Validate(AHeroCharacter* hero, int32 index, co
 void AMOBAGameState::HeroUseSkill_Implementation(AHeroCharacter* hero, int32 index, const FVector& VFaceTo,
         const FVector& Pos)
 {
-	hero->UseSkill(index, VFaceTo, Pos);
+	if (Role == ROLE_Authority)
+	{
+		hero->UseSkill(index, VFaceTo, Pos);
+	}
 }

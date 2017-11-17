@@ -677,8 +677,6 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				UProperty* NewProp_BaseAttackingEndingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackingEndingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackingEndingTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_BaseAttackingBeginingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackingBeginingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackingBeginingTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_BaseAttackingAnimationTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackingAnimationTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackingAnimationTimeLength, AHeroCharacter), 0x0010000000000005);
-				UProperty* NewProp_DazzingRotationCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("DazzingRotationCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(DazzingRotationCounting, AHeroCharacter), 0x0010000000000005);
-				UProperty* NewProp_DazzingRotationSpeed = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("DazzingRotationSpeed"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(DazzingRotationSpeed, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_BaseAttackSpeedSecond = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackSpeedSecond"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackSpeedSecond, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_AdditionAttackSpeed = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("AdditionAttackSpeed"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(AdditionAttackSpeed, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_BaseAttackRadius = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackRadius"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackRadius, AHeroCharacter), 0x0010000000000005);
@@ -964,11 +962,6 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				MetaData->SetValue(NewProp_BaseAttackingAnimationTimeLength, TEXT("Category"), TEXT("Hero"));
 				MetaData->SetValue(NewProp_BaseAttackingAnimationTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseAttackingAnimationTimeLength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x64ca\x52d5\x756b\x6642\x9593\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_DazzingRotationCounting, TEXT("Category"), TEXT("Hero"));
-				MetaData->SetValue(NewProp_DazzingRotationCounting, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_DazzingRotationSpeed, TEXT("Category"), TEXT("Hero"));
-				MetaData->SetValue(NewProp_DazzingRotationSpeed, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_DazzingRotationSpeed, TEXT("ToolTip"), TEXT("\x6688"));
 				MetaData->SetValue(NewProp_BaseAttackSpeedSecond, TEXT("Category"), TEXT("Hero"));
 				MetaData->SetValue(NewProp_BaseAttackSpeedSecond, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseAttackSpeedSecond, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x901f"));
@@ -1019,7 +1012,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroCharacter, 3869571064);
+	IMPLEMENT_CLASS(AHeroCharacter, 453711866);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroCharacter(Z_Construct_UClass_AHeroCharacter, &AHeroCharacter::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroCharacter"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroCharacter);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

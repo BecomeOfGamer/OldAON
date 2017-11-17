@@ -215,14 +215,7 @@ public:
 	// 基礎攻速
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
 	float BaseAttackSpeedSecond;
-
-	// 暈
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	float DazzingRotationSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	float DazzingRotationCounting;
-
+	
 	// 基礎攻擊動畫時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
 	float BaseAttackingAnimationTimeLength;
