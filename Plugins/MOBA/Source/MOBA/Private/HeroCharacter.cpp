@@ -397,13 +397,35 @@ bool AHeroCharacter::HasEquipment(AEquipment* equ)
 
 void AHeroCharacter::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
 {
-	isSelection = true;
-	SelectionDecal->SetVisibility(true);
-
 	AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 	if (hud)
 	{
-		hud->OnSelectedHero(this);
+		// 按下左鍵
+		if (hud->bMouseLButton)
+		{
+			if (hud->CurrentSelection.Num() == 1)
+			{
+				if (hud->CurrentSelection[0] == this)
+				{
+					return;
+				}
+				if (hud->CurrentSelection[0]->CurrentSkillHint)
+				{
+					return;
+				}
+			}
+			hud->ClickedSelected = true;
+			hud->ClearAllSelection();
+			SelectionOn();
+		}
+		// 按下右鍵
+		else if (hud->bMouseRButton)
+		{
+			if (hud->CurrentSelection.Num() > 0)
+			{
+				hud->HeroAttackHero(this);
+			}
+		}
 	}
 }
 
