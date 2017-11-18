@@ -78,6 +78,7 @@ void AMHUD::Tick(float DeltaSeconds)
 		RTSStatus = ERTSStatusEnum::Normal;
 		for(AHeroCharacter* EachHero : RemoveSelection)
 		{
+			EachHero->SelectionOff();
 			CurrentSelection.Remove(EachHero);
 		}
 		RemoveSelection.Empty();
@@ -448,18 +449,21 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 					act.ActionStatus = EHeroActionStatus::MoveToPosition;
 					act.TargetVec1 = CurrentMouseHit;
 					act.SequenceNumber = SequenceNumber++;
-					if (CurrentMouseHit != FVector::ZeroVector)
+					for (AHeroCharacter* EachHero : CurrentSelection)
 					{
-						if (bLeftShiftDown)
+						if (CurrentMouseHit != FVector::ZeroVector)
 						{
-							LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
+							if (bLeftShiftDown)
+							{
+								LocalController->ServerAppendHeroAction(EachHero, act);
+							}
+							else
+							{
+								LocalController->ServerSetHeroAction(EachHero, act);
+							}
 						}
-						else
-						{
-							LocalController->ServerSetHeroAction(CurrentSelection[0], act);
-						}
-						UWorld* const World = GetWorld();
 					}
+					
 				}
 			}
 		}
@@ -698,7 +702,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("CurrentSelection.Num %d"),
 		                                 CurrentSelection.Num()));
-		if(CurrentSelection.Num() > 0)
+		if (CurrentSelection.Num() > 0)
 		{
 			FHeroAction act;
 			act.ActionStatus = EHeroActionStatus::MoveToThrowEqu;
@@ -706,13 +710,16 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 			act.TargetIndex1 = EquipmentIndex;
 			act.SequenceNumber = SequenceNumber++;
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			if (bLeftShiftDown)
+			for (AHeroCharacter* EachHero : CurrentSelection)
 			{
-				LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
-			}
-			else
-			{
-				LocalController->ServerSetHeroAction(CurrentSelection[0], act);
+				if (bLeftShiftDown)
+				{
+					LocalController->ServerAppendHeroAction(EachHero, act);
+				}
+				else
+				{
+					LocalController->ServerSetHeroAction(EachHero, act);
+				}
 			}
 			RTSStatus = ERTSStatusEnum::Normal;
 			ThrowTexture = NULL;
@@ -734,5 +741,28 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 	{
 		RTSStatus = ERTSStatusEnum::Normal;
 	}
+}
+
+void AMHUD::OnSelectedHero(AHeroCharacter* hero)
+{
+	if (CurrentSelection.Num() > 0 && CurrentSelection[0] == hero)
+	{
+
+	}
+	else
+	{
+		for (AHeroCharacter* EachHero : CurrentSelection)
+		{
+			if (hero != EachHero)
+			{
+				RemoveSelection.Add(EachHero);
+			}
+		}
+		if (!CurrentSelection.Contains(hero))
+		{
+			CurrentSelection.Add(hero);
+		}
+	}
+	ClickedSelected = true;
 }
 

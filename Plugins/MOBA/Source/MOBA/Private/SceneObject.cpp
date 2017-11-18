@@ -14,7 +14,6 @@ ASceneObject::ASceneObject(const FObjectInitializer& ObjectInitializer)
 	{
 		StaticMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
 		StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-		StaticMesh->OnClicked.AddDynamic(this, &ASceneObject::OnMouseClicked);
 		StaticMesh->bGenerateOverlapEvents = true;
 	}
 	if (BodyBox)
@@ -43,6 +42,14 @@ ASceneObject::ASceneObject(const FObjectInitializer& ObjectInitializer)
 void ASceneObject::BeginPlay()
 {
 	Super::BeginPlay();
+	if (StaticMesh)
+	{
+		StaticMesh->OnClicked.AddDynamic(this, &ASceneObject::OnMouseClicked);
+	}
+	if (BodyBox)
+	{
+		BodyBox->OnClicked.AddDynamic(this, &ASceneObject::OnMouseClicked);
+	}
 }
 
 // Called every frame

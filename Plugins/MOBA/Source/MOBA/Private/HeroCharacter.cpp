@@ -80,7 +80,8 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 
 	// 每隔一段時間更新移動
 	FollowActorUpdateTimeGap = 0.3;
-	GetCapsuleComponent()->OnClicked.AddDynamic(this, &AHeroCharacter::OnMouseClicked);
+
+	
 }
 
 void AHeroCharacter::PostInitializeComponents()
@@ -92,10 +93,8 @@ void AHeroCharacter::PostInitializeComponents()
 void AHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();	
-	
-	//AMOBAPlayerController* acontrol =
-	//	Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	//WalkAI->SetOwner(acontrol);
+	GetCapsuleComponent()->OnClicked.AddDynamic(this, &AHeroCharacter::OnMouseClicked);
+
 	SelectionDecal->SetVisibility(false);
 	isSelection = false;
 	CheckSelf(Skill_MaxCD.Num() == Skill_Amount, TEXT("Skill_MaxCD is invalid"));
@@ -404,7 +403,7 @@ void AHeroCharacter::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey Butto
 	AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 	if (hud)
 	{
-		hud->CurrentSelection.Add(this);
+		hud->OnSelectedHero(this);
 	}
 }
 
