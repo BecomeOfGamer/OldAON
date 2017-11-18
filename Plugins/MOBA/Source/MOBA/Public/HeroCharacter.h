@@ -528,10 +528,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<UHeroBuff*> BuffQueue;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	AAIController* WalkAI;
-
+	
 	FVector LastMoveTarget;
 	FHeroAction LastUseSkill;
 };

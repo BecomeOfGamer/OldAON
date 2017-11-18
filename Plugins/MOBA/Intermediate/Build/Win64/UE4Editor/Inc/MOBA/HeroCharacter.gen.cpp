@@ -43,7 +43,6 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UseSkill();
 	MOBA_API UClass* Z_Construct_UClass_AHeroCharacter_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_ACharacter();
-	AIMODULE_API UClass* Z_Construct_UClass_AAIController_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_UHeroBuff_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_AEquipment_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_ASkillHintActor_NoRegister();
@@ -570,7 +569,6 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateSAI());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UseSkill());
 
-				UProperty* NewProp_WalkAI = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("WalkAI"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(WalkAI, AHeroCharacter), 0x0010000000000005, Z_Construct_UClass_AAIController_NoRegister());
 				UProperty* NewProp_BuffQueue = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffQueue"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(BuffQueue, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_BuffQueue_Inner = new(EC_InternalUseOnlyConstructor, NewProp_BuffQueue, TEXT("BuffQueue"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UClass_UHeroBuff_NoRegister());
 				UProperty* NewProp_BodyStatus = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BodyStatus"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(CPP_PROPERTY_BASE(BodyStatus, AHeroCharacter), 0x0010000000000025, Z_Construct_UEnum_MOBA_EHeroBodyStatus());
@@ -715,8 +713,6 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				MetaData->SetValue(OuterClass, TEXT("HideCategories"), TEXT("Navigation"));
 				MetaData->SetValue(OuterClass, TEXT("IncludePath"), TEXT("HeroCharacter.h"));
 				MetaData->SetValue(OuterClass, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_WalkAI, TEXT("Category"), TEXT("Current"));
-				MetaData->SetValue(NewProp_WalkAI, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BuffQueue, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_BuffQueue, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BodyStatus, TEXT("Category"), TEXT("Current"));
@@ -1012,7 +1008,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroCharacter, 453711866);
+	IMPLEMENT_CLASS(AHeroCharacter, 370902524);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroCharacter(Z_Construct_UClass_AHeroCharacter, &AHeroCharacter::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroCharacter"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroCharacter);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

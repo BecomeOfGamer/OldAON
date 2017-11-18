@@ -86,12 +86,6 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 void AHeroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	WalkAI = nullptr;
-	if (Role == ROLE_Authority)
-	{
-		WalkAI = GetWorld()->SpawnActor<AAIController>();
-		WalkAI->Possess(this);
-	}
 }
 
 // Called when the game starts or when spawned
@@ -642,7 +636,8 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 			FVector dir = CurrentAction.TargetVec1 - this->GetActorLocation();
 			dir.Z = 0;
 			dir.Normalize();
-			this->AddMovementInput(dir);
+			// AddMovementInput will move actor with no rotation, no nav
+			//this->AddMovementInput(dir);
 			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Magenta, GetFullName() +
 				FString::Printf(TEXT("%s Dis %f"), *dir.ToString(), Distance));
 		}
@@ -768,16 +763,10 @@ void AHeroCharacter::DoAction_MoveToPosition(const FHeroAction& CurrentAction)
 		{
 			ags->CharacterStopMove(this);
 		}
-		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
-		if (NavSys && this->GetController())
-		{
-			NavSys->SimpleMoveToLocation(this->GetController(), CurrentAction.TargetVec1);
-		}
 	}
 	else if (LastMoveTarget != CurrentAction.TargetVec1)
 	{
 		DoAction_MoveToPositionImpl(CurrentAction);
-		LastMoveTarget = CurrentAction.TargetVec1;
 	}
 }
 
@@ -791,12 +780,11 @@ void AHeroCharacter::DoAction_MoveToPositionImpl(const FHeroAction& CurrentActio
 	case EHeroBodyStatus::AttackEnding:
 	case EHeroBodyStatus::Standing:
 	{
-		float Distance = FVector::Dist(CurrentAction.TargetVec1, this->GetActorLocation());
 		BodyStatus = EHeroBodyStatus::Moving;
-		if (Distance > MinimumDontMoveDistance)
+		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+		if (NavSys && this->GetController())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta,
-			                                 FString::Printf(L"Distance:%.1f %.1f", Distance, MinimumDontMoveDistance));
+			NavSys->SimpleMoveToLocation(this->GetController(), CurrentAction.TargetVec1);
 		}
 	}
 	break;
@@ -1221,10 +1209,10 @@ void AHeroCharacter::DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction)
 		}
 		else
 		{
-			LastMoveTarget = CurrentAction.TargetVec1;
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			if (ags)
 			{
+				LastMoveTarget = CurrentAction.TargetVec1;
 				ags->CharacterMove(this, CurrentAction.TargetVec1);
 			}
 			BodyStatus = EHeroBodyStatus::Moving;
@@ -1235,10 +1223,10 @@ void AHeroCharacter::DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction)
 	{
 		if (LastMoveTarget != CurrentAction.TargetVec1)
 		{
-			LastMoveTarget = CurrentAction.TargetVec1;
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			if (ags)
 			{
+				LastMoveTarget = CurrentAction.TargetVec1;
 				ags->CharacterMove(this, CurrentAction.TargetVec1);
 			}
 		}

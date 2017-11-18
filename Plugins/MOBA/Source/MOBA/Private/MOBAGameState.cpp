@@ -82,14 +82,6 @@ void AMOBAGameState::CharacterMove_Implementation(AHeroCharacter* actor, const F
 		{
 			NavSys->SimpleMoveToLocation(actor->GetController(), pos);
 		}
-		if (actor->WalkAI)
-		{
-			actor->WalkAI->MoveToLocation(pos);
-		}
-		else
-		{
-			UE_LOG(MOBA_Log, Log, TEXT("%s WalkAI->MoveToLocation FAIL"), *(actor->GetFullName()));
-		}
 	}
 }
 
@@ -102,13 +94,10 @@ void AMOBAGameState::CharacterStopMove_Implementation(AHeroCharacter* actor)
 {
 	if (Role == ROLE_Authority)
 	{
-		if (actor->WalkAI)
+		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+		if (NavSys && actor->GetController())
 		{
-			actor->WalkAI->StopMovement();
-		}
-		else
-		{
-			UE_LOG(MOBA_Log, Log, TEXT("%s WalkAI->StopMovement FAIL"), *(actor->GetFullName()));
+			actor->GetController()->StopMovement();
 		}
 	}
 }
