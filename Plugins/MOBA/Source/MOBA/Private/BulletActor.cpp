@@ -62,7 +62,7 @@ void ABulletActor::Tick(float DeltaTime)
 			ASceneObject* SceneObj = Cast<ASceneObject>(TargetActor);
 
 			// Εγ¥ά¶Λ®`¤ε¦r
-			ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(AHeroCharacter::ShowDamageEffect);
+			ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(Hero->ShowDamageEffect);
 			if (TempDamageText)
 			{
 				TempDamageText->OriginPosition = TargetActor->GetActorLocation();

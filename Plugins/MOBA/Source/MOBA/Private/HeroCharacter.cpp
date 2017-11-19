@@ -14,8 +14,6 @@
 #include "PaperFlipbook.h"
 #include "SceneObject.h"
 
-TSubclassOf<ADamageEffect> AHeroCharacter::ShowDamageEffect;
-
 
 AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())
@@ -35,6 +33,7 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	// FRotator = rotation Y Z X
 	SelectionDecal->SetWorldRotation(FQuat(FRotator(90, 0, 0)));
 	SelectionDecal->SetWorldScale3D(FVector(10, 50, 50));
+	SelectionDecal->DecalSize = FVector(2, 1, 1);
 	SelectionDecal->SetupAttachment(GetCapsuleComponent());
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -81,7 +80,15 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	// 每隔一段時間更新移動
 	FollowActorUpdateTimeGap = 0.3;
 
-	
+	// set for mouse click
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
 }
 
 void AHeroCharacter::PostInitializeComponents()
@@ -122,6 +129,15 @@ void AHeroCharacter::BeginPlay()
 	}
 	CurrentSkillHint = NULL;
 	CurrentSkillIndex = -1;
+	
+
+	CurrentAttackingBeginingTimeLength = BaseAttackingBeginingTimeLength;
+	CurrentAttackingEndingTimeLength = BaseAttackingEndingTimeLength;
+	CurrentAttackingAnimationTimeLength = BaseAttackingAnimationTimeLength;
+	CurrentSpellingWatingTimeLength = BaseSpellingWatingTimeLength;
+	CurrentSpellingAnimationTimeLength = BaseSpellingAnimationTimeLength;
+	CurrentSpellingBeginingTimeLength = BaseSpellingBeginingTimeLength;
+	CurrentSpellingEndingTimeLength = BaseSpellingEndingTimeLength;
 	// 依等級更新力敏智
 	UpdateSAI();
 	// 依等級更新血魔攻速
@@ -131,14 +147,7 @@ void AHeroCharacter::BeginPlay()
 	CurrentAttackRadius = BaseAttackRadius;
 	CurrentAttack = BaseAttack;
 	CurrentArmor = BaseArmor;
-	CurrentAttackingBeginingTimeLength = BaseAttackingBeginingTimeLength;
-	CurrentAttackingEndingTimeLength = BaseAttackingEndingTimeLength;
-	CurrentAttackingAnimationTimeLength = BaseAttackingAnimationTimeLength;
-	CurrentSpellingWatingTimeLength = BaseSpellingWatingTimeLength;
-	CurrentSpellingAnimationTimeLength = BaseSpellingAnimationTimeLength;
-	CurrentSpellingBeginingTimeLength = BaseSpellingBeginingTimeLength;
-	CurrentSpellingEndingTimeLength = BaseSpellingEndingTimeLength;
-
+		
 
 	MinimumDontMoveDistance = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 30;
 }
@@ -499,6 +508,8 @@ void AHeroCharacter::UpdateHPMPAS()
 		CurrentAttackSpeed = BaseMP + BaseAgility * ags->AgilityToAttackSpeed;
 		CurrentAttackSpeedSecond = BaseAttackSpeedSecond / (1 + CurrentAttackSpeed * 0.01);
 		CurrentArmor = BaseArmor + BaseAgility * ags->AgilityToDefense;
+		CurrentAttackingAnimationTimeLength = BaseAttackingAnimationTimeLength / CurrentAttackSpeedSecond;
+		CurrentAttackingAnimationRate = BaseAttackingAnimationTimeLength / CurrentAttackSpeedSecond;
 	}
 }
 
@@ -554,6 +565,17 @@ void AHeroCharacter::HideSkillHint()
 	CurrentSkillHint = NULL;
 }
 
+
+bool AHeroCharacter::ServerPlayAttack_Validate(float duraction, float rate)
+{
+	return true;
+}
+
+void AHeroCharacter::ServerPlayAttack_Implementation(float duraction, float rate)
+{
+	BP_PlayAttack(duraction, rate);
+}
+
 bool AHeroCharacter::UseSkill(int32 index, FVector VFaceTo, FVector Pos)
 {
 	if (index < 0)
@@ -582,10 +604,6 @@ int32 AHeroCharacter::GetCurrentSkillIndex()
 	return CurrentSkillIndex;
 }
 
-void AHeroCharacter::SetDamageEffect(TSubclassOf<ADamageEffect> DamageKind)
-{
-	ShowDamageEffect = DamageKind;
-}
 
 bool AHeroCharacter::CheckCurrentActionFinish()
 {
@@ -907,6 +925,7 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		{
 			AttackingCounting = 0;
 			BodyStatus = EHeroBodyStatus::AttackBegining;
+			ServerPlayAttack(CurrentSpellingAnimationTimeLength, CurrentAttackingAnimationRate);
 			PlayAttack = true;
 		}
 		// 播放攻擊動畫
@@ -921,6 +940,7 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			if (ags)
 			{
+				// 遠攻
 				float Injury = ags->ArmorConvertToInjuryPersent(TargetActor->CurrentArmor);
 				float Damage = this->CurrentAttack * Injury;
 
@@ -938,6 +958,7 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 				}
 				else
 				{
+					// 近戰
 					// 顯示傷害文字
 					ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(ShowDamageEffect);
 					if (TempDamageText)
@@ -953,7 +974,6 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 					TargetActor->CurrentHP -= Damage;
 				}
 			}
-			
 			BodyStatus = EHeroBodyStatus::AttackEnding;
 		}
 	}
@@ -1288,4 +1308,7 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AHeroCharacter, BodyStatus);
 	DOREPLIFETIME(AHeroCharacter, ActionQueue);
 	DOREPLIFETIME(AHeroCharacter, CurrentAction);
+	DOREPLIFETIME(AHeroCharacter, AttackingCounting);
+	DOREPLIFETIME(AHeroCharacter, CurrentAttackSpeedSecond);
+	DOREPLIFETIME(AHeroCharacter, CurrentAttackingAnimationRate);
 }

@@ -9,7 +9,6 @@
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 struct FHeroAction;
-class ADamageEffect;
 struct FVector;
 class UPrimitiveComponent;
 struct FKey;
@@ -31,6 +30,8 @@ struct FKey;
 #define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
+	virtual bool ServerPlayAttack_Validate(float , float ); \
+	virtual void ServerPlayAttack_Implementation(float duraction, float rate); \
  \
 	DECLARE_FUNCTION(execDoAction) \
 	{ \
@@ -43,15 +44,6 @@ struct FKey;
 			return; \
 		} \
 		this->DoAction_Implementation(Z_Param_CurrentAction); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execSetDamageEffect) \
-	{ \
-		P_GET_OBJECT(UClass,Z_Param_DamageKind); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		AHeroCharacter::SetDamageEffect(Z_Param_DamageKind); \
 		P_NATIVE_END; \
 	} \
  \
@@ -71,6 +63,21 @@ struct FKey;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		*(bool*)Z_Param__Result=this->UseSkill(Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execServerPlayAttack) \
+	{ \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_duraction); \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_rate); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->ServerPlayAttack_Validate(Z_Param_duraction,Z_Param_rate)) \
+		{ \
+			RPC_ValidateFailed(TEXT("ServerPlayAttack_Validate")); \
+			return; \
+		} \
+		this->ServerPlayAttack_Implementation(Z_Param_duraction,Z_Param_rate); \
 		P_NATIVE_END; \
 	} \
  \
@@ -162,6 +169,8 @@ struct FKey;
 #define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS_NO_PURE_DECLS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
+	virtual bool ServerPlayAttack_Validate(float , float ); \
+	virtual void ServerPlayAttack_Implementation(float duraction, float rate); \
  \
 	DECLARE_FUNCTION(execDoAction) \
 	{ \
@@ -174,15 +183,6 @@ struct FKey;
 			return; \
 		} \
 		this->DoAction_Implementation(Z_Param_CurrentAction); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execSetDamageEffect) \
-	{ \
-		P_GET_OBJECT(UClass,Z_Param_DamageKind); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		AHeroCharacter::SetDamageEffect(Z_Param_DamageKind); \
 		P_NATIVE_END; \
 	} \
  \
@@ -202,6 +202,21 @@ struct FKey;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		*(bool*)Z_Param__Result=this->UseSkill(Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execServerPlayAttack) \
+	{ \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_duraction); \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_rate); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->ServerPlayAttack_Validate(Z_Param_duraction,Z_Param_rate)) \
+		{ \
+			RPC_ValidateFailed(TEXT("ServerPlayAttack_Validate")); \
+			return; \
+		} \
+		this->ServerPlayAttack_Implementation(Z_Param_duraction,Z_Param_rate); \
 		P_NATIVE_END; \
 	} \
  \
@@ -297,9 +312,19 @@ struct FKey;
 		FVector VFaceTo; \
 		FVector Pos; \
 	}; \
+	struct HeroCharacter_eventBP_PlayAttack_Parms \
+	{ \
+		float duraction; \
+		float rate; \
+	}; \
 	struct HeroCharacter_eventDoAction_Parms \
 	{ \
 		FHeroAction CurrentAction; \
+	}; \
+	struct HeroCharacter_eventServerPlayAttack_Parms \
+	{ \
+		float duraction; \
+		float rate; \
 	};
 
 

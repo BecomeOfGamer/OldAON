@@ -22,6 +22,7 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill();
 	MOBA_API UClass* Z_Construct_UClass_AHeroCharacter();
 	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_DoAction();
 	MOBA_API UScriptStruct* Z_Construct_UScriptStruct_FHeroAction();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_GetCurrentSkillIndex();
@@ -34,9 +35,7 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	ENGINE_API UClass* Z_Construct_UClass_UPrimitiveComponent_NoRegister();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_SelectionOff();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_SelectionOn();
-	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_SetDamageEffect();
-	MOBA_API UClass* Z_Construct_UClass_ADamageEffect_NoRegister();
-	COREUOBJECT_API UClass* Z_Construct_UClass_UClass();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ShowSkillHint();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateSAI();
@@ -46,8 +45,10 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UClass* Z_Construct_UClass_UHeroBuff_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_AEquipment_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_ASkillHintActor_NoRegister();
+	COREUOBJECT_API UClass* Z_Construct_UClass_UClass();
 	ENGINE_API UClass* Z_Construct_UClass_UTexture2D_NoRegister();
 	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector2D();
+	MOBA_API UClass* Z_Construct_UClass_ADamageEffect_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_ABulletActor_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_UArrowComponent_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_UDecalComponent_NoRegister();
@@ -190,12 +191,28 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		Parms.Pos=Pos;
 		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_BP_ImplementSkill),&Parms);
 	}
+	static FName NAME_AHeroCharacter_BP_PlayAttack = FName(TEXT("BP_PlayAttack"));
+	void AHeroCharacter::BP_PlayAttack(float duraction, float rate)
+	{
+		HeroCharacter_eventBP_PlayAttack_Parms Parms;
+		Parms.duraction=duraction;
+		Parms.rate=rate;
+		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_BP_PlayAttack),&Parms);
+	}
 	static FName NAME_AHeroCharacter_DoAction = FName(TEXT("DoAction"));
 	void AHeroCharacter::DoAction(FHeroAction const& CurrentAction)
 	{
 		HeroCharacter_eventDoAction_Parms Parms;
 		Parms.CurrentAction=CurrentAction;
 		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_DoAction),&Parms);
+	}
+	static FName NAME_AHeroCharacter_ServerPlayAttack = FName(TEXT("ServerPlayAttack"));
+	void AHeroCharacter::ServerPlayAttack(float duraction, float rate)
+	{
+		HeroCharacter_eventServerPlayAttack_Parms Parms;
+		Parms.duraction=duraction;
+		Parms.rate=rate;
+		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_ServerPlayAttack),&Parms);
 	}
 	void AHeroCharacter::StaticRegisterNativesAHeroCharacter()
 	{
@@ -210,7 +227,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 			{ "OnMouseClicked", (Native)&AHeroCharacter::execOnMouseClicked },
 			{ "SelectionOff", (Native)&AHeroCharacter::execSelectionOff },
 			{ "SelectionOn", (Native)&AHeroCharacter::execSelectionOn },
-			{ "SetDamageEffect", (Native)&AHeroCharacter::execSetDamageEffect },
+			{ "ServerPlayAttack", (Native)&AHeroCharacter::execServerPlayAttack },
 			{ "ShowSkillHint", (Native)&AHeroCharacter::execShowSkillHint },
 			{ "UpdateHPMPAS", (Native)&AHeroCharacter::execUpdateHPMPAS },
 			{ "UpdateSAI", (Native)&AHeroCharacter::execUpdateSAI },
@@ -228,6 +245,24 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 			UProperty* NewProp_Pos = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Pos"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(Pos, HeroCharacter_eventBP_ImplementSkill_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
 			UProperty* NewProp_VFaceTo = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("VFaceTo"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(VFaceTo, HeroCharacter_eventBP_ImplementSkill_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
 			UProperty* NewProp_index = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("index"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(index, HeroCharacter_eventBP_ImplementSkill_Parms), 0x0010000000000080);
+			ReturnFunction->Bind();
+			ReturnFunction->StaticLink();
+#if WITH_METADATA
+			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
+			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+#endif
+		}
+		return ReturnFunction;
+	}
+	UFunction* Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack()
+	{
+		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("BP_PlayAttack"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x08020800, 65535, sizeof(HeroCharacter_eventBP_PlayAttack_Parms));
+			UProperty* NewProp_rate = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("rate"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(rate, HeroCharacter_eventBP_PlayAttack_Parms), 0x0010000000000080);
+			UProperty* NewProp_duraction = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("duraction"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(duraction, HeroCharacter_eventBP_PlayAttack_Parms), 0x0010000000000080);
 			ReturnFunction->Bind();
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
@@ -424,23 +459,19 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		}
 		return ReturnFunction;
 	}
-	UFunction* Z_Construct_UFunction_AHeroCharacter_SetDamageEffect()
+	UFunction* Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack()
 	{
-		struct HeroCharacter_eventSetDamageEffect_Parms
-		{
-			TSubclassOf<ADamageEffect>  DamageKind;
-		};
 		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
 		static UFunction* ReturnFunction = nullptr;
 		if (!ReturnFunction)
 		{
-			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("SetDamageEffect"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x04022401, 65535, sizeof(HeroCharacter_eventSetDamageEffect_Parms));
-			UProperty* NewProp_DamageKind = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("DamageKind"), RF_Public|RF_Transient|RF_MarkAsNative) UClassProperty(CPP_PROPERTY_BASE(DamageKind, HeroCharacter_eventSetDamageEffect_Parms), 0x0014000000000080, Z_Construct_UClass_ADamageEffect_NoRegister(), Z_Construct_UClass_UClass());
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("ServerPlayAttack"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x80024CC0, 65535, sizeof(HeroCharacter_eventServerPlayAttack_Parms));
+			UProperty* NewProp_rate = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("rate"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(rate, HeroCharacter_eventServerPlayAttack_Parms), 0x0010000000000080);
+			UProperty* NewProp_duraction = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("duraction"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(duraction, HeroCharacter_eventServerPlayAttack_Parms), 0x0010000000000080);
 			ReturnFunction->Bind();
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -554,6 +585,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->ClassFlags |= (EClassFlags)0x20900080u;
 
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill());
+				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_DoAction());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetCurrentSkillIndex());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetHPPercent());
@@ -563,7 +595,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_OnMouseClicked());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SelectionOff());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SelectionOn());
-				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SetDamageEffect());
+				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateSAI());
@@ -586,7 +618,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				UProperty* NewProp_CurrentMagicInjured = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentMagicInjured"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentMagicInjured, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentArmor = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentArmor"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentArmor, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentAttack = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttack"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttack, AHeroCharacter), 0x0010000000000005);
-				UProperty* NewProp_CurrentAttackSpeedSecond = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackSpeedSecond"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackSpeedSecond, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_CurrentAttackSpeedSecond = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackSpeedSecond"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackSpeedSecond, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_CurrentAttackSpeed = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackSpeed"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackSpeed, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentHealingMP = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentHealingMP"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentHealingMP, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentHealingHP = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentHealingHP"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentHealingHP, AHeroCharacter), 0x0010000000000005);
@@ -599,13 +631,14 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				UProperty* NewProp_DazzingLeftCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("DazzingLeftCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(DazzingLeftCounting, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_SpellingCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("SpellingCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(SpellingCounting, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_FollowActorUpdateCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("FollowActorUpdateCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(FollowActorUpdateCounting, AHeroCharacter), 0x0010000000000005);
-				UProperty* NewProp_AttackingCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("AttackingCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(AttackingCounting, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_AttackingCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("AttackingCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(AttackingCounting, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_CurrentSpellingEndingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingEndingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingEndingTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentSpellingBeginingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingBeginingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingBeginingTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentSpellingAnimationTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingAnimationTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingAnimationTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentSpellingWatingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingWatingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingWatingTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentAttackingEndingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackingEndingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackingEndingTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentAttackingBeginingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackingBeginingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackingBeginingTimeLength, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_CurrentAttackingAnimationRate = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackingAnimationRate"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackingAnimationRate, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_CurrentAttackingAnimationTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackingAnimationTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackingAnimationTimeLength, AHeroCharacter), 0x0010000000000005);
 				CPP_BOOL_PROPERTY_BITMASK_STRUCT(IsDead, AHeroCharacter);
 				UProperty* NewProp_IsDead = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("IsDead"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(IsDead, AHeroCharacter), 0x0010000000000005, CPP_BOOL_PROPERTY_BITMASK(IsDead, AHeroCharacter), sizeof(bool), true);
@@ -684,6 +717,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				UProperty* NewProp_HPBarLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("HPBarLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(HPBarLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_HeroHistoryDescription = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("HeroHistoryDescription"), RF_Public|RF_Transient|RF_MarkAsNative) UStrProperty(CPP_PROPERTY_BASE(HeroHistoryDescription, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_HeroName = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("HeroName"), RF_Public|RF_Transient|RF_MarkAsNative) UStrProperty(CPP_PROPERTY_BASE(HeroName, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_ShowDamageEffect = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("ShowDamageEffect"), RF_Public|RF_Transient|RF_MarkAsNative) UClassProperty(CPP_PROPERTY_BASE(ShowDamageEffect, AHeroCharacter), 0x0014000000000005, Z_Construct_UClass_ADamageEffect_NoRegister(), Z_Construct_UClass_UClass());
 				UProperty* NewProp_HeroBullet = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("HeroBullet"), RF_Public|RF_Transient|RF_MarkAsNative) UClassProperty(CPP_PROPERTY_BASE(HeroBullet, AHeroCharacter), 0x0014000000000005, Z_Construct_UClass_ABulletActor_NoRegister(), Z_Construct_UClass_UClass());
 				UProperty* NewProp_PositionUnderFoot = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("PositionUnderFoot"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(PositionUnderFoot, AHeroCharacter), 0x001000000008001d, Z_Construct_UClass_UArrowComponent_NoRegister());
 				UProperty* NewProp_PositionOnHead = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("PositionOnHead"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(PositionOnHead, AHeroCharacter), 0x001000000008000d, Z_Construct_UClass_UArrowComponent_NoRegister());
@@ -691,6 +725,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				CPP_BOOL_PROPERTY_BITMASK_STRUCT(IsDebug, AHeroCharacter);
 				UProperty* NewProp_IsDebug = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("IsDebug"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(IsDebug, AHeroCharacter), 0x0010000000000015, CPP_BOOL_PROPERTY_BITMASK(IsDebug, AHeroCharacter), sizeof(bool), true);
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill(), "BP_ImplementSkill"); // 728258913
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack(), "BP_PlayAttack"); // 2693622208
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_DoAction(), "DoAction"); // 2284941708
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetCurrentSkillIndex(), "GetCurrentSkillIndex"); // 3198225587
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetHPPercent(), "GetHPPercent"); // 2662852471
@@ -700,7 +735,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_OnMouseClicked(), "OnMouseClicked"); // 1273128435
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOff(), "SelectionOff"); // 1526153471
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOn(), "SelectionOn"); // 798867789
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SetDamageEffect(), "SetDamageEffect"); // 2433074539
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack(), "ServerPlayAttack"); // 3516323136
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint(), "ShowSkillHint"); // 3961161328
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS(), "UpdateHPMPAS"); // 1210657723
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateSAI(), "UpdateSAI"); // 347021170
@@ -809,6 +844,9 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				MetaData->SetValue(NewProp_CurrentAttackingBeginingTimeLength, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_CurrentAttackingBeginingTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_CurrentAttackingBeginingTimeLength, TEXT("ToolTip"), TEXT("\x76ee\x524d\x653b\x64ca\x524d\x6416\x6642\x9593\x9577\x5ea6"));
+				MetaData->SetValue(NewProp_CurrentAttackingAnimationRate, TEXT("Category"), TEXT("Current"));
+				MetaData->SetValue(NewProp_CurrentAttackingAnimationRate, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_CurrentAttackingAnimationRate, TEXT("ToolTip"), TEXT("\x76ee\x524d\x653b\x64ca\x52d5\x756b\x64ad\x653e\x901f\x5ea6"));
 				MetaData->SetValue(NewProp_CurrentAttackingAnimationTimeLength, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_CurrentAttackingAnimationTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_CurrentAttackingAnimationTimeLength, TEXT("ToolTip"), TEXT("Each Attacking Time gap\n|---------------------------------------------------------------------------------------|\n                                    waiting for next attack\n                                   |-----------------------|\nCurrentAttackingAnimationTimeLength\n|---------------------------------------------------------------|\nCurrentAttackingBeginingTimeLength\n|--------------------------------|\n                                    CurrentAttackingEndingTimeLength\n                                    |------------------------------|\n                                    ^\n                       Cause Damage\n// \x76ee\x524d\x653b\x64ca\x52d5\x756b\x6642\x9593\x9577\x5ea6"));
@@ -985,6 +1023,8 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				MetaData->SetValue(NewProp_HeroName, TEXT("Category"), TEXT("Hero"));
 				MetaData->SetValue(NewProp_HeroName, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_HeroName, TEXT("ToolTip"), TEXT("\x82f1\x96c4\x540d"));
+				MetaData->SetValue(NewProp_ShowDamageEffect, TEXT("Category"), TEXT("Interaction"));
+				MetaData->SetValue(NewProp_ShowDamageEffect, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_HeroBullet, TEXT("Category"), TEXT("Interaction"));
 				MetaData->SetValue(NewProp_HeroBullet, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_PositionUnderFoot, TEXT("Category"), TEXT("Interaction"));
@@ -1008,7 +1048,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroCharacter, 370902524);
+	IMPLEMENT_CLASS(AHeroCharacter, 1558438977);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroCharacter(Z_Construct_UClass_AHeroCharacter, &AHeroCharacter::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroCharacter"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroCharacter);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

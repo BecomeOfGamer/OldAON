@@ -126,15 +126,18 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_ImplementSkill(int32 index, FVector VFaceTo, FVector Pos);
 
+	UFUNCTION(NetMulticast, WithValidation, Reliable)
+	void ServerPlayAttack(float duraction, float rate);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_PlayAttack(float duraction, float rate);
+
 	UFUNCTION(BlueprintCallable, Category = "Hero")
 	bool UseSkill(int32 index, FVector VFaceTo, FVector Pos);
 
 	UFUNCTION(BlueprintCallable, Category = "Hero")
 	int32 GetCurrentSkillIndex();
-
-	UFUNCTION(BlueprintCallable, Category = "Hero")
-	static void SetDamageEffect(TSubclassOf<ADamageEffect> DamageKind);
-
+	
 	// 確定當前動作做完了沒
 	bool CheckCurrentActionFinish();
 
@@ -180,7 +183,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	TSubclassOf<ABulletActor> HeroBullet;
 
-	static TSubclassOf<ADamageEffect> ShowDamageEffect;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	TSubclassOf<ADamageEffect> ShowDamageEffect;
 
 	// 英雄名
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
@@ -411,6 +415,9 @@ public:
 	// 目前攻擊動畫時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float CurrentAttackingAnimationTimeLength;
+	// 目前攻擊動畫播放速度
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	float CurrentAttackingAnimationRate;
 	// 目前攻擊前搖時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float CurrentAttackingBeginingTimeLength;
@@ -446,7 +453,7 @@ public:
 	float CurrentSpellingEndingTimeLength;
 
 	// 目前攻擊計時器
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting", Replicated)
 	float AttackingCounting;
 	// 追踨目標計時器
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting")
@@ -486,7 +493,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float CurrentAttackSpeed;
 	// 攻速秒數
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float CurrentAttackSpeedSecond;
 	// 攻擊力
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
