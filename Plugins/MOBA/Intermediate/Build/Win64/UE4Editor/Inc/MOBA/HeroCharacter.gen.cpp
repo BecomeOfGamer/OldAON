@@ -36,6 +36,7 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_SelectionOff();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_SelectionOn();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ServerShowDamageEffect();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ShowSkillHint();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateSAI();
@@ -214,6 +215,15 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		Parms.rate=rate;
 		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_ServerPlayAttack),&Parms);
 	}
+	static FName NAME_AHeroCharacter_ServerShowDamageEffect = FName(TEXT("ServerShowDamageEffect"));
+	void AHeroCharacter::ServerShowDamageEffect(FVector pos, FVector dir, float Damage)
+	{
+		HeroCharacter_eventServerShowDamageEffect_Parms Parms;
+		Parms.pos=pos;
+		Parms.dir=dir;
+		Parms.Damage=Damage;
+		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_ServerShowDamageEffect),&Parms);
+	}
 	void AHeroCharacter::StaticRegisterNativesAHeroCharacter()
 	{
 		UClass* Class = AHeroCharacter::StaticClass();
@@ -228,6 +238,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 			{ "SelectionOff", (Native)&AHeroCharacter::execSelectionOff },
 			{ "SelectionOn", (Native)&AHeroCharacter::execSelectionOn },
 			{ "ServerPlayAttack", (Native)&AHeroCharacter::execServerPlayAttack },
+			{ "ServerShowDamageEffect", (Native)&AHeroCharacter::execServerShowDamageEffect },
 			{ "ShowSkillHint", (Native)&AHeroCharacter::execShowSkillHint },
 			{ "UpdateHPMPAS", (Native)&AHeroCharacter::execUpdateHPMPAS },
 			{ "UpdateSAI", (Native)&AHeroCharacter::execUpdateSAI },
@@ -477,6 +488,25 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		}
 		return ReturnFunction;
 	}
+	UFunction* Z_Construct_UFunction_AHeroCharacter_ServerShowDamageEffect()
+	{
+		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("ServerShowDamageEffect"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x80824CC0, 65535, sizeof(HeroCharacter_eventServerShowDamageEffect_Parms));
+			UProperty* NewProp_Damage = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Damage"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(Damage, HeroCharacter_eventServerShowDamageEffect_Parms), 0x0010000000000080);
+			UProperty* NewProp_dir = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("dir"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(dir, HeroCharacter_eventServerShowDamageEffect_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
+			UProperty* NewProp_pos = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("pos"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(pos, HeroCharacter_eventServerShowDamageEffect_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
+			ReturnFunction->Bind();
+			ReturnFunction->StaticLink();
+#if WITH_METADATA
+			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
+			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+#endif
+		}
+		return ReturnFunction;
+	}
 	UFunction* Z_Construct_UFunction_AHeroCharacter_ShowSkillHint()
 	{
 		struct HeroCharacter_eventShowSkillHint_Parms
@@ -596,6 +626,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SelectionOff());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SelectionOn());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack());
+				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ServerShowDamageEffect());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateSAI());
@@ -736,6 +767,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOff(), "SelectionOff"); // 1526153471
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOn(), "SelectionOn"); // 798867789
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack(), "ServerPlayAttack"); // 3516323136
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ServerShowDamageEffect(), "ServerShowDamageEffect"); // 1658933705
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint(), "ShowSkillHint"); // 3961161328
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS(), "UpdateHPMPAS"); // 1210657723
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateSAI(), "UpdateSAI"); // 347021170
@@ -1048,7 +1080,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroCharacter, 1558438977);
+	IMPLEMENT_CLASS(AHeroCharacter, 882204317);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroCharacter(Z_Construct_UClass_AHeroCharacter, &AHeroCharacter::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroCharacter"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroCharacter);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

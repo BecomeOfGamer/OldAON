@@ -30,6 +30,8 @@ struct FKey;
 #define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
+	virtual bool ServerShowDamageEffect_Validate(FVector , FVector , float ); \
+	virtual void ServerShowDamageEffect_Implementation(FVector pos, FVector dir, float Damage); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
 	virtual void ServerPlayAttack_Implementation(float duraction, float rate); \
  \
@@ -63,6 +65,22 @@ struct FKey;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		*(bool*)Z_Param__Result=this->UseSkill(Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execServerShowDamageEffect) \
+	{ \
+		P_GET_STRUCT(FVector,Z_Param_pos); \
+		P_GET_STRUCT(FVector,Z_Param_dir); \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_Damage); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->ServerShowDamageEffect_Validate(Z_Param_pos,Z_Param_dir,Z_Param_Damage)) \
+		{ \
+			RPC_ValidateFailed(TEXT("ServerShowDamageEffect_Validate")); \
+			return; \
+		} \
+		this->ServerShowDamageEffect_Implementation(Z_Param_pos,Z_Param_dir,Z_Param_Damage); \
 		P_NATIVE_END; \
 	} \
  \
@@ -169,6 +187,8 @@ struct FKey;
 #define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS_NO_PURE_DECLS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
+	virtual bool ServerShowDamageEffect_Validate(FVector , FVector , float ); \
+	virtual void ServerShowDamageEffect_Implementation(FVector pos, FVector dir, float Damage); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
 	virtual void ServerPlayAttack_Implementation(float duraction, float rate); \
  \
@@ -202,6 +222,22 @@ struct FKey;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		*(bool*)Z_Param__Result=this->UseSkill(Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execServerShowDamageEffect) \
+	{ \
+		P_GET_STRUCT(FVector,Z_Param_pos); \
+		P_GET_STRUCT(FVector,Z_Param_dir); \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_Damage); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->ServerShowDamageEffect_Validate(Z_Param_pos,Z_Param_dir,Z_Param_Damage)) \
+		{ \
+			RPC_ValidateFailed(TEXT("ServerShowDamageEffect_Validate")); \
+			return; \
+		} \
+		this->ServerShowDamageEffect_Implementation(Z_Param_pos,Z_Param_dir,Z_Param_Damage); \
 		P_NATIVE_END; \
 	} \
  \
@@ -325,6 +361,12 @@ struct FKey;
 	{ \
 		float duraction; \
 		float rate; \
+	}; \
+	struct HeroCharacter_eventServerShowDamageEffect_Parms \
+	{ \
+		FVector pos; \
+		FVector dir; \
+		float Damage; \
 	};
 
 

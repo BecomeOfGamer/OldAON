@@ -129,6 +129,9 @@ public:
 	UFUNCTION(NetMulticast, WithValidation, Reliable)
 	void ServerPlayAttack(float duraction, float rate);
 
+	UFUNCTION(NetMulticast, WithValidation, Reliable)
+	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_PlayAttack(float duraction, float rate);
 
@@ -156,7 +159,7 @@ public:
 	void PopAction();
 	// 做打人
 	void DoAction_AttackActor(const FHeroAction& CurrentAction);
-
+	
 	// 做指向技
 	void DoAction_SpellToDirection(const FHeroAction& CurrentAction);
 	void DoAction_AttackSceneObject(const FHeroAction& CurrentAction);
