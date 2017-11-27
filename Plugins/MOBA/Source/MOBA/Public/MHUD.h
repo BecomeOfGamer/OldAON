@@ -130,6 +130,9 @@ public:
 	TArray<AHeroCharacter*> RemoveSelection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	TMap<FString,int32>  SkillMapping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FVector2D InitialMouseXY;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

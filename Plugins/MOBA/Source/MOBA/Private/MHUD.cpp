@@ -48,11 +48,13 @@ void AMHUD::BeginPlay()
 			EquipmentDMaterials.Add(UMaterialInstanceDynamic::Create(EquipmentMaterial, this));
 		}
 	}
-	for(int i = 0; i < 4; ++i)
+	for(int i = 0; i < 5; ++i)
 	{
 		FVector2D p1, s1;
 		GetSkillPosition(i, p1, s1);
-		RTS_AddHitBox(p1, s1, FString::Printf(TEXT("Skill%d"), i + 1), false, 0);
+		FString skname = FString::Printf(TEXT("Skill%d"), i + 1);
+		RTS_AddHitBox(p1, s1, skname, false, 0);
+		SkillMapping.Add(skname, i);
 		if(SkillMaterial)
 		{
 			SkillDMaterials.Add(UMaterialInstanceDynamic::Create(SkillMaterial, this));
@@ -639,6 +641,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 		}
 		return;
 	}
+	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	// 顯示技能提示
 	if(CurrentSelection.Num() > 0)
 	{
@@ -650,6 +653,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
 					bool res = CurrentSelection[0]->ShowSkillHint(idx);
+					ags->HeroUseSkill(CurrentSelection[0], idx, FVector(), FVector());
 					if(res)
 					{
 						RTSStatus = ERTSStatusEnum::SkillHint;
@@ -664,6 +668,11 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 		if(HitBox.Contains(pos, ViewportScale))
 		{
 			RTS_HitBoxLButtonPressed(HitBox.GetName());
+			if (SkillMapping.Contains(HitBox.GetName()))
+			{
+				CurrentSelection[0]->ShowSkillHint(SkillMapping.FindRef(HitBox.GetName()));
+				
+			}
 			if(HitBox.ConsumesInput())
 			{
 				break;  //Early out if this box consumed the click

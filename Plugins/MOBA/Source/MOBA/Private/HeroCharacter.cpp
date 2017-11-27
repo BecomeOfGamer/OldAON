@@ -18,7 +18,7 @@
 AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())
 {
-	SetRemoteRoleForBackwardsCompat(ROLE_AutonomousProxy);
+	//SetRemoteRoleForBackwardsCompat(ROLE_AutonomousProxy);
 	HeroBullet = NULL;
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
@@ -89,6 +89,15 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
+
+	for (int i = 0; i < (int)EHeroBuffKind::EndBuffKind; ++i)
+	{
+		BuffKindMap.Add(i, false);
+	}
+	for (int i = 0; i < (int)EHeroBuffProperty::EndBuffProperty; ++i)
+	{
+		BuffPropertyMap.Add(i, false);
+	}
 }
 
 void AHeroCharacter::PostInitializeComponents()
@@ -210,20 +219,15 @@ void AHeroCharacter::Tick(float DeltaTime)
 	bool isLastFrameDazzing = (0 == DazzingLeftCounting);
 	DazzingLeftCounting = 0;
 	for (int32 i = 0; i < BuffQueue.Num(); ++i)
-	{
-		BuffQueue[i]->Duration -= DeltaTime;
-		// 如果暈了
-		if (BuffQueue[i]->BuffKind == EHeroBuffKind::Dazzing && BuffQueue[i]->Duration > DazzingLeftCounting)
-		{
-			DazzingLeftCounting = BuffQueue[i]->Duration;
-			BodyStatus = EHeroBodyStatus::Dazzing;
-		}
+	{	
 		// 移除時間到的Buff
 		if (BuffQueue[i]->Duration <= 0)
 		{
 			// 釋放記憶體
-			BuffQueue[i]->ConditionalBeginDestroy();
-			BuffQueue[i] = NULL;
+			if (!BuffQueue[i]->IsPendingKillPending())
+			{
+				BuffQueue[i]->Destroy();
+			}
 			BuffQueue.RemoveAt(i);
 			i--;
 		}
@@ -403,6 +407,30 @@ bool AHeroCharacter::HasEquipment(AEquipment* equ)
 	return false;
 }
 
+bool AHeroCharacter::AttackCompute_Validate(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage)
+{
+	return true;
+}
+
+void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage)
+{
+	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	float Injury = ags->ArmorConvertToInjuryPersent(victim->CurrentArmor);
+	float RDamage = damage * Injury;
+	// 顯示傷害文字
+	ServerShowDamageEffect(victim->GetActorLocation(),
+		victim->GetActorLocation() - attacker->GetActorLocation(), RDamage);
+	victim->CurrentHP -= RDamage;
+	for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+	{
+		attacker->BuffQueue[i]->CreateDamage(attacker, victim, dtype, damage, RDamage);
+		attacker->BuffQueue[i]->OnAttackLanded(attacker, victim, dtype, damage, RDamage);
+	}
+	for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+	{
+		victim->BuffQueue[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
+	}
+}
 
 void AHeroCharacter::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
 {
@@ -937,34 +965,24 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		if (!IsAttacked && AttackingCounting > CurrentAttackingBeginingTimeLength)
 		{
 			IsAttacked = true;
-			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			if (ags)
+
+			// 遠攻
+			if (HeroBullet)
 			{
-				// 遠攻
-				float Injury = ags->ArmorConvertToInjuryPersent(TargetActor->CurrentArmor);
-				float Damage = this->CurrentAttack * Injury;
-
-				if (HeroBullet)
+				FVector pos = GetActorLocation();
+				ABulletActor* bullet = GetWorld()->SpawnActor<ABulletActor>(HeroBullet);
+				if (bullet)
 				{
-					FVector pos = GetActorLocation();
-
-					ABulletActor* bullet = GetWorld()->SpawnActor<ABulletActor>(HeroBullet);
-					if (bullet)
-					{
-						bullet->SetActorLocation(pos);
-						bullet->SetTartgetActor(TargetActor);
-						bullet->Damage = Damage;
-					}
+					bullet->SetActorLocation(pos);
+					bullet->SetTartgetActor(TargetActor);
+					bullet->Damage = this->CurrentAttack;
 				}
-				else
-				{
-					// 近戰
-					// 顯示傷害文字
-					ServerShowDamageEffect(TargetActor->GetActorLocation(),
-						TargetActor->GetActorLocation() - GetActorLocation(), Damage);
-
-					TargetActor->CurrentHP -= Damage;
-				}
+			}
+			else
+			{
+				// 近戰
+				
+				AttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack);
 			}
 			BodyStatus = EHeroBodyStatus::AttackEnding;
 		}
@@ -987,12 +1005,13 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 	}
 }
 
-bool AHeroCharacter::ServerShowDamageEffect_Validate(FVector pos, FVector dir, float Damage)
+void AHeroCharacter::AddBuff(AHeroBuff* buff)
 {
-	return true;
+	BuffQueue.Add(buff);
+	buff->BuffTarget.Add(this);
 }
 
-void AHeroCharacter::ServerShowDamageEffect_Implementation(FVector pos, FVector dir, float Damage)
+void AHeroCharacter::ServerShowDamageEffect(FVector pos, FVector dir, float Damage)
 {
 	ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(ShowDamageEffect);
 	if (TempDamageText)

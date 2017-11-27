@@ -4,26 +4,31 @@
 #include "HeroBuff.h"
 
 
-
-
-UHeroBuff* UHeroBuff::NewHeroBuff()
+AHeroBuff::AHeroBuff(const FObjectInitializer& ObjectInitializer)
+	: Super(FObjectInitializer::Get())
 {
-	return NewObject<UHeroBuff>();
+	bReplicates = true;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
-TArray<UHeroBuff*> UHeroBuff::CloneArray(TArray<UHeroBuff*> input)
+AHeroBuff* AHeroBuff::NewHeroBuff()
 {
-	TArray<UHeroBuff*> res;
-	for (UHeroBuff* hb : input)
+	return NewObject<AHeroBuff>();
+}
+
+TArray<AHeroBuff*> AHeroBuff::CloneArray(TArray<AHeroBuff*> input)
+{
+	TArray<AHeroBuff*> res;
+	for (AHeroBuff* hb : input)
 	{
 		res.Add(hb->Clone());
 	}
 	return res;
 }
 
-UHeroBuff* UHeroBuff::Clone()
+AHeroBuff* AHeroBuff::Clone()
 {
-	UHeroBuff* data = NewObject<UHeroBuff>();
+	AHeroBuff* data = NewObject<AHeroBuff>();
 	data->Priority = Priority;
 	data->Name = Name;
 	data->Head = Head;
@@ -32,4 +37,10 @@ UHeroBuff* UHeroBuff::Clone()
 	data->Superposition = Superposition;
 	data->Duration = Duration;
 	return data;
+}
+
+void AHeroBuff::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	Duration -= DeltaTime;
 }

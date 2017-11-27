@@ -70,7 +70,7 @@ public:
 	virtual void BeginPlay() override;
 
 	// Called every frame
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void PostInitializeComponents() override;
 
@@ -86,6 +86,9 @@ public:
 	bool ThrowEquipment(AEquipment* equ, FVector pos);
 
 	bool HasEquipment(AEquipment* equ);
+
+	UFUNCTION(NetMulticast, WithValidation, Reliable)
+	void AttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage);
 
 	// for UI
 	UFUNCTION()
@@ -129,7 +132,9 @@ public:
 	UFUNCTION(NetMulticast, WithValidation, Reliable)
 	void ServerPlayAttack(float duraction, float rate);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable)
+	UFUNCTION(BlueprintCallable, Category = "Hero")
+	void AddBuff(AHeroBuff* buff);
+	
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -537,8 +542,14 @@ public:
 	EHeroBodyStatus BodyStatus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	TArray<UHeroBuff*> BuffQueue;
+	TArray<AHeroBuff*> BuffQueue;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	TMap<uint8, bool> BuffKindMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	TMap<uint8, int32> BuffPropertyMap;
+
 	FVector LastMoveTarget;
 	FHeroAction LastUseSkill;
 };

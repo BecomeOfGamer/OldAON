@@ -635,6 +635,9 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_ERTSStatusEnum(ERTSStatu
 				UProperty* NewProp_CurrentMouseHit = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentMouseHit"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(CurrentMouseHit, AMHUD), 0x0010000000000005, Z_Construct_UScriptStruct_FVector());
 				UProperty* NewProp_CurrentMouseXY = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentMouseXY"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(CurrentMouseXY, AMHUD), 0x0010000000000005, Z_Construct_UScriptStruct_FVector2D());
 				UProperty* NewProp_InitialMouseXY = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("InitialMouseXY"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(InitialMouseXY, AMHUD), 0x0010000000000005, Z_Construct_UScriptStruct_FVector2D());
+				UProperty* NewProp_SkillMapping = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("SkillMapping"), RF_Public|RF_Transient|RF_MarkAsNative) UMapProperty(CPP_PROPERTY_BASE(SkillMapping, AMHUD), 0x0010000000000005);
+				UProperty* NewProp_SkillMapping_Key_KeyProp = new(EC_InternalUseOnlyConstructor, NewProp_SkillMapping, TEXT("SkillMapping_Key"), RF_Public|RF_Transient|RF_MarkAsNative) UStrProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000001);
+				UProperty* NewProp_SkillMapping_ValueProp = new(EC_InternalUseOnlyConstructor, NewProp_SkillMapping, TEXT("SkillMapping"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(FObjectInitializer(), EC_CppProperty, 1, 0x0000000000000001);
 				UProperty* NewProp_CurrentSelection = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSelection"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(CurrentSelection, AMHUD), 0x0010000000000005);
 				UProperty* NewProp_CurrentSelection_Inner = new(EC_InternalUseOnlyConstructor, NewProp_CurrentSelection, TEXT("CurrentSelection"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UClass_AHeroCharacter_NoRegister());
 				UProperty* NewProp_HeroCanSelection = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("HeroCanSelection"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(HeroCanSelection, AMHUD), 0x0010000000000005);
@@ -709,6 +712,8 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_ERTSStatusEnum(ERTSStatu
 				MetaData->SetValue(NewProp_CurrentMouseXY, TEXT("ModuleRelativePath"), TEXT("Public/MHUD.h"));
 				MetaData->SetValue(NewProp_InitialMouseXY, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_InitialMouseXY, TEXT("ModuleRelativePath"), TEXT("Public/MHUD.h"));
+				MetaData->SetValue(NewProp_SkillMapping, TEXT("Category"), TEXT("MOBA"));
+				MetaData->SetValue(NewProp_SkillMapping, TEXT("ModuleRelativePath"), TEXT("Public/MHUD.h"));
 				MetaData->SetValue(NewProp_CurrentSelection, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_CurrentSelection, TEXT("ModuleRelativePath"), TEXT("Public/MHUD.h"));
 				MetaData->SetValue(NewProp_HeroCanSelection, TEXT("Category"), TEXT("MOBA"));
@@ -719,7 +724,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_ERTSStatusEnum(ERTSStatu
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AMHUD, 1074872317);
+	IMPLEMENT_CLASS(AMHUD, 817616066);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AMHUD(Z_Construct_UClass_AMHUD, &AMHUD::StaticClass, TEXT("/Script/MOBA"), TEXT("AMHUD"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AMHUD);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

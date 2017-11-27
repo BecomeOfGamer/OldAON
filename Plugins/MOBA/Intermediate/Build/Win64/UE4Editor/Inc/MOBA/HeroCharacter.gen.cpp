@@ -19,8 +19,13 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	UPackage* Z_Construct_UPackage__Script_MOBA();
 	MOBA_API UScriptStruct* Z_Construct_UScriptStruct_FSkillDescription();
 	MOBA_API UScriptStruct* Z_Construct_UScriptStruct_FLevelCDs();
-	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_AddBuff();
 	MOBA_API UClass* Z_Construct_UClass_AHeroCharacter();
+	MOBA_API UClass* Z_Construct_UClass_AHeroBuff_NoRegister();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_AttackCompute();
+	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EDamageType();
+	MOBA_API UClass* Z_Construct_UClass_AHeroCharacter_NoRegister();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill();
 	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_DoAction();
@@ -36,14 +41,11 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_SelectionOff();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_SelectionOn();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack();
-	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ServerShowDamageEffect();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ShowSkillHint();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateSAI();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UseSkill();
-	MOBA_API UClass* Z_Construct_UClass_AHeroCharacter_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_ACharacter();
-	MOBA_API UClass* Z_Construct_UClass_UHeroBuff_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_AEquipment_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_ASkillHintActor_NoRegister();
 	COREUOBJECT_API UClass* Z_Construct_UClass_UClass();
@@ -183,6 +185,16 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		return ReturnStruct;
 	}
 	uint32 Get_Z_Construct_UScriptStruct_FLevelCDs_CRC() { return 77316854U; }
+	static FName NAME_AHeroCharacter_AttackCompute = FName(TEXT("AttackCompute"));
+	void AHeroCharacter::AttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage)
+	{
+		HeroCharacter_eventAttackCompute_Parms Parms;
+		Parms.attacker=attacker;
+		Parms.victim=victim;
+		Parms.dtype=dtype;
+		Parms.damage=damage;
+		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_AttackCompute),&Parms);
+	}
 	static FName NAME_AHeroCharacter_BP_ImplementSkill = FName(TEXT("BP_ImplementSkill"));
 	void AHeroCharacter::BP_ImplementSkill(int32 index, FVector VFaceTo, FVector Pos)
 	{
@@ -215,19 +227,12 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		Parms.rate=rate;
 		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_ServerPlayAttack),&Parms);
 	}
-	static FName NAME_AHeroCharacter_ServerShowDamageEffect = FName(TEXT("ServerShowDamageEffect"));
-	void AHeroCharacter::ServerShowDamageEffect(FVector pos, FVector dir, float Damage)
-	{
-		HeroCharacter_eventServerShowDamageEffect_Parms Parms;
-		Parms.pos=pos;
-		Parms.dir=dir;
-		Parms.Damage=Damage;
-		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_ServerShowDamageEffect),&Parms);
-	}
 	void AHeroCharacter::StaticRegisterNativesAHeroCharacter()
 	{
 		UClass* Class = AHeroCharacter::StaticClass();
 		static const TNameNativePtrPair<ANSICHAR> AnsiFuncs[] = {
+			{ "AddBuff", (Native)&AHeroCharacter::execAddBuff },
+			{ "AttackCompute", (Native)&AHeroCharacter::execAttackCompute },
 			{ "DoAction", (Native)&AHeroCharacter::execDoAction },
 			{ "GetCurrentSkillIndex", (Native)&AHeroCharacter::execGetCurrentSkillIndex },
 			{ "GetHPPercent", (Native)&AHeroCharacter::execGetHPPercent },
@@ -238,13 +243,55 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 			{ "SelectionOff", (Native)&AHeroCharacter::execSelectionOff },
 			{ "SelectionOn", (Native)&AHeroCharacter::execSelectionOn },
 			{ "ServerPlayAttack", (Native)&AHeroCharacter::execServerPlayAttack },
-			{ "ServerShowDamageEffect", (Native)&AHeroCharacter::execServerShowDamageEffect },
 			{ "ShowSkillHint", (Native)&AHeroCharacter::execShowSkillHint },
 			{ "UpdateHPMPAS", (Native)&AHeroCharacter::execUpdateHPMPAS },
 			{ "UpdateSAI", (Native)&AHeroCharacter::execUpdateSAI },
 			{ "UseSkill", (Native)&AHeroCharacter::execUseSkill },
 		};
 		FNativeFunctionRegistrar::RegisterFunctions(Class, AnsiFuncs, ARRAY_COUNT(AnsiFuncs));
+	}
+	UFunction* Z_Construct_UFunction_AHeroCharacter_AddBuff()
+	{
+		struct HeroCharacter_eventAddBuff_Parms
+		{
+			AHeroBuff* buff;
+		};
+		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("AddBuff"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x04020401, 65535, sizeof(HeroCharacter_eventAddBuff_Parms));
+			UProperty* NewProp_buff = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("buff"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(buff, HeroCharacter_eventAddBuff_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroBuff_NoRegister());
+			ReturnFunction->Bind();
+			ReturnFunction->StaticLink();
+#if WITH_METADATA
+			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+#endif
+		}
+		return ReturnFunction;
+	}
+	UFunction* Z_Construct_UFunction_AHeroCharacter_AttackCompute()
+	{
+		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("AttackCompute"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x80024CC0, 65535, sizeof(HeroCharacter_eventAttackCompute_Parms));
+			UProperty* NewProp_damage = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("damage"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(damage, HeroCharacter_eventAttackCompute_Parms), 0x0010000000000080);
+			UProperty* NewProp_dtype = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("dtype"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(CPP_PROPERTY_BASE(dtype, HeroCharacter_eventAttackCompute_Parms), 0x0010000000000080, Z_Construct_UEnum_MOBA_EDamageType());
+			UProperty* NewProp_dtype_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_dtype, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
+			UProperty* NewProp_victim = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("victim"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(victim, HeroCharacter_eventAttackCompute_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
+			UProperty* NewProp_attacker = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("attacker"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(attacker, HeroCharacter_eventAttackCompute_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
+			ReturnFunction->Bind();
+			ReturnFunction->StaticLink();
+#if WITH_METADATA
+			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
+			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+#endif
+		}
+		return ReturnFunction;
 	}
 	UFunction* Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill()
 	{
@@ -488,25 +535,6 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		}
 		return ReturnFunction;
 	}
-	UFunction* Z_Construct_UFunction_AHeroCharacter_ServerShowDamageEffect()
-	{
-		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
-		static UFunction* ReturnFunction = nullptr;
-		if (!ReturnFunction)
-		{
-			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("ServerShowDamageEffect"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x80824CC0, 65535, sizeof(HeroCharacter_eventServerShowDamageEffect_Parms));
-			UProperty* NewProp_Damage = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Damage"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(Damage, HeroCharacter_eventServerShowDamageEffect_Parms), 0x0010000000000080);
-			UProperty* NewProp_dir = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("dir"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(dir, HeroCharacter_eventServerShowDamageEffect_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
-			UProperty* NewProp_pos = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("pos"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(pos, HeroCharacter_eventServerShowDamageEffect_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
-			ReturnFunction->Bind();
-			ReturnFunction->StaticLink();
-#if WITH_METADATA
-			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-#endif
-		}
-		return ReturnFunction;
-	}
 	UFunction* Z_Construct_UFunction_AHeroCharacter_ShowSkillHint()
 	{
 		struct HeroCharacter_eventShowSkillHint_Parms
@@ -614,6 +642,8 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				UObjectForceRegistration(OuterClass);
 				OuterClass->ClassFlags |= (EClassFlags)0x20900080u;
 
+				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_AddBuff());
+				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_AttackCompute());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_DoAction());
@@ -626,14 +656,19 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SelectionOff());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SelectionOn());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack());
-				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ServerShowDamageEffect());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateSAI());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UseSkill());
 
+				UProperty* NewProp_BuffPropertyMap = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffPropertyMap"), RF_Public|RF_Transient|RF_MarkAsNative) UMapProperty(CPP_PROPERTY_BASE(BuffPropertyMap, AHeroCharacter), 0x0010000000000025);
+				UProperty* NewProp_BuffPropertyMap_Key_KeyProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap, TEXT("BuffPropertyMap_Key"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000001);
+				UProperty* NewProp_BuffPropertyMap_ValueProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap, TEXT("BuffPropertyMap"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(FObjectInitializer(), EC_CppProperty, 1, 0x0000000000000001);
+				UProperty* NewProp_BuffKindMap = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffKindMap"), RF_Public|RF_Transient|RF_MarkAsNative) UMapProperty(CPP_PROPERTY_BASE(BuffKindMap, AHeroCharacter), 0x0010000000000025);
+				UProperty* NewProp_BuffKindMap_Key_KeyProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffKindMap, TEXT("BuffKindMap_Key"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000001);
+				UProperty* NewProp_BuffKindMap_ValueProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffKindMap, TEXT("BuffKindMap"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, 1, 0x0000000000000001, 0, sizeof(bool), true);
 				UProperty* NewProp_BuffQueue = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffQueue"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(BuffQueue, AHeroCharacter), 0x0010000000000025);
-				UProperty* NewProp_BuffQueue_Inner = new(EC_InternalUseOnlyConstructor, NewProp_BuffQueue, TEXT("BuffQueue"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UClass_UHeroBuff_NoRegister());
+				UProperty* NewProp_BuffQueue_Inner = new(EC_InternalUseOnlyConstructor, NewProp_BuffQueue, TEXT("BuffQueue"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UClass_AHeroBuff_NoRegister());
 				UProperty* NewProp_BodyStatus = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BodyStatus"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(CPP_PROPERTY_BASE(BodyStatus, AHeroCharacter), 0x0010000000000025, Z_Construct_UEnum_MOBA_EHeroBodyStatus());
 				UProperty* NewProp_BodyStatus_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_BodyStatus, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
 				UProperty* NewProp_CurrentAction = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAction"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(CurrentAction, AHeroCharacter), 0x0010000000000025, Z_Construct_UScriptStruct_FHeroAction());
@@ -755,6 +790,8 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				UProperty* NewProp_SelectionDecal = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("SelectionDecal"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(SelectionDecal, AHeroCharacter), 0x001000000008001d, Z_Construct_UClass_UDecalComponent_NoRegister());
 				CPP_BOOL_PROPERTY_BITMASK_STRUCT(IsDebug, AHeroCharacter);
 				UProperty* NewProp_IsDebug = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("IsDebug"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(IsDebug, AHeroCharacter), 0x0010000000000015, CPP_BOOL_PROPERTY_BITMASK(IsDebug, AHeroCharacter), sizeof(bool), true);
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_AddBuff(), "AddBuff"); // 1992653910
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_AttackCompute(), "AttackCompute"); // 2449765087
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill(), "BP_ImplementSkill"); // 728258913
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack(), "BP_PlayAttack"); // 2693622208
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_DoAction(), "DoAction"); // 2284941708
@@ -767,7 +804,6 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOff(), "SelectionOff"); // 1526153471
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOn(), "SelectionOn"); // 798867789
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack(), "ServerPlayAttack"); // 3516323136
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ServerShowDamageEffect(), "ServerShowDamageEffect"); // 1658933705
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint(), "ShowSkillHint"); // 3961161328
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS(), "UpdateHPMPAS"); // 1210657723
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateSAI(), "UpdateSAI"); // 347021170
@@ -780,6 +816,10 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				MetaData->SetValue(OuterClass, TEXT("HideCategories"), TEXT("Navigation"));
 				MetaData->SetValue(OuterClass, TEXT("IncludePath"), TEXT("HeroCharacter.h"));
 				MetaData->SetValue(OuterClass, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_BuffPropertyMap, TEXT("Category"), TEXT("Current"));
+				MetaData->SetValue(NewProp_BuffPropertyMap, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_BuffKindMap, TEXT("Category"), TEXT("Current"));
+				MetaData->SetValue(NewProp_BuffKindMap, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BuffQueue, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_BuffQueue, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BodyStatus, TEXT("Category"), TEXT("Current"));
@@ -1080,7 +1120,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroCharacter, 882204317);
+	IMPLEMENT_CLASS(AHeroCharacter, 2964617781);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroCharacter(Z_Construct_UClass_AHeroCharacter, &AHeroCharacter::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroCharacter"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroCharacter);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

@@ -10,8 +10,11 @@
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 struct FHeroAction;
 struct FVector;
+class AHeroBuff;
 class UPrimitiveComponent;
 struct FKey;
+class AHeroCharacter;
+enum class EDamageType : uint8;
 #ifdef MOBA_HeroCharacter_generated_h
 #error "HeroCharacter.generated.h already included, missing '#pragma once' in HeroCharacter.h"
 #endif
@@ -30,10 +33,10 @@ struct FKey;
 #define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
-	virtual bool ServerShowDamageEffect_Validate(FVector , FVector , float ); \
-	virtual void ServerShowDamageEffect_Implementation(FVector pos, FVector dir, float Damage); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
 	virtual void ServerPlayAttack_Implementation(float duraction, float rate); \
+	virtual bool AttackCompute_Validate(AHeroCharacter* , AHeroCharacter* , EDamageType , float ); \
+	virtual void AttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage); \
  \
 	DECLARE_FUNCTION(execDoAction) \
 	{ \
@@ -68,19 +71,12 @@ struct FKey;
 		P_NATIVE_END; \
 	} \
  \
-	DECLARE_FUNCTION(execServerShowDamageEffect) \
+	DECLARE_FUNCTION(execAddBuff) \
 	{ \
-		P_GET_STRUCT(FVector,Z_Param_pos); \
-		P_GET_STRUCT(FVector,Z_Param_dir); \
-		P_GET_PROPERTY(UFloatProperty,Z_Param_Damage); \
+		P_GET_OBJECT(AHeroBuff,Z_Param_buff); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		if (!this->ServerShowDamageEffect_Validate(Z_Param_pos,Z_Param_dir,Z_Param_Damage)) \
-		{ \
-			RPC_ValidateFailed(TEXT("ServerShowDamageEffect_Validate")); \
-			return; \
-		} \
-		this->ServerShowDamageEffect_Implementation(Z_Param_pos,Z_Param_dir,Z_Param_Damage); \
+		this->AddBuff(Z_Param_buff); \
 		P_NATIVE_END; \
 	} \
  \
@@ -180,6 +176,23 @@ struct FKey;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		this->OnMouseClicked(Z_Param_ClickedComp,Z_Param_ButtonPressed); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execAttackCompute) \
+	{ \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_attacker); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_victim); \
+		P_GET_ENUM(EDamageType,Z_Param_dtype); \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_damage); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->AttackCompute_Validate(Z_Param_attacker,Z_Param_victim,EDamageType(Z_Param_dtype),Z_Param_damage)) \
+		{ \
+			RPC_ValidateFailed(TEXT("AttackCompute_Validate")); \
+			return; \
+		} \
+		this->AttackCompute_Implementation(Z_Param_attacker,Z_Param_victim,EDamageType(Z_Param_dtype),Z_Param_damage); \
 		P_NATIVE_END; \
 	}
 
@@ -187,10 +200,10 @@ struct FKey;
 #define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS_NO_PURE_DECLS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
-	virtual bool ServerShowDamageEffect_Validate(FVector , FVector , float ); \
-	virtual void ServerShowDamageEffect_Implementation(FVector pos, FVector dir, float Damage); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
 	virtual void ServerPlayAttack_Implementation(float duraction, float rate); \
+	virtual bool AttackCompute_Validate(AHeroCharacter* , AHeroCharacter* , EDamageType , float ); \
+	virtual void AttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage); \
  \
 	DECLARE_FUNCTION(execDoAction) \
 	{ \
@@ -225,19 +238,12 @@ struct FKey;
 		P_NATIVE_END; \
 	} \
  \
-	DECLARE_FUNCTION(execServerShowDamageEffect) \
+	DECLARE_FUNCTION(execAddBuff) \
 	{ \
-		P_GET_STRUCT(FVector,Z_Param_pos); \
-		P_GET_STRUCT(FVector,Z_Param_dir); \
-		P_GET_PROPERTY(UFloatProperty,Z_Param_Damage); \
+		P_GET_OBJECT(AHeroBuff,Z_Param_buff); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		if (!this->ServerShowDamageEffect_Validate(Z_Param_pos,Z_Param_dir,Z_Param_Damage)) \
-		{ \
-			RPC_ValidateFailed(TEXT("ServerShowDamageEffect_Validate")); \
-			return; \
-		} \
-		this->ServerShowDamageEffect_Implementation(Z_Param_pos,Z_Param_dir,Z_Param_Damage); \
+		this->AddBuff(Z_Param_buff); \
 		P_NATIVE_END; \
 	} \
  \
@@ -338,10 +344,34 @@ struct FKey;
 		P_NATIVE_BEGIN; \
 		this->OnMouseClicked(Z_Param_ClickedComp,Z_Param_ButtonPressed); \
 		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execAttackCompute) \
+	{ \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_attacker); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_victim); \
+		P_GET_ENUM(EDamageType,Z_Param_dtype); \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_damage); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->AttackCompute_Validate(Z_Param_attacker,Z_Param_victim,EDamageType(Z_Param_dtype),Z_Param_damage)) \
+		{ \
+			RPC_ValidateFailed(TEXT("AttackCompute_Validate")); \
+			return; \
+		} \
+		this->AttackCompute_Implementation(Z_Param_attacker,Z_Param_victim,EDamageType(Z_Param_dtype),Z_Param_damage); \
+		P_NATIVE_END; \
 	}
 
 
 #define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_EVENT_PARMS \
+	struct HeroCharacter_eventAttackCompute_Parms \
+	{ \
+		AHeroCharacter* attacker; \
+		AHeroCharacter* victim; \
+		EDamageType dtype; \
+		float damage; \
+	}; \
 	struct HeroCharacter_eventBP_ImplementSkill_Parms \
 	{ \
 		int32 index; \
@@ -361,12 +391,6 @@ struct FKey;
 	{ \
 		float duraction; \
 		float rate; \
-	}; \
-	struct HeroCharacter_eventServerShowDamageEffect_Parms \
-	{ \
-		FVector pos; \
-		FVector dir; \
-		float Damage; \
 	};
 
 
