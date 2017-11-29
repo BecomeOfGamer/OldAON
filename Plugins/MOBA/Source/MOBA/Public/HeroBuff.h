@@ -8,7 +8,7 @@
 
 
 UENUM(BlueprintType)
-enum class EHeroBuffKind : uint8
+enum class EHeroBuffState : uint8
 {
 	Dazzing,	// 暈炫
 	BanMove,	// 禁移動
@@ -147,7 +147,7 @@ public:
 
 	//額外效果
 	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadOnly)
-	TArray<EHeroBuffKind> BuffKind;
+	TArray<EHeroBuffState> BuffKind;
 
 	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadOnly)
 	TArray<AHeroCharacter*> BuffTarget;
