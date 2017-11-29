@@ -34,6 +34,7 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_GetHPPercent();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_GetMPPercent();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_GetSkillCDPercent();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_HealCompute();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_HideSkillHint();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_OnMouseClicked();
 	INPUTCORE_API UScriptStruct* Z_Construct_UScriptStruct_FKey();
@@ -219,6 +220,15 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		Parms.CurrentAction=CurrentAction;
 		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_DoAction),&Parms);
 	}
+	static FName NAME_AHeroCharacter_HealCompute = FName(TEXT("HealCompute"));
+	void AHeroCharacter::HealCompute(AHeroCharacter* attacker, AHeroCharacter* victim, float HealMount)
+	{
+		HeroCharacter_eventHealCompute_Parms Parms;
+		Parms.attacker=attacker;
+		Parms.victim=victim;
+		Parms.HealMount=HealMount;
+		ProcessEvent(FindFunctionChecked(NAME_AHeroCharacter_HealCompute),&Parms);
+	}
 	static FName NAME_AHeroCharacter_ServerPlayAttack = FName(TEXT("ServerPlayAttack"));
 	void AHeroCharacter::ServerPlayAttack(float duraction, float rate)
 	{
@@ -238,6 +248,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 			{ "GetHPPercent", (Native)&AHeroCharacter::execGetHPPercent },
 			{ "GetMPPercent", (Native)&AHeroCharacter::execGetMPPercent },
 			{ "GetSkillCDPercent", (Native)&AHeroCharacter::execGetSkillCDPercent },
+			{ "HealCompute", (Native)&AHeroCharacter::execHealCompute },
 			{ "HideSkillHint", (Native)&AHeroCharacter::execHideSkillHint },
 			{ "OnMouseClicked", (Native)&AHeroCharacter::execOnMouseClicked },
 			{ "SelectionOff", (Native)&AHeroCharacter::execSelectionOff },
@@ -278,7 +289,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		static UFunction* ReturnFunction = nullptr;
 		if (!ReturnFunction)
 		{
-			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("AttackCompute"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x80024CC0, 65535, sizeof(HeroCharacter_eventAttackCompute_Parms));
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("AttackCompute"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x84024CC0, 65535, sizeof(HeroCharacter_eventAttackCompute_Parms));
 			UProperty* NewProp_damage = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("damage"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(damage, HeroCharacter_eventAttackCompute_Parms), 0x0010000000000080);
 			UProperty* NewProp_dtype = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("dtype"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(CPP_PROPERTY_BASE(dtype, HeroCharacter_eventAttackCompute_Parms), 0x0010000000000080, Z_Construct_UEnum_MOBA_EDamageType());
 			UProperty* NewProp_dtype_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_dtype, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
@@ -437,6 +448,25 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 			MetaData->SetValue(ReturnFunction, TEXT("ToolTip"), TEXT("for Game Logic"));
+#endif
+		}
+		return ReturnFunction;
+	}
+	UFunction* Z_Construct_UFunction_AHeroCharacter_HealCompute()
+	{
+		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("HealCompute"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x84024CC0, 65535, sizeof(HeroCharacter_eventHealCompute_Parms));
+			UProperty* NewProp_HealMount = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("HealMount"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(HealMount, HeroCharacter_eventHealCompute_Parms), 0x0010000000000080);
+			UProperty* NewProp_victim = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("victim"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(victim, HeroCharacter_eventHealCompute_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
+			UProperty* NewProp_attacker = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("attacker"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(attacker, HeroCharacter_eventHealCompute_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
+			ReturnFunction->Bind();
+			ReturnFunction->StaticLink();
+#if WITH_METADATA
+			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
+			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
 		return ReturnFunction;
@@ -651,6 +681,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetHPPercent());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetMPPercent());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetSkillCDPercent());
+				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_HealCompute());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_HideSkillHint());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_OnMouseClicked());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SelectionOff());
@@ -791,7 +822,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				CPP_BOOL_PROPERTY_BITMASK_STRUCT(IsDebug, AHeroCharacter);
 				UProperty* NewProp_IsDebug = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("IsDebug"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(IsDebug, AHeroCharacter), 0x0010000000000015, CPP_BOOL_PROPERTY_BITMASK(IsDebug, AHeroCharacter), sizeof(bool), true);
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_AddBuff(), "AddBuff"); // 1992653910
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_AttackCompute(), "AttackCompute"); // 2449765087
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_AttackCompute(), "AttackCompute"); // 21798285
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_BP_ImplementSkill(), "BP_ImplementSkill"); // 728258913
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack(), "BP_PlayAttack"); // 2693622208
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_DoAction(), "DoAction"); // 2284941708
@@ -799,6 +830,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetHPPercent(), "GetHPPercent"); // 2662852471
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetMPPercent(), "GetMPPercent"); // 3667680972
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetSkillCDPercent(), "GetSkillCDPercent"); // 3225554263
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_HealCompute(), "HealCompute"); // 4161279553
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_HideSkillHint(), "HideSkillHint"); // 427071617
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_OnMouseClicked(), "OnMouseClicked"); // 1273128435
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOff(), "SelectionOff"); // 1526153471
@@ -1120,7 +1152,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelCDs
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroCharacter, 2964617781);
+	IMPLEMENT_CLASS(AHeroCharacter, 4256033732);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroCharacter(Z_Construct_UClass_AHeroCharacter, &AHeroCharacter::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroCharacter"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroCharacter);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

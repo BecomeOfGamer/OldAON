@@ -432,6 +432,24 @@ void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHer
 	}
 }
 
+bool AHeroCharacter::HealCompute_Validate(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount)
+{
+	return true;
+}
+
+void AHeroCharacter::HealCompute_Implementation(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount)
+{
+	target->CurrentHP += heal_mount;
+	for (int32 i = 0; i < caster->BuffQueue.Num(); ++i)
+	{
+		caster->BuffQueue[i]->OnHealLanded(caster, target, heal_mount);
+	}
+	for (int32 i = 0; i < target->BuffQueue.Num(); ++i)
+	{
+		target->BuffQueue[i]->BeHeal(caster, target, heal_mount);
+	}
+}
+
 void AHeroCharacter::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
 {
 	AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());

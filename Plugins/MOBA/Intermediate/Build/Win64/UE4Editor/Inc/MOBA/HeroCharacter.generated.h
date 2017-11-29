@@ -35,6 +35,8 @@ enum class EDamageType : uint8;
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
 	virtual void ServerPlayAttack_Implementation(float duraction, float rate); \
+	virtual bool HealCompute_Validate(AHeroCharacter* , AHeroCharacter* , float ); \
+	virtual void HealCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, float HealMount); \
 	virtual bool AttackCompute_Validate(AHeroCharacter* , AHeroCharacter* , EDamageType , float ); \
 	virtual void AttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage); \
  \
@@ -176,6 +178,22 @@ enum class EDamageType : uint8;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		this->OnMouseClicked(Z_Param_ClickedComp,Z_Param_ButtonPressed); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execHealCompute) \
+	{ \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_attacker); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_victim); \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_HealMount); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->HealCompute_Validate(Z_Param_attacker,Z_Param_victim,Z_Param_HealMount)) \
+		{ \
+			RPC_ValidateFailed(TEXT("HealCompute_Validate")); \
+			return; \
+		} \
+		this->HealCompute_Implementation(Z_Param_attacker,Z_Param_victim,Z_Param_HealMount); \
 		P_NATIVE_END; \
 	} \
  \
@@ -202,6 +220,8 @@ enum class EDamageType : uint8;
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
 	virtual void ServerPlayAttack_Implementation(float duraction, float rate); \
+	virtual bool HealCompute_Validate(AHeroCharacter* , AHeroCharacter* , float ); \
+	virtual void HealCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, float HealMount); \
 	virtual bool AttackCompute_Validate(AHeroCharacter* , AHeroCharacter* , EDamageType , float ); \
 	virtual void AttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage); \
  \
@@ -343,6 +363,22 @@ enum class EDamageType : uint8;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		this->OnMouseClicked(Z_Param_ClickedComp,Z_Param_ButtonPressed); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execHealCompute) \
+	{ \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_attacker); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_victim); \
+		P_GET_PROPERTY(UFloatProperty,Z_Param_HealMount); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->HealCompute_Validate(Z_Param_attacker,Z_Param_victim,Z_Param_HealMount)) \
+		{ \
+			RPC_ValidateFailed(TEXT("HealCompute_Validate")); \
+			return; \
+		} \
+		this->HealCompute_Implementation(Z_Param_attacker,Z_Param_victim,Z_Param_HealMount); \
 		P_NATIVE_END; \
 	} \
  \
@@ -386,6 +422,12 @@ enum class EDamageType : uint8;
 	struct HeroCharacter_eventDoAction_Parms \
 	{ \
 		FHeroAction CurrentAction; \
+	}; \
+	struct HeroCharacter_eventHealCompute_Parms \
+	{ \
+		AHeroCharacter* attacker; \
+		AHeroCharacter* victim; \
+		float HealMount; \
 	}; \
 	struct HeroCharacter_eventServerPlayAttack_Parms \
 	{ \

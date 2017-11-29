@@ -17,24 +17,33 @@ enum class EHeroBuffKind : uint8
 	BanEquipment,	// 禁道具
 	BanBeSkillSight,	// 不能被法術指定
 	BanBeAttackSight,	// 不能被普攻指定
+	MagicImmune,		// 魔法免疫
+	Invulnerable,		// 無敵
 	AttackUseMagic,	// 普攻轉換為魔法傷害
 	AttackUsePure,	// 普攻轉換為真實傷害
 	EndBuffKind
 };
 
+// 物理輸出 = ((BaseAttack*AttackBounsPercentage+AttackBounsConstant)*AttackBounsRatio*PhysicalDamageOutputPercentage)*PhysicalDamageOutputRatio
+
+
 UENUM(BlueprintType)
 enum class EHeroBuffProperty : uint8
 {
-	PhysicalDamageOutputRatio,	// 物理傷害輸出加成(百分比)
-	MagicalDamageOutputRatio,	// 魔法傷害輸出加成(百分比)
-	PhysicalDamageInputRatio,	// 受到物理傷害加成(百分比)
-	MagicDamageInputRatio,		// 受到魔法傷害加成(百分比)
+	PhysicalDamageOutputPercentage,	// 物理傷害輸出加成(百分比)
+	MagicalDamageOutputPercentage,	// 魔法傷害輸出加成(百分比)
+	PhysicalDamageOutputRatio,		// 物理傷害輸出加成(比例加成)
+	MagicalDamageOutputRatio,		// 魔法傷害輸出加成(比例加成)
+	PhysicalDamageInputPercentage,	// 受到物理傷害加成(百分比)
+	MagicDamageInputPercentage,		// 受到魔法傷害加成(百分比)
+	PhysicalDamageInputRatio,		// 受到物理傷害加成(比例加成)
+	MagicDamageInputRatio,			// 受到魔法傷害加成(比例加成)
 	MoveSpeedRatio,				// 移動速度加成(百分比)
-	MoveSpeedConstant,			// 移動速度加成(實際值)
-	MoveSpeedUnique,			// 移動速度加成(鞋子)
+	MoveSpeedConstant,			// 移動速度加成(固定值)
+	MoveSpeedUnique,			// 移動速度加成(唯一)
 	MoveSpeedFixed,				// 固定移動速度
 	AttackSpeedRatio,			// 攻擊速度加成(百分比)
-	AttackSpeedConstant,		// 攻擊速度加成(實際值)
+	AttackSpeedConstant,		// 攻擊速度加成(固定值)
 	MinHealth,					// 鎖最低血
 	MaxHealth,					// 鎖最高血
 	MinMana,					// 鎖最低魔
@@ -43,6 +52,19 @@ enum class EHeroBuffProperty : uint8
 	BaseAttackSpeedRatio,		// 固定移動速度
 	AbsorbPhysicalDamageRatio,	// 吸收物理傷害(百分比)
 	AbsorbMagicalDamageRatio,	// 吸收物理傷害(百分比)
+	HealRatio,					// 治癒加成(百分比)
+	ManaRegenConstant,			// 回魔(固定值)
+	ManaRegenPercentage,		// 回魔(百分比)
+	ManaRegenRatio,				// 回魔(比例加成)
+	HealthRegenConstant,		// 回血(固定值)
+	HealthRegenPercentage,		// 回血(百分比)
+	HealthRegenRatio,			// 回血(比例加成)
+	AttackBounsConstant,		// 攻擊加成(固定值)
+	AttackBounsPercentage,		// 攻擊加成(百分比)
+	AttackBounsRatio,			// 攻擊加成(比例加成)
+	ArmorBounsConstant,			// 防禦加成(固定值)
+	ArmorBounsPercentage,		// 防禦加成(百分比)
+	ArmorBounsRatio,			// 防禦加成(比例加成)
 	EndBuffProperty
 };
 class AHeroCharacter;
@@ -92,6 +114,9 @@ public:
 	//造成傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void CreateDamage(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
+	//治療別人的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnHealLanded(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount);
 	//被打死的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnDeath(AHeroCharacter* caster, AHeroCharacter* killer, EDamageType dtype, float damage);

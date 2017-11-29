@@ -87,8 +87,11 @@ public:
 
 	bool HasEquipment(AEquipment* equ);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable)
+	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable)
 	void AttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage);
+
+	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable)
+	void HealCompute(AHeroCharacter* attacker, AHeroCharacter* victim, float HealMount);
 
 	// for UI
 	UFUNCTION()

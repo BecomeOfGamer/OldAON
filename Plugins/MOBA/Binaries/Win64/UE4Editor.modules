@@ -4,7 +4,7 @@
 	"BuildId" : "7d5229ac-d3e2-4191-ac6f-9a43d8706aee",
 	"Modules" : 
 	{
-		"MOBA" : "UE4Editor-MOBA-3574.dll",
-		"MOBA_Editor" : "UE4Editor-MOBA_Editor-7687.dll"
+		"MOBA" : "UE4Editor-MOBA.dll",
+		"MOBA_Editor" : "UE4Editor-MOBA_Editor.dll"
 	}
 }
