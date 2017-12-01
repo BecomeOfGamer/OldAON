@@ -21,8 +21,8 @@ void EmptyLinkFunctionForGeneratedCodeMOBA_init() {}
 			ReturnPackage = CastChecked<UPackage>(StaticFindObjectFast(UPackage::StaticClass(), nullptr, FName(TEXT("/Script/MOBA")), false, false));
 			ReturnPackage->SetPackageFlags(PKG_CompiledIn | 0x00000000);
 			FGuid Guid;
-			Guid.A = 0x357F908D;
-			Guid.B = 0x45DAF67F;
+			Guid.A = 0xFB30754B;
+			Guid.B = 0xC51F99C4;
 			Guid.C = 0x00000000;
 			Guid.D = 0x00000000;
 			ReturnPackage->SetGuid(Guid);

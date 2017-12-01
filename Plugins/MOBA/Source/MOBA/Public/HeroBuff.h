@@ -24,47 +24,50 @@ enum class EHeroBuffState : uint8
 	EndBuffKind
 };
 
-// 物理輸出 = ((BaseAttack*AttackBounsPercentage+AttackBounsConstant)*AttackBounsRatio*PhysicalDamageOutputPercentage)*PhysicalDamageOutputRatio
-
+// BaseAttack是原始攻擊力
+// 物理輸出 = (((BaseAttack+AttackBounsConstantWhite)*AttackBounsPercentage+AttackBounsConstantGreen)*PhysicalDamageOutputPercentage)
+// BaseManaRegen是原始回魔速度
+// 回魔速度 = (BaseManaRegen*ManaRegenPercentage+ManaRegenConstant)*HealthRegenRatio
+// BaseAttackSpeed 是原始攻速，BaseAttackSpeedFixed 是變身系的基礎攻速
+// 攻擊速度 = (BaseAttackSpeed*AttackSpeedConstant)*AttackSpeedRatio
+// 攻擊速度 = (BaseAttackSpeedFixed*AttackSpeedConstant)*AttackSpeedRatio
+// 
 
 UENUM(BlueprintType)
 enum class EHeroBuffProperty : uint8
 {
-	PhysicalDamageOutputPercentage,	// 物理傷害輸出加成(百分比)
-	MagicalDamageOutputPercentage,	// 魔法傷害輸出加成(百分比)
-	PhysicalDamageOutputRatio,		// 物理傷害輸出加成(比例加成)
-	MagicalDamageOutputRatio,		// 魔法傷害輸出加成(比例加成)
-	PhysicalDamageInputPercentage,	// 受到物理傷害加成(百分比)
-	MagicDamageInputPercentage,		// 受到魔法傷害加成(百分比)
-	PhysicalDamageInputRatio,		// 受到物理傷害加成(比例加成)
-	MagicDamageInputRatio,			// 受到魔法傷害加成(比例加成)
-	MoveSpeedRatio,				// 移動速度加成(百分比)
-	MoveSpeedConstant,			// 移動速度加成(固定值)
-	MoveSpeedUnique,			// 移動速度加成(唯一)
-	MoveSpeedFixed,				// 固定移動速度
-	AttackSpeedRatio,			// 攻擊速度加成(百分比)
-	AttackSpeedConstant,		// 攻擊速度加成(固定值)
-	MinHealth,					// 鎖最低血
-	MaxHealth,					// 鎖最高血
-	MinMana,					// 鎖最低魔
-	MaxMana,					// 鎖最高魔
-	BaseAttackSpeedFixed,		// 改變基礎攻速
-	BaseAttackSpeedRatio,		// 固定移動速度
-	AbsorbPhysicalDamageRatio,	// 吸收物理傷害(百分比)
-	AbsorbMagicalDamageRatio,	// 吸收物理傷害(百分比)
-	HealRatio,					// 治癒加成(百分比)
-	ManaRegenConstant,			// 回魔(固定值)
-	ManaRegenPercentage,		// 回魔(百分比)
-	ManaRegenRatio,				// 回魔(比例加成)
-	HealthRegenConstant,		// 回血(固定值)
-	HealthRegenPercentage,		// 回血(百分比)
-	HealthRegenRatio,			// 回血(比例加成)
-	AttackBounsConstant,		// 攻擊加成(固定值)
-	AttackBounsPercentage,		// 攻擊加成(百分比)
-	AttackBounsRatio,			// 攻擊加成(比例加成)
-	ArmorBounsConstant,			// 防禦加成(固定值)
-	ArmorBounsPercentage,		// 防禦加成(百分比)
-	ArmorBounsRatio,			// 防禦加成(比例加成)
+	PhysicalDamageOutputPercentage,	// 物理傷害輸出加成(百分比) EX. 0.1 加成10%
+	MagicalDamageOutputPercentage,	// 魔法傷害輸出加成(百分比) EX. 0.1 加成10%
+	PureDamageOutputPercentage,		// 真傷傷害輸出加成(百分比) EX. 0.1 加成10%
+	PhysicalDamageInputPercentage,	// 受到物理傷害加成(百分比) EX. -0.1 減傷10%
+	MagicDamageInputPercentage,		// 受到魔法傷害加成(百分比) EX. -0.1 減傷10%
+	PureDamageInputPercentage,		// 受到真傷傷害加成(百分比) EX. -0.1 減傷10%
+	MoveSpeedRatio,				// 移動速度加成(百分比) EX. 2 2倍跑速
+	MoveSpeedConstant,			// 移動速度加成(固定值) EX. 100 增加100跑速
+	MoveSpeedUnique,			// 移動速度加成(唯一) EX. 80 多個裝備也是固定加80跑速
+	MoveSpeedFixed,				// 固定移動速度 EX. 700 固定700跑速
+	AttackSpeedRatio,			// 攻速加成(百分比) EX. 2 2倍攻速突破基礎攻速限制
+	AttackSpeedConstant,		// 攻速加成(固定值) EX. 200 增加200%攻速 最高500% 加基礎值100最高600
+	MinHealth,					// 鎖最低血 EX. 100 血量不會少於100
+	MaxHealth,					// 鎖最高血 EX. 2000 血量不會高於2000
+	MinMana,					// 鎖最低魔 EX. 200 魔力不會低於200
+	MaxMana,					// 鎖最高魔 EX. 400 魔力不會高於400
+	BaseAttackSpeedFixed,			// 改變基礎攻速(百分比) EX. 0.9 基礎攻速從1.8變為0.9
+	AbsorbPhysicalDamagePercentage,	// 吸收物理傷害(百分比) EX. 0.1 吸收受到的10%物理傷害
+	AbsorbMagicalDamagePercentage,	// 吸收魔法傷害(百分比) EX. 0.1 吸收受到的10%魔法傷害
+	AbsorbPureDamagePercentage,		// 吸收魔法傷害(百分比) EX. 0.1 吸收受到的10%魔法傷害
+	HealPercentage,					// 治癒加成(百分比) EX. 0.2 治療生命提升10%
+	ManaRegenConstant,			// 回魔(固定值) EX. 3 每秒回魔增加3
+	ManaRegenPercentage,		// 回魔(百分比) EX. 0.03 每秒回魔增加總魔力的3%
+	ManaRegenRatio,				// 回魔(比例加成) EX. 2 回復魔力+200%=300% 如果當前回魔20就變成60
+	HealthRegenConstant,		// 回血(固定值) EX. 10 每秒回血增加10
+	HealthRegenPercentage,		// 回血(百分比) EX. 0.01 每秒回魔增加總生命的1%
+	HealthRegenRatio,			// 回血(比例加成) EX. 2 回復血量+200%=300% 如果當前回血50就變成150
+	AttackBounsConstantWhite,	// 攻擊加成(固定值) EX. 30 攻擊白字+30 可以被其它攻擊加成影響
+	AttackBounsConstantGreen,	// 攻擊加成(固定值) EX. 30 攻擊綠字+30 不會被其它攻擊加成影響
+	AttackBounsPercentage,		// 攻擊加成(百分比) EX. 2 攻擊白字乘2加到綠字 不被其它攻擊加成影響
+	ArmorBounsConstant,			// 防禦加成(固定值) EX. 5 防禦白字+5
+	ArmorBounsPercentage,		// 防禦加成(百分比) EX. 1 當前防禦乘上1加到綠字
 	EndBuffProperty
 };
 class AHeroCharacter;
@@ -141,13 +144,21 @@ public:
 	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadOnly)
 	FString Name;
 
+	// Follow Actor
+	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadOnly)
+	bool FollowActor;
+
 	// logo
 	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadOnly)
 	UTexture2D * Head;
 
-	//額外效果
+	// 額外效果
 	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadOnly)
 	TArray<EHeroBuffState> BuffKind;
+
+	// 額外加成
+	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadWrite)
+	TMap<uint8, int32> BuffPropertyMap;
 
 	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadOnly)
 	TArray<AHeroCharacter*> BuffTarget;

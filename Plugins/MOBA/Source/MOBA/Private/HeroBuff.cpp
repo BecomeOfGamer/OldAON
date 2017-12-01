@@ -43,4 +43,11 @@ void AHeroBuff::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	Duration -= DeltaTime;
+	if (FollowActor)
+	{
+		if (BuffTarget.Num() > 0)
+		{
+			this->SetActorLocation(BuffTarget[0]->GetActorLocation());
+		}
+	}
 }

@@ -548,7 +548,7 @@ public:
 	TArray<AHeroBuff*> BuffQueue;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	TMap<uint8, bool> BuffKindMap;
+	TMap<uint8, bool> BuffStateMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TMap<uint8, int32> BuffPropertyMap;

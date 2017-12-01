@@ -90,9 +90,9 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
 
-	for (int i = 0; i < (int)EHeroBuffKind::EndBuffKind; ++i)
+	for (int i = 0; i < (int)EHeroBuffState::EndBuffKind; ++i)
 	{
-		BuffKindMap.Add(i, false);
+		BuffStateMap.Add(i, false);
 	}
 	for (int i = 0; i < (int)EHeroBuffProperty::EndBuffProperty; ++i)
 	{
@@ -165,6 +165,55 @@ void AHeroCharacter::BeginPlay()
 void AHeroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	{ // 計算各種buff
+		BuffPropertyMap[(int)EHeroBuffProperty::PhysicalDamageOutputPercentage] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::MagicalDamageOutputPercentage] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::PureDamageOutputPercentage] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::PhysicalDamageInputPercentage] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::MagicDamageInputPercentage] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::PureDamageInputPercentage] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::MoveSpeedRatio] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::MoveSpeedConstant] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::MoveSpeedUnique] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::MoveSpeedFixed] = -1;
+		BuffPropertyMap[(int)EHeroBuffProperty::AttackSpeedRatio] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::AttackSpeedConstant] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::MinHealth] = -1;
+		BuffPropertyMap[(int)EHeroBuffProperty::MaxHealth] = -1;
+		BuffPropertyMap[(int)EHeroBuffProperty::MinMana] = -1;
+		BuffPropertyMap[(int)EHeroBuffProperty::MaxMana] = -1;
+		BuffPropertyMap[(int)EHeroBuffProperty::BaseAttackSpeedFixed] = -1;
+		BuffPropertyMap[(int)EHeroBuffProperty::AbsorbPhysicalDamagePercentage] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::AbsorbMagicalDamagePercentage] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::AbsorbPureDamagePercentage] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::HealPercentage] = 1;
+		BuffPropertyMap[(int)EHeroBuffProperty::ManaRegenConstant] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::ManaRegenPercentage] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::ManaRegenRatio] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::HealthRegenConstant] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::HealthRegenPercentage] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::HealthRegenRatio] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::AttackBounsConstantWhite] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::AttackBounsConstantGreen] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::AttackBounsPercentage] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::ArmorBounsConstant] = 0;
+		BuffPropertyMap[(int)EHeroBuffProperty::ArmorBounsPercentage] = 0;
+		for (auto& Elem : BuffStateMap)
+		{
+			Elem.Value = false;
+		}
+		for (int32 i = 0; i < BuffQueue.Num(); ++i)
+		{
+			for (auto& Elem : BuffQueue[i]->BuffPropertyMap)
+			{
+				BuffPropertyMap[Elem.Key] += Elem.Value;
+			}
+			for (EHeroBuffState& Elem : BuffQueue[i]->BuffKind)
+			{
+				BuffStateMap[(int)Elem] = true;
+			}
+		}
+	}
 	if (CurrentSkillHint)
 	{
 		AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
@@ -219,7 +268,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 	bool isLastFrameDazzing = (0 == DazzingLeftCounting);
 	DazzingLeftCounting = 0;
 	for (int32 i = 0; i < BuffQueue.Num(); ++i)
-	{	
+	{
 		// 移除時間到的Buff
 		if (BuffQueue[i]->Duration <= 0)
 		{
@@ -417,9 +466,37 @@ void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHer
 	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	float Injury = ags->ArmorConvertToInjuryPersent(victim->CurrentArmor);
 	float RDamage = damage * Injury;
+	float FDamage = RDamage;
 	// 顯示傷害文字
 	ServerShowDamageEffect(victim->GetActorLocation(),
 		victim->GetActorLocation() - attacker->GetActorLocation(), RDamage);
+	if (dtype == EDamageType::DAMAGE_PHYSICAL)
+	{
+		if (victim->BuffPropertyMap[(uint8)EHeroBuffProperty::AbsorbPhysicalDamagePercentage] > 0)
+		{
+			victim->CurrentHP += victim->BuffPropertyMap[(uint8)EHeroBuffProperty::AbsorbPhysicalDamagePercentage] * RDamage;
+		}
+		FDamage = FDamage * attacker->BuffPropertyMap[(uint8)EHeroBuffProperty::PhysicalDamageOutputPercentage]
+			* victim->BuffPropertyMap[(uint8)EHeroBuffProperty::PhysicalDamageInputPercentage];
+	}
+	else if (dtype == EDamageType::DAMAGE_MAGICAL)
+	{
+		if (victim->BuffPropertyMap[(uint8)EHeroBuffProperty::MagicalDamageOutputPercentage] > 0)
+		{
+			victim->CurrentHP += victim->BuffPropertyMap[(uint8)EHeroBuffProperty::MagicalDamageOutputPercentage] * RDamage;
+		}
+		FDamage = FDamage * attacker->BuffPropertyMap[(uint8)EHeroBuffProperty::MagicalDamageOutputPercentage]
+			* victim->BuffPropertyMap[(uint8)EHeroBuffProperty::MagicDamageInputPercentage];
+	}
+	else if (dtype == EDamageType::DAMAGE_PURE)
+	{
+		if (victim->BuffPropertyMap[(uint8)EHeroBuffProperty::PureDamageOutputPercentage] > 0)
+		{
+			victim->CurrentHP += victim->BuffPropertyMap[(uint8)EHeroBuffProperty::PureDamageOutputPercentage] * RDamage;
+		}
+		FDamage = FDamage * attacker->BuffPropertyMap[(uint8)EHeroBuffProperty::PureDamageOutputPercentage]
+			* victim->BuffPropertyMap[(uint8)EHeroBuffProperty::PureDamageInputPercentage];
+	}
 	victim->CurrentHP -= RDamage;
 	for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
 	{
