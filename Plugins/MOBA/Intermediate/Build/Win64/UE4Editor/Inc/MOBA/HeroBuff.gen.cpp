@@ -66,7 +66,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffProperty(EHeroB
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::MagicalDamageOutputPercentage"), 1);
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::PureDamageOutputPercentage"), 2);
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::PhysicalDamageInputPercentage"), 3);
-			EnumNames.Emplace(TEXT("EHeroBuffProperty::MagicDamageInputPercentage"), 4);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::MagicalDamageInputPercentage"), 4);
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::PureDamageInputPercentage"), 5);
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::MoveSpeedRatio"), 6);
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::MoveSpeedConstant"), 7);
@@ -94,8 +94,19 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffProperty(EHeroB
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::AttackBounsPercentage"), 29);
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::ArmorBounsConstant"), 30);
 			EnumNames.Emplace(TEXT("EHeroBuffProperty::ArmorBounsPercentage"), 31);
-			EnumNames.Emplace(TEXT("EHeroBuffProperty::EndBuffProperty"), 32);
-			EnumNames.Emplace(TEXT("EHeroBuffProperty::EHeroBuffProperty_MAX"), 33);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::StealHealth"), 32);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::AttackMiss"), 33);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::BlockingPhysical"), 34);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::BlockingMagical"), 35);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::BlockingPure"), 36);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::BlockingPhysicalConstant"), 37);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::BlockingMagicalConstant"), 38);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::BlockingPureConstant"), 39);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::HealthBouns"), 40);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::ManaBouns"), 41);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::Dodge"), 42);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::EndBuffProperty"), 43);
+			EnumNames.Emplace(TEXT("EHeroBuffProperty::EHeroBuffProperty_MAX"), 44);
 			ReturnEnum->SetEnums(EnumNames, UEnum::ECppForm::EnumClass);
 			ReturnEnum->CppType = TEXT("EHeroBuffProperty");
 #if WITH_METADATA
@@ -108,17 +119,27 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffProperty(EHeroB
 			MetaData->SetValue(ReturnEnum, TEXT("AttackBounsConstantGreen.ToolTip"), TEXT("\x653b\x64ca\x52a0\x6210(\x56fa\x5b9a\x503c) EX. 30 \x653b\x64ca\x767d\x5b57+30 \x53ef\x4ee5\x88ab\x5176\x5b83\x653b\x64ca\x52a0\x6210\x5f71\x97ff"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackBounsConstantWhite.ToolTip"), TEXT("\x56de\x8840(\x6bd4\x4f8b\x52a0\x6210) EX. 2 \x56de\x5fa9\x8840\x91cf+200%=300% \x5982\x679c\x7576\x524d\x56de\x8840")TEXT("50\x5c31\x8b8a\x6210")TEXT("150"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackBounsPercentage.ToolTip"), TEXT("\x653b\x64ca\x52a0\x6210(\x56fa\x5b9a\x503c) EX. 30 \x653b\x64ca\x7da0\x5b57+30 \x4e0d\x6703\x88ab\x5176\x5b83\x653b\x64ca\x52a0\x6210\x5f71\x97ff"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackMiss.ToolTip"), TEXT("\x751f\x547d\x5438\x6536 EX. 0.2 \x5438\x6536\x9020\x6210\x50b7\x5bb3\x7684")TEXT("20%"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackSpeedConstant.ToolTip"), TEXT("\x653b\x901f\x52a0\x6210(\x767e\x5206\x6bd4) EX. 2 2\x500d\x653b\x901f\x7a81\x7834\x57fa\x790e\x653b\x901f\x9650\x5236"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackSpeedRatio.ToolTip"), TEXT("\x56fa\x5b9a\x79fb\x52d5\x901f\x5ea6 EX. 700 \x56fa\x5b9a")TEXT("700\x8dd1\x901f"));
 			MetaData->SetValue(ReturnEnum, TEXT("BaseAttackSpeedFixed.ToolTip"), TEXT("\x9396\x6700\x9ad8\x9b54 EX. 400 \x9b54\x529b\x4e0d\x6703\x9ad8\x65bc")TEXT("400"));
+			MetaData->SetValue(ReturnEnum, TEXT("BlockingMagical.ToolTip"), TEXT("\x683c\x6a94\x653b\x64ca\x6a5f\x7387 EX. 0.25 25%\x7684\x6a5f\x7387\x683c\x6a94\x7269\x7406\x50b7\x5bb3"));
+			MetaData->SetValue(ReturnEnum, TEXT("BlockingMagicalConstant.ToolTip"), TEXT("\x683c\x6a94\x56fa\x5b9a\x7269\x7406\x50b7\x5bb3"));
+			MetaData->SetValue(ReturnEnum, TEXT("BlockingPhysical.ToolTip"), TEXT("\x653b\x64ca\x5931\x8aa4\x6a5f\x7387 EX. 0.15 15%\x7684\x6a5f\x7387miss"));
+			MetaData->SetValue(ReturnEnum, TEXT("BlockingPhysicalConstant.ToolTip"), TEXT("\x683c\x6a94\x653b\x64ca\x6a5f\x7387 EX. 0.25 25%\x7684\x6a5f\x7387\x683c\x6a94\x7269\x7406\x50b7\x5bb3"));
+			MetaData->SetValue(ReturnEnum, TEXT("BlockingPure.ToolTip"), TEXT("\x683c\x6a94\x653b\x64ca\x6a5f\x7387 EX. 0.25 25%\x7684\x6a5f\x7387\x683c\x6a94\x7269\x7406\x50b7\x5bb3"));
+			MetaData->SetValue(ReturnEnum, TEXT("BlockingPureConstant.ToolTip"), TEXT("\x683c\x6a94\x56fa\x5b9a\x9b54\x6cd5\x50b7\x5bb3"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlueprintType"), TEXT("true"));
-			MetaData->SetValue(ReturnEnum, TEXT("EndBuffProperty.ToolTip"), TEXT("\x9632\x79a6\x52a0\x6210(\x767e\x5206\x6bd4) EX. 1 \x7576\x524d\x9632\x79a6\x4e58\x4e0a")TEXT("1\x52a0\x5230\x7da0\x5b57"));
+			MetaData->SetValue(ReturnEnum, TEXT("Dodge.ToolTip"), TEXT("\x9b54\x91cf\x4e0a\x9650"));
+			MetaData->SetValue(ReturnEnum, TEXT("EndBuffProperty.ToolTip"), TEXT("\x9583\x907f\x6a5f\x7387"));
 			MetaData->SetValue(ReturnEnum, TEXT("HealPercentage.ToolTip"), TEXT("\x5438\x6536\x9b54\x6cd5\x50b7\x5bb3(\x767e\x5206\x6bd4) EX. 0.1 \x5438\x6536\x53d7\x5230\x7684")TEXT("10%\x9b54\x6cd5\x50b7\x5bb3"));
+			MetaData->SetValue(ReturnEnum, TEXT("HealthBouns.ToolTip"), TEXT("\x683c\x6a94\x56fa\x5b9a\x771f\x5be6\x50b7\x5bb3"));
 			MetaData->SetValue(ReturnEnum, TEXT("HealthRegenConstant.ToolTip"), TEXT("\x56de\x9b54(\x6bd4\x4f8b\x52a0\x6210) EX. 2 \x56de\x5fa9\x9b54\x529b+200%=300% \x5982\x679c\x7576\x524d\x56de\x9b54")TEXT("20\x5c31\x8b8a\x6210")TEXT("60"));
 			MetaData->SetValue(ReturnEnum, TEXT("HealthRegenPercentage.ToolTip"), TEXT("\x56de\x8840(\x56fa\x5b9a\x503c) EX. 10 \x6bcf\x79d2\x56de\x8840\x589e\x52a0")TEXT("10"));
 			MetaData->SetValue(ReturnEnum, TEXT("HealthRegenRatio.ToolTip"), TEXT("\x56de\x8840(\x767e\x5206\x6bd4) EX. 0.01 \x6bcf\x79d2\x56de\x9b54\x589e\x52a0\x7e3d\x751f\x547d\x7684")TEXT("1%"));
+			MetaData->SetValue(ReturnEnum, TEXT("MagicalDamageInputPercentage.ToolTip"), TEXT("\x53d7\x5230\x7269\x7406\x50b7\x5bb3\x52a0\x6210(\x767e\x5206\x6bd4) EX. -0.1 \x6e1b\x50b7")TEXT("10%"));
 			MetaData->SetValue(ReturnEnum, TEXT("MagicalDamageOutputPercentage.ToolTip"), TEXT("\x7269\x7406\x50b7\x5bb3\x8f38\x51fa\x52a0\x6210(\x767e\x5206\x6bd4) EX. 0.1 \x52a0\x6210")TEXT("10%"));
-			MetaData->SetValue(ReturnEnum, TEXT("MagicDamageInputPercentage.ToolTip"), TEXT("\x53d7\x5230\x7269\x7406\x50b7\x5bb3\x52a0\x6210(\x767e\x5206\x6bd4) EX. -0.1 \x6e1b\x50b7")TEXT("10%"));
+			MetaData->SetValue(ReturnEnum, TEXT("ManaBouns.ToolTip"), TEXT("\x8840\x91cf\x4e0a\x9650"));
 			MetaData->SetValue(ReturnEnum, TEXT("ManaRegenConstant.ToolTip"), TEXT("\x6cbb\x7652\x52a0\x6210(\x767e\x5206\x6bd4) EX. 0.2 \x6cbb\x7642\x751f\x547d\x63d0\x5347")TEXT("10%"));
 			MetaData->SetValue(ReturnEnum, TEXT("ManaRegenPercentage.ToolTip"), TEXT("\x56de\x9b54(\x56fa\x5b9a\x503c) EX. 3 \x6bcf\x79d2\x56de\x9b54\x589e\x52a0")TEXT("3"));
 			MetaData->SetValue(ReturnEnum, TEXT("ManaRegenRatio.ToolTip"), TEXT("\x56de\x9b54(\x767e\x5206\x6bd4) EX. 0.03 \x6bcf\x79d2\x56de\x9b54\x589e\x52a0\x7e3d\x9b54\x529b\x7684")TEXT("3%"));
@@ -134,12 +155,13 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffProperty(EHeroB
 			MetaData->SetValue(ReturnEnum, TEXT("PhysicalDamageInputPercentage.ToolTip"), TEXT("\x771f\x50b7\x50b7\x5bb3\x8f38\x51fa\x52a0\x6210(\x767e\x5206\x6bd4) EX. 0.1 \x52a0\x6210")TEXT("10%"));
 			MetaData->SetValue(ReturnEnum, TEXT("PureDamageInputPercentage.ToolTip"), TEXT("\x53d7\x5230\x9b54\x6cd5\x50b7\x5bb3\x52a0\x6210(\x767e\x5206\x6bd4) EX. -0.1 \x6e1b\x50b7")TEXT("10%"));
 			MetaData->SetValue(ReturnEnum, TEXT("PureDamageOutputPercentage.ToolTip"), TEXT("\x9b54\x6cd5\x50b7\x5bb3\x8f38\x51fa\x52a0\x6210(\x767e\x5206\x6bd4) EX. 0.1 \x52a0\x6210")TEXT("10%"));
-			MetaData->SetValue(ReturnEnum, TEXT("ToolTip"), TEXT("BaseAttack\x662f\x539f\x59cb\x653b\x64ca\x529b\n\x7269\x7406\x8f38\x51fa = (((BaseAttack+AttackBounsConstantWhite)*AttackBounsPercentage+AttackBounsConstantGreen)**PhysicalDamageOutputPercentage)\nBaseManaRegen\x662f\x539f\x59cb\x56de\x9b54\x901f\x5ea6\n\x56de\x9b54\x901f\x5ea6 = (BaseManaRegen*ManaRegenPercentage+ManaRegenConstant)*HealthRegenRatio\nBaseAttackSpeed \x662f\x539f\x59cb\x653b\x901f\xff0c")TEXT("BaseAttackSpeedFixed \x662f\x8b8a\x8eab\x7cfb\x7684\x57fa\x790e\x653b\x901f\n\x653b\x64ca\x901f\x5ea6 = (BaseAttackSpeed*AttackSpeedConstant)*AttackSpeedRatio\n\x653b\x64ca\x901f\x5ea6 = (BaseAttackSpeedFixed*AttackSpeedConstant)*AttackSpeedRatio"));
+			MetaData->SetValue(ReturnEnum, TEXT("StealHealth.ToolTip"), TEXT("\x9632\x79a6\x52a0\x6210(\x767e\x5206\x6bd4) EX. 1 \x7576\x524d\x9632\x79a6\x4e58\x4e0a")TEXT("1\x52a0\x5230\x7da0\x5b57"));
+			MetaData->SetValue(ReturnEnum, TEXT("ToolTip"), TEXT("BaseAttack\x662f\x539f\x59cb\x653b\x64ca\x529b\n\x7269\x7406\x8f38\x51fa = (((BaseAttack+AttackBounsConstantWhite)*AttackBounsPercentage+AttackBounsConstantGreen)*PhysicalDamageOutputPercentage)\nBaseManaRegen\x662f\x539f\x59cb\x56de\x9b54\x901f\x5ea6\n\x56de\x9b54\x901f\x5ea6 = (BaseManaRegen*ManaRegenPercentage+ManaRegenConstant)*HealthRegenRatio\nBaseAttackSpeed \x662f\x539f\x59cb\x653b\x901f\xff0c")TEXT("BaseAttackSpeedFixed \x662f\x8b8a\x8eab\x7cfb\x7684\x57fa\x790e\x653b\x901f\n\x653b\x64ca\x901f\x5ea6 = (BaseAttackSpeed*AttackSpeedConstant)*AttackSpeedRatio\n\x653b\x64ca\x901f\x5ea6 = (BaseAttackSpeedFixed*AttackSpeedConstant)*AttackSpeedRatio"));
 #endif
 		}
 		return ReturnEnum;
 	}
-	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBuffProperty_CRC() { return 982011080U; }
+	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBuffProperty_CRC() { return 3936030646U; }
 static UEnum* EHeroBuffState_StaticEnum()
 {
 	static UEnum* Singleton = nullptr;
@@ -166,17 +188,20 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffState(EHeroBuff
 			EnumNames.Emplace(TEXT("EHeroBuffState::BanEquipment"), 4);
 			EnumNames.Emplace(TEXT("EHeroBuffState::BanBeSkillSight"), 5);
 			EnumNames.Emplace(TEXT("EHeroBuffState::BanBeAttackSight"), 6);
-			EnumNames.Emplace(TEXT("EHeroBuffState::MagicImmune"), 7);
-			EnumNames.Emplace(TEXT("EHeroBuffState::Invulnerable"), 8);
-			EnumNames.Emplace(TEXT("EHeroBuffState::AttackUseMagic"), 9);
-			EnumNames.Emplace(TEXT("EHeroBuffState::AttackUsePure"), 10);
-			EnumNames.Emplace(TEXT("EHeroBuffState::EndBuffKind"), 11);
-			EnumNames.Emplace(TEXT("EHeroBuffState::EHeroBuffState_MAX"), 12);
+			EnumNames.Emplace(TEXT("EHeroBuffState::MagicalImmune"), 7);
+			EnumNames.Emplace(TEXT("EHeroBuffState::PhysicalImmune"), 8);
+			EnumNames.Emplace(TEXT("EHeroBuffState::PureImmune"), 9);
+			EnumNames.Emplace(TEXT("EHeroBuffState::Invulnerable"), 10);
+			EnumNames.Emplace(TEXT("EHeroBuffState::Sleeping"), 11);
+			EnumNames.Emplace(TEXT("EHeroBuffState::AttackUseMagic"), 12);
+			EnumNames.Emplace(TEXT("EHeroBuffState::AttackUsePure"), 13);
+			EnumNames.Emplace(TEXT("EHeroBuffState::EndBuffKind"), 14);
+			EnumNames.Emplace(TEXT("EHeroBuffState::EHeroBuffState_MAX"), 15);
 			ReturnEnum->SetEnums(EnumNames, UEnum::ECppForm::EnumClass);
 			ReturnEnum->CppType = TEXT("EHeroBuffState");
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnEnum->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnEnum, TEXT("AttackUseMagic.ToolTip"), TEXT("\x7121\x6575"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackUseMagic.ToolTip"), TEXT("\x7761\x7720\xff0c\x88ab\x653b\x64ca\x6703\x9192\x4f86"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackUsePure.ToolTip"), TEXT("\x666e\x653b\x8f49\x63db\x70ba\x9b54\x6cd5\x50b7\x5bb3"));
 			MetaData->SetValue(ReturnEnum, TEXT("BanAttack.ToolTip"), TEXT("\x7981\x79fb\x52d5"));
 			MetaData->SetValue(ReturnEnum, TEXT("BanBeAttackSight.ToolTip"), TEXT("\x4e0d\x80fd\x88ab\x6cd5\x8853\x6307\x5b9a"));
@@ -186,14 +211,17 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffState(EHeroBuff
 			MetaData->SetValue(ReturnEnum, TEXT("BanSkill.ToolTip"), TEXT("\x7981\x653b\x64ca"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlueprintType"), TEXT("true"));
 			MetaData->SetValue(ReturnEnum, TEXT("EndBuffKind.ToolTip"), TEXT("\x666e\x653b\x8f49\x63db\x70ba\x771f\x5be6\x50b7\x5bb3"));
-			MetaData->SetValue(ReturnEnum, TEXT("Invulnerable.ToolTip"), TEXT("\x9b54\x6cd5\x514d\x75ab"));
-			MetaData->SetValue(ReturnEnum, TEXT("MagicImmune.ToolTip"), TEXT("\x4e0d\x80fd\x88ab\x666e\x653b\x6307\x5b9a"));
+			MetaData->SetValue(ReturnEnum, TEXT("Invulnerable.ToolTip"), TEXT("\x771f\x50b7\x514d\x75ab"));
+			MetaData->SetValue(ReturnEnum, TEXT("MagicalImmune.ToolTip"), TEXT("\x4e0d\x80fd\x88ab\x666e\x653b\x6307\x5b9a"));
 			MetaData->SetValue(ReturnEnum, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
+			MetaData->SetValue(ReturnEnum, TEXT("PhysicalImmune.ToolTip"), TEXT("\x9b54\x6cd5\x514d\x75ab"));
+			MetaData->SetValue(ReturnEnum, TEXT("PureImmune.ToolTip"), TEXT("\x7269\x7406\x514d\x75ab"));
+			MetaData->SetValue(ReturnEnum, TEXT("Sleeping.ToolTip"), TEXT("\x7121\x6575"));
 #endif
 		}
 		return ReturnEnum;
 	}
-	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBuffState_CRC() { return 1848136541U; }
+	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBuffState_CRC() { return 372719362U; }
 	static FName NAME_AHeroBuff_BeDamage = FName(TEXT("BeDamage"));
 	void AHeroBuff::BeDamage(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage)
 	{
@@ -779,8 +807,9 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffState(EHeroBuff
 				UProperty* NewProp_BuffTarget = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffTarget"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(BuffTarget, AHeroBuff), 0x0010000000000015);
 				UProperty* NewProp_BuffTarget_Inner = new(EC_InternalUseOnlyConstructor, NewProp_BuffTarget, TEXT("BuffTarget"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UClass_AHeroCharacter_NoRegister());
 				UProperty* NewProp_BuffPropertyMap = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffPropertyMap"), RF_Public|RF_Transient|RF_MarkAsNative) UMapProperty(CPP_PROPERTY_BASE(BuffPropertyMap, AHeroBuff), 0x0010000000000005);
-				UProperty* NewProp_BuffPropertyMap_Key_KeyProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap, TEXT("BuffPropertyMap_Key"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000001);
+				UProperty* NewProp_BuffPropertyMap_Key_KeyProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap, TEXT("BuffPropertyMap_Key"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000001, Z_Construct_UEnum_MOBA_EHeroBuffProperty());
 				UProperty* NewProp_BuffPropertyMap_ValueProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap, TEXT("BuffPropertyMap"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(FObjectInitializer(), EC_CppProperty, 1, 0x0000000000000001);
+				UProperty* NewProp_BuffPropertyMap_Key_KeyProp_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap_Key_KeyProp, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
 				UProperty* NewProp_BuffKind = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffKind"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(BuffKind, AHeroBuff), 0x0010000000000015);
 				UProperty* NewProp_BuffKind_Inner = new(EC_InternalUseOnlyConstructor, NewProp_BuffKind, TEXT("BuffKind"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UEnum_MOBA_EHeroBuffState());
 				UProperty* NewProp_BuffKind_Inner_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_BuffKind_Inner, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
@@ -849,7 +878,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffState(EHeroBuff
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroBuff, 3910335570);
+	IMPLEMENT_CLASS(AHeroBuff, 202037114);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroBuff(Z_Construct_UClass_AHeroBuff, &AHeroBuff::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroBuff"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroBuff);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

@@ -22,6 +22,18 @@ void AMOBAGameState::SetObjectLocation_Implementation(AActor* actor, const FVect
 	}
 }
 
+bool AMOBAGameState::MakeRandom_Validate()
+{
+	return true;
+}
+void AMOBAGameState::MakeRandom_Implementation()
+{
+	if (Role == ROLE_Authority)
+	{
+		RandomSeed = FMath::RandRange(1, 100000);
+	}
+}
+
 float AMOBAGameState::ArmorConvertToInjuryPersent(float armor)
 {
 	return 1.f / (1.f + 0.06f * armor);
@@ -114,4 +126,10 @@ void AMOBAGameState::HeroUseSkill_Implementation(AHeroCharacter* hero, int32 ind
 	{
 		hero->UseSkill(index, VFaceTo, Pos);
 	}
+}
+
+void AMOBAGameState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMOBAGameState, RandomSeed);
 }

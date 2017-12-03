@@ -18,6 +18,8 @@ class AActor;
 #define MOBA_MOBAGameState_generated_h
 
 #define AON_Plugins_MOBA_Source_MOBA_Public_MOBAGameState_h_16_RPC_WRAPPERS \
+	virtual bool MakeRandom_Validate(); \
+	virtual void MakeRandom_Implementation(); \
 	virtual bool ClearHeroAction_Validate(AHeroCharacter* , FHeroAction const& ); \
 	virtual void ClearHeroAction_Implementation(AHeroCharacter* hero, FHeroAction const& action); \
 	virtual bool AppendHeroAction_Validate(AHeroCharacter* , FHeroAction const& ); \
@@ -39,6 +41,19 @@ class AActor;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		*(float*)Z_Param__Result=this->ArmorConvertToInjuryPersent(Z_Param_armor); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execMakeRandom) \
+	{ \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->MakeRandom_Validate()) \
+		{ \
+			RPC_ValidateFailed(TEXT("MakeRandom_Validate")); \
+			return; \
+		} \
+		this->MakeRandom_Implementation(); \
 		P_NATIVE_END; \
 	} \
  \
@@ -150,6 +165,8 @@ class AActor;
 
 
 #define AON_Plugins_MOBA_Source_MOBA_Public_MOBAGameState_h_16_RPC_WRAPPERS_NO_PURE_DECLS \
+	virtual bool MakeRandom_Validate(); \
+	virtual void MakeRandom_Implementation(); \
 	virtual bool ClearHeroAction_Validate(AHeroCharacter* , FHeroAction const& ); \
 	virtual void ClearHeroAction_Implementation(AHeroCharacter* hero, FHeroAction const& action); \
 	virtual bool AppendHeroAction_Validate(AHeroCharacter* , FHeroAction const& ); \
@@ -171,6 +188,19 @@ class AActor;
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
 		*(float*)Z_Param__Result=this->ArmorConvertToInjuryPersent(Z_Param_armor); \
+		P_NATIVE_END; \
+	} \
+ \
+	DECLARE_FUNCTION(execMakeRandom) \
+	{ \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		if (!this->MakeRandom_Validate()) \
+		{ \
+			RPC_ValidateFailed(TEXT("MakeRandom_Validate")); \
+			return; \
+		} \
+		this->MakeRandom_Implementation(); \
 		P_NATIVE_END; \
 	} \
  \
@@ -328,7 +358,8 @@ private: \
 public: \
 	DECLARE_CLASS(AMOBAGameState, AGameStateBase, COMPILED_IN_FLAGS(0), 0, TEXT("/Script/MOBA"), NO_API) \
 	DECLARE_SERIALIZER(AMOBAGameState) \
-	enum {IsIntrinsic=COMPILED_IN_INTRINSIC};
+	enum {IsIntrinsic=COMPILED_IN_INTRINSIC}; \
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 
 #define AON_Plugins_MOBA_Source_MOBA_Public_MOBAGameState_h_16_INCLASS \
@@ -338,7 +369,8 @@ private: \
 public: \
 	DECLARE_CLASS(AMOBAGameState, AGameStateBase, COMPILED_IN_FLAGS(0), 0, TEXT("/Script/MOBA"), NO_API) \
 	DECLARE_SERIALIZER(AMOBAGameState) \
-	enum {IsIntrinsic=COMPILED_IN_INTRINSIC};
+	enum {IsIntrinsic=COMPILED_IN_INTRINSIC}; \
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 
 #define AON_Plugins_MOBA_Source_MOBA_Public_MOBAGameState_h_16_STANDARD_CONSTRUCTORS \

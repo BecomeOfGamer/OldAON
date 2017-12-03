@@ -6,6 +6,7 @@
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Intermediate\Build\Win64\UE4Editor\Inc\MOBA\HeroActionx.gen.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Intermediate\Build\Win64\UE4Editor\Inc\MOBA\HeroBuff.gen.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Intermediate\Build\Win64\UE4Editor\Inc\MOBA\HeroCharacter.gen.cpp"
+#include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Intermediate\Build\Win64\UE4Editor\Inc\MOBA\HeroSkill.gen.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Intermediate\Build\Win64\UE4Editor\Inc\MOBA\MHUD.gen.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Intermediate\Build\Win64\UE4Editor\Inc\MOBA\MOBA.init.gen.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Intermediate\Build\Win64\UE4Editor\Inc\MOBA\MOBAGameState.gen.cpp"

@@ -10,3 +10,4 @@
 #include "HeroCharacter.h"
 #include "DamageEffect.h"
 #include "SkillHintActor.h"
+#include "HeroSkill.h"

@@ -171,9 +171,9 @@ void AMHUD::DrawHUD()
 			{
 				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("Skill%d"), idx + 1));
 
-				if(skhb && SkillDMaterials.Num() > idx && selectHero->Skill_Texture.Num() > idx)
+				if(skhb && SkillDMaterials.Num() > idx && selectHero->Skills.Num() > idx)
 				{
-					SkillDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Skill_Texture[idx]);
+					SkillDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Skills[idx]->Skill_Texture);
 					SkillDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->GetSkillCDPercent(idx));
 					DrawMaterialSimple(SkillDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
 					                   skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);

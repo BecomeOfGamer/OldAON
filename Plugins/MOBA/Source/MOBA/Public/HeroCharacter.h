@@ -12,42 +12,12 @@
 #include "HeroCharacter.generated.h"
 
 
-USTRUCT(BlueprintType)
-struct FLevelCDs
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<float> CDs;
-
-	float operator[](int32 n)
-	{
-		return CDs[n];
-	}
-};
-
-USTRUCT(BlueprintType)
-struct FSkillDescription
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Description;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> DescriptionLevel;
-
-	FString& operator[](int32 n)
-	{
-		return DescriptionLevel[n];
-	}
-};
 
 UENUM(BlueprintType)
 enum class EHeroBodyStatus : uint8
 {
-	Standing,
-	Moving,
+	Standing,		// 站著發呆
+	Moving,			// 移動中
 	Dazzing,		// 暈眩中
 	AttackWating,	// 攻擊等待
 	AttackBegining, // 攻擊前搖
@@ -59,6 +29,8 @@ enum class EHeroBodyStatus : uint8
 
 class AEquipment;
 class ABulletActor;
+class AHeroSkill;
+class ASkillHintActor;
 
 UCLASS()
 class MOBA_API AHeroCharacter : public ACharacter
@@ -129,8 +101,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hero")
 	void HideSkillHint();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BP_ImplementSkill(int32 index, FVector VFaceTo, FVector Pos);
 
 	UFUNCTION(NetMulticast, WithValidation, Reliable)
 	void ServerPlayAttack(float duraction, float rate);
@@ -216,10 +186,13 @@ public:
 	// set by HUD
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
 	FVector2D	ScreenPosition;
-
-	// 該英雄的技能數量
+	
+	// 基礎攻擊距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	int32 Skill_Amount;
+	TArray<AHeroSkill*> Skills;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	TArray<TSubclassOf<AHeroSkill>>	Skill_Classes;
 
 	// 基礎攻擊距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
@@ -278,10 +251,10 @@ public:
 
 	// 基礎回血
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	float BaseHealingHP;
+	float BaseRegenHP;
 	// 基礎回魔
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	float BaseHealingMP;
+	float BaseRegenMP;
 	// 基礎血量
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
 	float BaseHP;
@@ -326,58 +299,15 @@ public:
 	// 每個等級提升的智力
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
 	TArray<float> LevelProperty_Intelligence;
-
-	// 技能名字
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
-	TArray<FString> Skill_Name;
-	// 使用了技能後是否面對技能
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	TArray<bool> Skill_FaceSkill;
-	// 技能描述
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
-	TArray<FSkillDescription> Skill_Description;
-
-	// 技能圖片
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
-	TArray<UTexture2D*> Skill_Texture;
-
-	// 所有技能提示
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
-	TArray<TSubclassOf<ASkillHintActor>> Skill_HintActor;
-
+	
 	// 當前技能提示
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
-	ASkillHintActor * CurrentSkillHint;
+	ASkillHintActor* CurrentSkillHint;
 
 	// 當前技能指向
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
 	FVector CurrentSkillDirection;
-
-	// 儲存所有技能每個等級的CD時間
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
-	TArray<FLevelCDs> Skill_LevelCDs;
-
-	// 是否在CD中
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	TArray<bool> Skill_CDing;
-
-	// 當前CD秒數，CD秒數等於Skill_MaxCD時就是CD結束
-	// Skill_CurrentCD will accumulation every frame
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	TArray<float> Skill_CurrentCD;
-
-	// 當前技能CD時間
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	TArray<float> Skill_MaxCD;
-
-	// 當前所有技能原始CD時間
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	TArray<float> Skill_BaseCD;
-
-	// 當前所有的技能等級
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	TArray<int32> Skill_Level;
-
+	
 	// 可以使用的技能點數
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
 	int32 Skill_Points;
@@ -496,10 +426,10 @@ public:
 	float CurrentMP;
 	// 回血
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	float CurrentHealingHP;
+	float CurrentRegenHP;
 	// 回魔
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	float CurrentHealingMP;
+	float CurrentRegenMP;
 	// 攻速
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float CurrentAttackSpeed;
@@ -548,10 +478,16 @@ public:
 	TArray<AHeroBuff*> BuffQueue;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	TMap<uint8, bool> BuffStateMap;
+	TMap<EHeroBuffState, bool> BuffStateMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	TMap<EHeroBuffState, bool> DefaultBuffState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	TMap<uint8, int32> BuffPropertyMap;
+	TMap<EHeroBuffProperty, float> BuffPropertyMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	TMap<EHeroBuffProperty, float> DefaultBuffProperty;
 
 	FVector LastMoveTarget;
 	FHeroAction LastUseSkill;

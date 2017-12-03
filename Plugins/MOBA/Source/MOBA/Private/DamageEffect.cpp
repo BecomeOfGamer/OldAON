@@ -70,7 +70,7 @@ void ADamageEffect::Tick( float DeltaTime )
 
 void ADamageEffect::SetString(FString message)
 {
-	TextRender->SetText(message);
+	TextRender->SetText(FText::FromString(message));
 	FVector size = TextRender->GetTextWorldSize();
 	size *= 0.5;
 	size.Z = -size.Z;

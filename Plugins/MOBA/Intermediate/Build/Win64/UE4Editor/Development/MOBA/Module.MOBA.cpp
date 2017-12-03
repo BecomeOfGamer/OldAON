@@ -6,6 +6,7 @@
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Source\MOBA\Private\HeroActionx.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Source\MOBA\Private\HeroBuff.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Source\MOBA\Private\HeroCharacter.cpp"
+#include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Source\MOBA\Private\HeroSkill.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Source\MOBA\Private\MHitBox.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Source\MOBA\Private\MHUD.cpp"
 #include "C:\Users\USER\Documents\Unreal Projects\AON\Plugins\MOBA\Source\MOBA\Private\MOBA.cpp"

@@ -17,12 +17,16 @@ enum class EHeroBuffState : uint8
 	BanEquipment,	// 禁道具
 	BanBeSkillSight,	// 不能被法術指定
 	BanBeAttackSight,	// 不能被普攻指定
-	MagicImmune,		// 魔法免疫
+	MagicalImmune,		// 魔法免疫
+	PhysicalImmune,		// 物理免疫
+	PureImmune,			// 真傷免疫
 	Invulnerable,		// 無敵
+	Sleeping,			// 睡眠，被攻擊會醒來
 	AttackUseMagic,	// 普攻轉換為魔法傷害
 	AttackUsePure,	// 普攻轉換為真實傷害
 	EndBuffKind
 };
+#define HEROS EHeroBuffState
 
 // BaseAttack是原始攻擊力
 // 物理輸出 = (((BaseAttack+AttackBounsConstantWhite)*AttackBounsPercentage+AttackBounsConstantGreen)*PhysicalDamageOutputPercentage)
@@ -40,7 +44,7 @@ enum class EHeroBuffProperty : uint8
 	MagicalDamageOutputPercentage,	// 魔法傷害輸出加成(百分比) EX. 0.1 加成10%
 	PureDamageOutputPercentage,		// 真傷傷害輸出加成(百分比) EX. 0.1 加成10%
 	PhysicalDamageInputPercentage,	// 受到物理傷害加成(百分比) EX. -0.1 減傷10%
-	MagicDamageInputPercentage,		// 受到魔法傷害加成(百分比) EX. -0.1 減傷10%
+	MagicalDamageInputPercentage,	// 受到魔法傷害加成(百分比) EX. -0.1 減傷10%
 	PureDamageInputPercentage,		// 受到真傷傷害加成(百分比) EX. -0.1 減傷10%
 	MoveSpeedRatio,				// 移動速度加成(百分比) EX. 2 2倍跑速
 	MoveSpeedConstant,			// 移動速度加成(固定值) EX. 100 增加100跑速
@@ -68,8 +72,21 @@ enum class EHeroBuffProperty : uint8
 	AttackBounsPercentage,		// 攻擊加成(百分比) EX. 2 攻擊白字乘2加到綠字 不被其它攻擊加成影響
 	ArmorBounsConstant,			// 防禦加成(固定值) EX. 5 防禦白字+5
 	ArmorBounsPercentage,		// 防禦加成(百分比) EX. 1 當前防禦乘上1加到綠字
+	StealHealth,				// 生命吸收 EX. 0.2 吸收造成傷害的20%
+	AttackMiss,					// 攻擊失誤機率 EX. 0.15 15%的機率miss
+	BlockingPhysical,			// 格檔攻擊機率 EX. 0.25 25%的機率格檔物理傷害
+	BlockingMagical,			// 格檔攻擊機率 EX. 0.25 25%的機率格檔物理傷害
+	BlockingPure,				// 格檔攻擊機率 EX. 0.25 25%的機率格檔物理傷害
+	BlockingPhysicalConstant,	// 格檔固定物理傷害
+	BlockingMagicalConstant,	// 格檔固定魔法傷害
+	BlockingPureConstant,		// 格檔固定真實傷害
+	HealthBouns,				// 血量上限
+	ManaBouns,					// 魔量上限
+	Dodge,						// 閃避機率
 	EndBuffProperty
 };
+#define HEROP EHeroBuffProperty
+
 class AHeroCharacter;
 /**
  * 
@@ -158,7 +175,7 @@ public:
 
 	// 額外加成
 	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadWrite)
-	TMap<uint8, int32> BuffPropertyMap;
+	TMap<EHeroBuffProperty, int32> BuffPropertyMap;
 
 	UPROPERTY(Category = "HeroBuff", EditAnywhere, BlueprintReadOnly)
 	TArray<AHeroCharacter*> BuffTarget;

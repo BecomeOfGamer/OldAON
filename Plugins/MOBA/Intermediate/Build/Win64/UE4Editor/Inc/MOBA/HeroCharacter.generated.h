@@ -20,17 +20,7 @@ enum class EDamageType : uint8;
 #endif
 #define MOBA_HeroCharacter_generated_h
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_32_GENERATED_BODY \
-	friend MOBA_API class UScriptStruct* Z_Construct_UScriptStruct_FSkillDescription(); \
-	MOBA_API static class UScriptStruct* StaticStruct();
-
-
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_18_GENERATED_BODY \
-	friend MOBA_API class UScriptStruct* Z_Construct_UScriptStruct_FLevelCDs(); \
-	MOBA_API static class UScriptStruct* StaticStruct();
-
-
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_RPC_WRAPPERS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
@@ -215,7 +205,7 @@ enum class EDamageType : uint8;
 	}
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS_NO_PURE_DECLS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_RPC_WRAPPERS_NO_PURE_DECLS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
@@ -400,19 +390,13 @@ enum class EDamageType : uint8;
 	}
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_EVENT_PARMS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_EVENT_PARMS \
 	struct HeroCharacter_eventAttackCompute_Parms \
 	{ \
 		AHeroCharacter* attacker; \
 		AHeroCharacter* victim; \
 		EDamageType dtype; \
 		float damage; \
-	}; \
-	struct HeroCharacter_eventBP_ImplementSkill_Parms \
-	{ \
-		int32 index; \
-		FVector VFaceTo; \
-		FVector Pos; \
 	}; \
 	struct HeroCharacter_eventBP_PlayAttack_Parms \
 	{ \
@@ -436,8 +420,8 @@ enum class EDamageType : uint8;
 	};
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_CALLBACK_WRAPPERS
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_INCLASS_NO_PURE_DECLS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_CALLBACK_WRAPPERS
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAHeroCharacter(); \
 	friend MOBA_API class UClass* Z_Construct_UClass_AHeroCharacter(); \
@@ -448,7 +432,7 @@ public: \
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_INCLASS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_INCLASS \
 private: \
 	static void StaticRegisterNativesAHeroCharacter(); \
 	friend MOBA_API class UClass* Z_Construct_UClass_AHeroCharacter(); \
@@ -459,7 +443,7 @@ public: \
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_STANDARD_CONSTRUCTORS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API AHeroCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AHeroCharacter) \
@@ -472,7 +456,7 @@ private: \
 public:
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_ENHANCED_CONSTRUCTORS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API AHeroCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()) : Super(ObjectInitializer) { }; \
 private: \
@@ -485,31 +469,31 @@ DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(AHeroCharacter); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AHeroCharacter)
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_PRIVATE_PROPERTY_OFFSET
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_63_PROLOG \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_EVENT_PARMS
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_PRIVATE_PROPERTY_OFFSET
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_35_PROLOG \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_EVENT_PARMS
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_GENERATED_BODY_LEGACY \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_PRIVATE_PROPERTY_OFFSET \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_CALLBACK_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_INCLASS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_STANDARD_CONSTRUCTORS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_PRIVATE_PROPERTY_OFFSET \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_RPC_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_CALLBACK_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_INCLASS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_GENERATED_BODY \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_PRIVATE_PROPERTY_OFFSET \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_RPC_WRAPPERS_NO_PURE_DECLS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_CALLBACK_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_INCLASS_NO_PURE_DECLS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_66_ENHANCED_CONSTRUCTORS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_PRIVATE_PROPERTY_OFFSET \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_RPC_WRAPPERS_NO_PURE_DECLS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_CALLBACK_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_INCLASS_NO_PURE_DECLS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_38_ENHANCED_CONSTRUCTORS \
 static_assert(false, "Unknown access specifier for GENERATED_BODY() macro in class HeroCharacter."); \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

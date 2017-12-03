@@ -17,7 +17,7 @@ struct FVector;
 #endif
 #define MOBA_HeroBuff_generated_h
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_RPC_WRAPPERS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_RPC_WRAPPERS \
  \
 	DECLARE_FUNCTION(execClone) \
 	{ \
@@ -45,7 +45,7 @@ struct FVector;
 	}
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_RPC_WRAPPERS_NO_PURE_DECLS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_RPC_WRAPPERS_NO_PURE_DECLS \
  \
 	DECLARE_FUNCTION(execClone) \
 	{ \
@@ -73,7 +73,7 @@ struct FVector;
 	}
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_EVENT_PARMS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_EVENT_PARMS \
 	struct HeroBuff_eventBeDamage_Parms \
 	{ \
 		AHeroCharacter* attacker; \
@@ -177,8 +177,8 @@ struct FVector;
 	};
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_CALLBACK_WRAPPERS
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_INCLASS_NO_PURE_DECLS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_CALLBACK_WRAPPERS
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAHeroBuff(); \
 	friend MOBA_API class UClass* Z_Construct_UClass_AHeroBuff(); \
@@ -188,7 +188,7 @@ public: \
 	enum {IsIntrinsic=COMPILED_IN_INTRINSIC};
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_INCLASS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_INCLASS \
 private: \
 	static void StaticRegisterNativesAHeroBuff(); \
 	friend MOBA_API class UClass* Z_Construct_UClass_AHeroBuff(); \
@@ -198,7 +198,7 @@ public: \
 	enum {IsIntrinsic=COMPILED_IN_INTRINSIC};
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_STANDARD_CONSTRUCTORS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API AHeroBuff(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AHeroBuff) \
@@ -211,7 +211,7 @@ private: \
 public:
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_ENHANCED_CONSTRUCTORS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API AHeroBuff(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()) : Super(ObjectInitializer) { }; \
 private: \
@@ -224,31 +224,31 @@ DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(AHeroBuff); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AHeroBuff)
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_PRIVATE_PROPERTY_OFFSET
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_78_PROLOG \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_EVENT_PARMS
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_PRIVATE_PROPERTY_OFFSET
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_95_PROLOG \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_EVENT_PARMS
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_GENERATED_BODY_LEGACY \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_PRIVATE_PROPERTY_OFFSET \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_RPC_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_CALLBACK_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_INCLASS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_STANDARD_CONSTRUCTORS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_PRIVATE_PROPERTY_OFFSET \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_RPC_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_CALLBACK_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_INCLASS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_GENERATED_BODY \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_PRIVATE_PROPERTY_OFFSET \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_RPC_WRAPPERS_NO_PURE_DECLS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_CALLBACK_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_INCLASS_NO_PURE_DECLS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_81_ENHANCED_CONSTRUCTORS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_PRIVATE_PROPERTY_OFFSET \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_RPC_WRAPPERS_NO_PURE_DECLS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_CALLBACK_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_INCLASS_NO_PURE_DECLS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroBuff_h_98_ENHANCED_CONSTRUCTORS \
 static_assert(false, "Unknown access specifier for GENERATED_BODY() macro in class HeroBuff."); \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -262,7 +262,7 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	op(EHeroBuffProperty::MagicalDamageOutputPercentage) \
 	op(EHeroBuffProperty::PureDamageOutputPercentage) \
 	op(EHeroBuffProperty::PhysicalDamageInputPercentage) \
-	op(EHeroBuffProperty::MagicDamageInputPercentage) \
+	op(EHeroBuffProperty::MagicalDamageInputPercentage) \
 	op(EHeroBuffProperty::PureDamageInputPercentage) \
 	op(EHeroBuffProperty::MoveSpeedRatio) \
 	op(EHeroBuffProperty::MoveSpeedConstant) \
@@ -290,6 +290,17 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	op(EHeroBuffProperty::AttackBounsPercentage) \
 	op(EHeroBuffProperty::ArmorBounsConstant) \
 	op(EHeroBuffProperty::ArmorBounsPercentage) \
+	op(EHeroBuffProperty::StealHealth) \
+	op(EHeroBuffProperty::AttackMiss) \
+	op(EHeroBuffProperty::BlockingPhysical) \
+	op(EHeroBuffProperty::BlockingMagical) \
+	op(EHeroBuffProperty::BlockingPure) \
+	op(EHeroBuffProperty::BlockingPhysicalConstant) \
+	op(EHeroBuffProperty::BlockingMagicalConstant) \
+	op(EHeroBuffProperty::BlockingPureConstant) \
+	op(EHeroBuffProperty::HealthBouns) \
+	op(EHeroBuffProperty::ManaBouns) \
+	op(EHeroBuffProperty::Dodge) \
 	op(EHeroBuffProperty::EndBuffProperty) 
 #define FOREACH_ENUM_EHEROBUFFSTATE(op) \
 	op(EHeroBuffState::Dazzing) \
@@ -299,8 +310,11 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	op(EHeroBuffState::BanEquipment) \
 	op(EHeroBuffState::BanBeSkillSight) \
 	op(EHeroBuffState::BanBeAttackSight) \
-	op(EHeroBuffState::MagicImmune) \
+	op(EHeroBuffState::MagicalImmune) \
+	op(EHeroBuffState::PhysicalImmune) \
+	op(EHeroBuffState::PureImmune) \
 	op(EHeroBuffState::Invulnerable) \
+	op(EHeroBuffState::Sleeping) \
 	op(EHeroBuffState::AttackUseMagic) \
 	op(EHeroBuffState::AttackUsePure) \
 	op(EHeroBuffState::EndBuffKind) 
