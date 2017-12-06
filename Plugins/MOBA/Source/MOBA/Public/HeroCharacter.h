@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,15 +16,24 @@
 UENUM(BlueprintType)
 enum class EHeroBodyStatus : uint8
 {
-	Standing,		// 站著發呆
-	Moving,			// 移動中
-	Dazzing,		// 暈眩中
-	AttackWating,	// 攻擊等待
-	AttackBegining, // 攻擊前搖
-	AttackEnding,	//攻擊後搖
-	SpellWating,	// 施法前等待
-	SpellBegining,	// 施法前搖
-	SpellEnding,	// 施法後搖
+	//站著發呆
+	Standing,
+	//移動中
+	Moving,
+	//暈眩中
+	Dazzing,
+	//攻擊等待
+	AttackWating,
+	//攻擊前搖
+	AttackBegining,
+	//攻擊後搖
+	AttackEnding,
+	//施法前等待
+	SpellWating,
+	//施法前搖
+	SpellBegining,
+	//施法後搖
+	SpellEnding,
 };
 
 class AEquipment;
@@ -94,6 +103,9 @@ public:
 	// 依等級更新力敏智
 	UFUNCTION(BlueprintCallable, Category = "Hero")
 	void UpdateSAI();
+
+	UFUNCTION(BlueprintCallable, Category = "Hero")
+	bool TriggerSkill(int32 index, FVector Pos);
 
 	UFUNCTION(BlueprintCallable, Category = "Hero")
 	bool ShowSkillHint(int32 index);
@@ -488,7 +500,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	TMap<EHeroBuffProperty, float> DefaultBuffProperty;
-
+	
 	FVector LastMoveTarget;
 	FHeroAction LastUseSkill;
 };

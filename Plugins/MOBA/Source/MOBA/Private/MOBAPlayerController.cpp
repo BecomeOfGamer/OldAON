@@ -1,4 +1,4 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+﻿// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #include "MOBAPrivatePCH.h"
 #include "MOBAPlayerController.h"
 #include "AI/Navigation/NavigationSystem.h"
@@ -181,8 +181,8 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 			res = GetWorld()->LineTraceMultiByObjectType(Hits, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance,
 			        CollisionQuery);
 		}
-		// 只trace 地板的actor
-		// 地板名可以自定義
+		// ?泱race ?唳?ctor
+		// ?唳?隞亥摰儔
 		FVector HitPoint(0, 0, 0);
 		if (Hits.Num() > 0)
 		{

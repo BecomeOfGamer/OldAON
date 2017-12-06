@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 #include "MOBAPrivatePCH.h"
 #include "SceneObject.h"
 #include "UnrealNetwork.h"
@@ -81,7 +81,7 @@ void ASceneObject::OnMouseClicked(UPrimitiveComponent* TouchComp, FKey ButtonPre
 	AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 	if (hud)
 	{
-		// «ö¤U¥kÁä
+		// æŒ‰ä¸‹å³éµ
 		if (hud->bMouseRButton)
 		{
 			if (hud->CurrentSelection.Num() > 0)

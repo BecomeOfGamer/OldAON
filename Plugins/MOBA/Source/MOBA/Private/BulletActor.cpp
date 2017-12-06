@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "MOBAPrivatePCH.h"
 #include "BulletActor.h"
 #include "HeroCharacter.h"
@@ -61,7 +61,7 @@ void ABulletActor::Tick(float DeltaTime)
             AHeroCharacter* Hero = Cast<AHeroCharacter>(TargetActor);
 			ASceneObject* SceneObj = Cast<ASceneObject>(TargetActor);
 
-			// ��ܶˮ`��r
+			// 顯示傷害文字
 			ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(Hero->ShowDamageEffect);
 			if (TempDamageText)
 			{

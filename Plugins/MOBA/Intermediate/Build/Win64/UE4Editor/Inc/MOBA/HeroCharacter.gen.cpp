@@ -39,10 +39,11 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_SelectionOn();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_ShowSkillHint();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_TriggerSkill();
+	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateSAI();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UseSkill();
-	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector();
 	ENGINE_API UClass* Z_Construct_UClass_ACharacter();
 	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroBuffProperty();
 	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroBuffState();
@@ -90,21 +91,22 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnEnum->CppType = TEXT("EHeroBodyStatus");
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnEnum->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnEnum, TEXT("AttackBegining.ToolTip"), TEXT("\x653b\x64ca\x7b49\x5f85"));
-			MetaData->SetValue(ReturnEnum, TEXT("AttackEnding.ToolTip"), TEXT("\x653b\x64ca\x524d\x6416"));
-			MetaData->SetValue(ReturnEnum, TEXT("AttackWating.ToolTip"), TEXT("\x6688\x7729\x4e2d"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackBegining.ToolTip"), TEXT("\x653b\x64ca\x524d\x6416"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackEnding.ToolTip"), TEXT("\x653b\x64ca\x5f8c\x6416"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackWating.ToolTip"), TEXT("\x653b\x64ca\x7b49\x5f85"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlueprintType"), TEXT("true"));
-			MetaData->SetValue(ReturnEnum, TEXT("Dazzing.ToolTip"), TEXT("\x79fb\x52d5\x4e2d"));
+			MetaData->SetValue(ReturnEnum, TEXT("Dazzing.ToolTip"), TEXT("\x6688\x7729\x4e2d"));
 			MetaData->SetValue(ReturnEnum, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-			MetaData->SetValue(ReturnEnum, TEXT("Moving.ToolTip"), TEXT("\x7ad9\x8457\x767c\x5446"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellBegining.ToolTip"), TEXT("\x65bd\x6cd5\x524d\x7b49\x5f85"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellEnding.ToolTip"), TEXT("\x65bd\x6cd5\x524d\x6416"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellWating.ToolTip"), TEXT("\x653b\x64ca\x5f8c\x6416"));
+			MetaData->SetValue(ReturnEnum, TEXT("Moving.ToolTip"), TEXT("\x79fb\x52d5\x4e2d"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellBegining.ToolTip"), TEXT("\x65bd\x6cd5\x524d\x6416"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellEnding.ToolTip"), TEXT("\x65bd\x6cd5\x5f8c\x6416"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellWating.ToolTip"), TEXT("\x65bd\x6cd5\x524d\x7b49\x5f85"));
+			MetaData->SetValue(ReturnEnum, TEXT("Standing.ToolTip"), TEXT("\x7ad9\x8457\x767c\x5446"));
 #endif
 		}
 		return ReturnEnum;
 	}
-	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBodyStatus_CRC() { return 2812664003U; }
+	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBodyStatus_CRC() { return 787714524U; }
 	static FName NAME_AHeroCharacter_AttackCompute = FName(TEXT("AttackCompute"));
 	void AHeroCharacter::AttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage)
 	{
@@ -165,6 +167,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			{ "SelectionOn", (Native)&AHeroCharacter::execSelectionOn },
 			{ "ServerPlayAttack", (Native)&AHeroCharacter::execServerPlayAttack },
 			{ "ShowSkillHint", (Native)&AHeroCharacter::execShowSkillHint },
+			{ "TriggerSkill", (Native)&AHeroCharacter::execTriggerSkill },
 			{ "UpdateHPMPAS", (Native)&AHeroCharacter::execUpdateHPMPAS },
 			{ "UpdateSAI", (Native)&AHeroCharacter::execUpdateSAI },
 			{ "UseSkill", (Native)&AHeroCharacter::execUseSkill },
@@ -481,6 +484,33 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 		}
 		return ReturnFunction;
 	}
+	UFunction* Z_Construct_UFunction_AHeroCharacter_TriggerSkill()
+	{
+		struct HeroCharacter_eventTriggerSkill_Parms
+		{
+			int32 index;
+			FVector Pos;
+			bool ReturnValue;
+		};
+		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("TriggerSkill"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x04820401, 65535, sizeof(HeroCharacter_eventTriggerSkill_Parms));
+			CPP_BOOL_PROPERTY_BITMASK_STRUCT(ReturnValue, HeroCharacter_eventTriggerSkill_Parms);
+			UProperty* NewProp_ReturnValue = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("ReturnValue"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(ReturnValue, HeroCharacter_eventTriggerSkill_Parms), 0x0010000000000580, CPP_BOOL_PROPERTY_BITMASK(ReturnValue, HeroCharacter_eventTriggerSkill_Parms), sizeof(bool), true);
+			UProperty* NewProp_Pos = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Pos"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(Pos, HeroCharacter_eventTriggerSkill_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
+			UProperty* NewProp_index = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("index"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(index, HeroCharacter_eventTriggerSkill_Parms), 0x0010000000000080);
+			ReturnFunction->Bind();
+			ReturnFunction->StaticLink();
+#if WITH_METADATA
+			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+#endif
+		}
+		return ReturnFunction;
+	}
 	UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS()
 	{
 		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
@@ -578,6 +608,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_SelectionOn());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint());
+				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_TriggerSkill());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateSAI());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UseSkill());
@@ -717,6 +748,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOn(), "SelectionOn"); // 798867789
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack(), "ServerPlayAttack"); // 3516323136
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint(), "ShowSkillHint"); // 3961161328
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_TriggerSkill(), "TriggerSkill"); // 3990884558
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS(), "UpdateHPMPAS"); // 1210657723
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateSAI(), "UpdateSAI"); // 347021170
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UseSkill(), "UseSkill"); // 3587030035
@@ -1005,7 +1037,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroCharacter, 804710193);
+	IMPLEMENT_CLASS(AHeroCharacter, 2251822010);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroCharacter(Z_Construct_UClass_AHeroCharacter, &AHeroCharacter::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroCharacter"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroCharacter);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

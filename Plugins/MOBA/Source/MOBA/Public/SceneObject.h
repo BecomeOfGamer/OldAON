@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -22,7 +22,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent * StaticMesh;
 
-	// ¶Â∂q
+	// Ë°ÄÈáè
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float CurrentHP;
 

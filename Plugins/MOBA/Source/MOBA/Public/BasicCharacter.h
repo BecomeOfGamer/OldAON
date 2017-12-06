@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,9 +9,9 @@
 UENUM(BlueprintType)
 enum class EDamageType : uint8
 {
-	DAMAGE_PHYSICAL,	//ª«²z
-	DAMAGE_MAGICAL,	//Å]ªk
-	DAMAGE_PURE		//¯u¹ê
+	DAMAGE_PHYSICAL,	//ç‰©ç†
+	DAMAGE_MAGICAL,	//é­”æ³•
+	DAMAGE_PURE		//çœŸå¯¦
 };
 
 UCLASS()

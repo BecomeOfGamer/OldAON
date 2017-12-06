@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -12,21 +12,21 @@ class AEquipment;
 UENUM(BlueprintType)
 enum class EHeroActionStatus : uint8
 {
-	Default,			// ­è³Qªì©l¤Æ
-	MoveToPosition,		// ²¾°Ê¨ì«ü©w¥Ø¼Ğ
-	MoveToActor,		// ²¾°Ê¨ì«ü©wªº¤H¨­Ãä
-	FollowActor,		// ¸òµÛ¤H¨«
-	AttackActor,		// ¥´«ü©wªº¤H
-	MovingAttackActor,	// Ãä²¾°ÊÃä§ğÀ»«ü©w¼Ä¤H
-	MoveAndAttack,		// AÂI¦aªO ²¾°Ê¤¤¹J¨ì¼Ä¤H°±¤U¨Ó§ğÀ»
-	SpellToPosition,	// «ü©w¦aÂIªº§Ş¯à
-	SpellToActor,		// «ü©w§Ş
-	SpellToDirection,	// «ü¦V§Ş
-	SpellToSelf,		// ¤£»İ«ü©w¥Ø¼Ğªº§Ş¯à
-	MoveToPickup,		// ¾ß¸Ë
-	MoveToThrowEqu,		// ¥á¸Ë
-	ThrowEquToActor,	// ¥á¸Ëµ¹¤H
-	AttackSceneObject	// ¯}Ãa³õ´ºª«¥ó
+	Default,			// å‰›è¢«åˆå§‹åŒ–
+	MoveToPosition,		// ç§»å‹•åˆ°æŒ‡å®šç›®æ¨™
+	MoveToActor,		// ç§»å‹•åˆ°æŒ‡å®šçš„äººèº«é‚Š
+	FollowActor,		// è·Ÿè‘—äººèµ°
+	AttackActor,		// æ‰“æŒ‡å®šçš„äºº
+	MovingAttackActor,	// é‚Šç§»å‹•é‚Šæ”»æ“ŠæŒ‡å®šæ•µäºº
+	MoveAndAttack,		// Aé»åœ°æ¿ ç§»å‹•ä¸­é‡åˆ°æ•µäººåœä¸‹ä¾†æ”»æ“Š
+	SpellToPosition,	// æŒ‡å®šåœ°é»çš„æŠ€èƒ½
+	SpellToActor,		// æŒ‡å®šæŠ€
+	SpellToDirection,	// æŒ‡å‘æŠ€
+	SpellToSelf,		// ä¸éœ€æŒ‡å®šç›®æ¨™çš„æŠ€èƒ½
+	MoveToPickup,		// æ’¿è£
+	MoveToThrowEqu,		// ä¸Ÿè£
+	ThrowEquToActor,	// ä¸Ÿè£çµ¦äºº
+	AttackSceneObject	// ç ´å£å ´æ™¯ç‰©ä»¶
 };
 
 /**

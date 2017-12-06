@@ -114,7 +114,7 @@ void EmptyLinkFunctionForGeneratedCodeSceneObject() {}
 				MetaData->SetValue(NewProp_DestoryCounting, TEXT("ModuleRelativePath"), TEXT("Public/SceneObject.h"));
 				MetaData->SetValue(NewProp_CurrentHP, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_CurrentHP, TEXT("ModuleRelativePath"), TEXT("Public/SceneObject.h"));
-				MetaData->SetValue(NewProp_CurrentHP, TEXT("ToolTip"), TEXT("???q"));
+				MetaData->SetValue(NewProp_CurrentHP, TEXT("ToolTip"), TEXT("\x8840\x91cf"));
 				MetaData->SetValue(NewProp_StaticMesh, TEXT("Category"), TEXT("SceneObject"));
 				MetaData->SetValue(NewProp_StaticMesh, TEXT("EditInline"), TEXT("true"));
 				MetaData->SetValue(NewProp_StaticMesh, TEXT("ModuleRelativePath"), TEXT("Public/SceneObject.h"));
@@ -127,7 +127,7 @@ void EmptyLinkFunctionForGeneratedCodeSceneObject() {}
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(ASceneObject, 22238753);
+	IMPLEMENT_CLASS(ASceneObject, 966445927);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_ASceneObject(Z_Construct_UClass_ASceneObject, &ASceneObject::StaticClass, TEXT("/Script/MOBA"), TEXT("ASceneObject"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(ASceneObject);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

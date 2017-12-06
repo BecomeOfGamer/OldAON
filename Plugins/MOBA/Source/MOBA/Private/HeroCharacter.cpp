@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "MOBAPrivatePCH.h"
 #include "HeroCharacter.h"
 #include "GameFramework/Character.h"
@@ -110,15 +110,8 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	DefaultBuffProperty[EHeroBuffProperty::PureDamageInputPercentage] = 1;
 	DefaultBuffProperty[EHeroBuffProperty::MoveSpeedRatio] = 1;
 	DefaultBuffProperty[EHeroBuffProperty::MoveSpeedConstant] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::MoveSpeedUnique] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::MoveSpeedFixed] = -1;
 	DefaultBuffProperty[EHeroBuffProperty::AttackSpeedRatio] = 1;
 	DefaultBuffProperty[EHeroBuffProperty::AttackSpeedConstant] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::MinHealth] = -1;
-	DefaultBuffProperty[EHeroBuffProperty::MaxHealth] = -1;
-	DefaultBuffProperty[EHeroBuffProperty::MinMana] = -1;
-	DefaultBuffProperty[EHeroBuffProperty::MaxMana] = -1;
-	DefaultBuffProperty[EHeroBuffProperty::BaseAttackSpeedFixed] = -1;
 	DefaultBuffProperty[EHeroBuffProperty::AbsorbPhysicalDamagePercentage] = 0;
 	DefaultBuffProperty[EHeroBuffProperty::AbsorbMagicalDamagePercentage] = 0;
 	DefaultBuffProperty[EHeroBuffProperty::AbsorbPureDamagePercentage] = 0;
@@ -194,7 +187,6 @@ void AHeroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	{ // 計算各種buff
-		
 		TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
 		TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
 		for (int32 i = 0; i < BuffQueue.Num(); ++i)
@@ -443,128 +435,186 @@ bool AHeroCharacter::AttackCompute_Validate(AHeroCharacter* attacker, AHeroChara
 
 void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage)
 {
-	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	float Injury = ags->ArmorConvertToInjuryPersent(victim->CurrentArmor);
-	float RDamage = damage * Injury; // 扣防後傷害
-	float FDamage = RDamage; // 最終傷害
-	ags->MakeRandom();
-	int32 ranint = ags->RandomSeed;
-	FMath::SRandInit(ranint);
-	bool attackMiss = false;
-	if (attacker->BuffPropertyMap[HEROP::AttackMiss] > 0)
+	if (Role == ROLE_Authority)
 	{
-		int miss = FMath::FRandRange(0, 1);
-		if (attacker->BuffPropertyMap[HEROP::AttackMiss] >= miss)
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		float Injury = ags->ArmorConvertToInjuryPersent(victim->CurrentArmor);
+		float RDamage = damage * Injury; // 扣防後傷害
+		float FDamage = RDamage; // 最終傷害
+		//ags->MakeRandom();
+		//int32 ranint = ags->RandomSeed;
+		//FMath::SRandInit(ranint);
+		bool attackMiss = false;
+		// Buff Property Compute
+		if (attacker->BuffPropertyMap[HEROP::AttackMiss] > 0)
 		{
-			attackMiss = true;
+			float miss = FMath::FRandRange(0, 1);
+			if (attacker->BuffPropertyMap[HEROP::AttackMiss] >= miss)
+			{
+				attackMiss = true;
+			}
 		}
-	}
-	if (victim->BuffPropertyMap[HEROP::Dodge] > 0)
-	{
-		int miss = FMath::FRandRange(0, 1);
-		if (victim->BuffPropertyMap[HEROP::Dodge] >= miss)
+		if (victim->BuffPropertyMap[HEROP::Dodge] > 0)
 		{
-			attackMiss = true;
+			float miss = FMath::FRandRange(0, 1);
+			if (victim->BuffPropertyMap[HEROP::Dodge] >= miss)
+			{
+				attackMiss = true;
+			}
 		}
-	}
-	
-	if (dtype == EDamageType::DAMAGE_PHYSICAL)
-	{
-		if (victim->BuffPropertyMap[HEROP::BlockingPhysical] > 0)
+
+		// Buff Unique Compute
+		float max_critical = 1;
+		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
 		{
-			int block = FMath::FRandRange(0, 1);
-			if (victim->BuffPropertyMap[HEROP::BlockingPhysical] >= block)
+			if (attacker->BuffQueue[i]->BuffUniqueMap.Contains(HEROU::CriticalChance))
+			{
+				float chance = FMath::FRandRange(0, 1);
+				if (attacker->BuffQueue[i]->BuffUniqueMap[HEROU::CriticalChance] >= chance &&
+					attacker->BuffQueue[i]->BuffUniqueMap[HEROU::CriticalPercentage] >= max_critical)
+				{
+					max_critical = attacker->BuffQueue[i]->BuffUniqueMap[HEROU::CriticalPercentage];
+				}
+			}
+		}
+		FDamage *= max_critical;
+		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+		{
+			for (auto& Elem : attacker->BuffQueue[i]->BuffUniqueMap)
+			{
+				if (Elem.Key == HEROU::BlockingPhysicalChance && dtype == EDamageType::DAMAGE_PHYSICAL)
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (Elem.Value >= max_critical)
+					{
+						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingPhysicalConstant];
+					}
+				}
+				else if (Elem.Key == HEROU::BlockingMagicalChance && dtype == EDamageType::DAMAGE_MAGICAL)
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (Elem.Value >= max_critical)
+					{
+						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingMagicalConstant];
+					}
+				}
+				else if (Elem.Key == HEROU::BlockingPureChance && dtype == EDamageType::DAMAGE_PURE)
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (Elem.Value >= max_critical)
+					{
+						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingPureConstant];
+					}
+				}
+			}
+		}
+
+		if (dtype == EDamageType::DAMAGE_PHYSICAL)
+		{
+			if (victim->BuffPropertyMap[HEROP::BlockingPhysical] > 0)
+			{
+				float block = FMath::FRandRange(0, 1);
+				if (victim->BuffPropertyMap[HEROP::BlockingPhysical] >= block)
+				{
+					FDamage = 0;
+				}
+			}
+			if (victim->BuffPropertyMap[HEROP::BlockingPhysicalConstant] != 0)
+			{
+				FDamage -= victim->BuffPropertyMap[HEROP::BlockingPhysicalConstant];
+			}
+			if (victim->BuffPropertyMap[HEROP::AbsorbPhysicalDamagePercentage] > 0)
+			{
+				victim->CurrentHP += victim->BuffPropertyMap[HEROP::AbsorbPhysicalDamagePercentage] * RDamage;
+			}
+			FDamage = FDamage * attacker->BuffPropertyMap[HEROP::PhysicalDamageOutputPercentage]
+				* victim->BuffPropertyMap[HEROP::PhysicalDamageInputPercentage];
+
+			if (victim->BuffStateMap[HEROS::PhysicalImmune])
 			{
 				FDamage = 0;
 			}
 		}
-		if (victim->BuffPropertyMap[HEROP::BlockingPhysicalConstant] != 0)
+		else if (dtype == EDamageType::DAMAGE_MAGICAL)
 		{
-			FDamage -= victim->BuffPropertyMap[HEROP::BlockingPhysicalConstant];
-		}
-		if (victim->BuffPropertyMap[HEROP::AbsorbPhysicalDamagePercentage] > 0)
-		{
-			victim->CurrentHP += victim->BuffPropertyMap[HEROP::AbsorbPhysicalDamagePercentage] * RDamage;
-		}
-		FDamage = FDamage * attacker->BuffPropertyMap[HEROP::PhysicalDamageOutputPercentage]
-			* victim->BuffPropertyMap[HEROP::PhysicalDamageInputPercentage];
-		
-		if (victim->BuffStateMap[HEROS::PhysicalImmune])
-		{
-			FDamage = 0;
-		}
-	}
-	else if (dtype == EDamageType::DAMAGE_MAGICAL)
-	{
-		if (victim->BuffPropertyMap[HEROP::BlockingMagical] > 0)
-		{
-			int block = FMath::FRandRange(0, 1);
-			if (victim->BuffPropertyMap[HEROP::BlockingMagical] >= block)
+			if (victim->BuffPropertyMap[HEROP::BlockingMagical] > 0)
+			{
+				float block = FMath::FRandRange(0, 1);
+				if (victim->BuffPropertyMap[HEROP::BlockingMagical] >= block)
+				{
+					FDamage = 0;
+				}
+			}
+			if (victim->BuffPropertyMap[HEROP::BlockingMagicalConstant] != 0)
+			{
+				FDamage -= victim->BuffPropertyMap[HEROP::BlockingMagicalConstant];
+			}
+			if (victim->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage] > 0)
+			{
+				victim->CurrentHP += victim->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage] * RDamage;
+			}
+			FDamage = FDamage * attacker->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage]
+				* victim->BuffPropertyMap[HEROP::MagicalDamageInputPercentage];
+
+			if (victim->BuffStateMap[HEROS::MagicalImmune])
 			{
 				FDamage = 0;
 			}
 		}
-		if (victim->BuffPropertyMap[HEROP::BlockingMagicalConstant] != 0)
+		else if (dtype == EDamageType::DAMAGE_PURE)
 		{
-			FDamage -= victim->BuffPropertyMap[HEROP::BlockingMagicalConstant];
-		}
-		if (victim->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage] > 0)
-		{
-			victim->CurrentHP += victim->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage] * RDamage;
-		}
-		FDamage = FDamage * attacker->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage]
-			* victim->BuffPropertyMap[HEROP::MagicalDamageInputPercentage];
+			if (victim->BuffPropertyMap[HEROP::BlockingPure] > 0)
+			{
+				float block = FMath::FRandRange(0, 1);
+				if (victim->BuffPropertyMap[HEROP::BlockingPure] >= block)
+				{
+					FDamage = 0;
+				}
+			}
+			if (victim->BuffPropertyMap[HEROP::BlockingPureConstant] != 0)
+			{
+				FDamage -= victim->BuffPropertyMap[HEROP::BlockingPureConstant];
+			}
+			if (victim->BuffPropertyMap[HEROP::PureDamageOutputPercentage] > 0)
+			{
+				victim->CurrentHP += victim->BuffPropertyMap[HEROP::PureDamageOutputPercentage] * RDamage;
+			}
+			FDamage = FDamage * attacker->BuffPropertyMap[HEROP::PureDamageOutputPercentage]
+				* victim->BuffPropertyMap[HEROP::PureDamageInputPercentage];
 
-		if (victim->BuffStateMap[HEROS::MagicalImmune])
-		{
-			FDamage = 0;
-		}
-	}
-	else if (dtype == EDamageType::DAMAGE_PURE)
-	{
-		if (victim->BuffPropertyMap[HEROP::BlockingPure] > 0)
-		{
-			int block = FMath::FRandRange(0, 1);
-			if (victim->BuffPropertyMap[HEROP::BlockingPure] >= block)
+			if (victim->BuffStateMap[HEROS::PureImmune])
 			{
 				FDamage = 0;
 			}
 		}
-		if (victim->BuffPropertyMap[HEROP::BlockingPureConstant] != 0)
-		{
-			FDamage -= victim->BuffPropertyMap[HEROP::BlockingPureConstant];
-		}
-		if (victim->BuffPropertyMap[HEROP::PureDamageOutputPercentage] > 0)
-		{
-			victim->CurrentHP += victim->BuffPropertyMap[HEROP::PureDamageOutputPercentage] * RDamage;
-		}
-		FDamage = FDamage * attacker->BuffPropertyMap[HEROP::PureDamageOutputPercentage]
-			* victim->BuffPropertyMap[HEROP::PureDamageInputPercentage];
 
-		if (victim->BuffStateMap[HEROS::PureImmune])
-		{
-			FDamage = 0;
-		}
-	}
-	
-	victim->CurrentHP -= FDamage;
-	if (attacker->BuffPropertyMap[HEROP::StealHealth] > 0)
-	{
-		attacker->CurrentHP += attacker->BuffPropertyMap[HEROP::StealHealth] * FDamage;
-	}
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("Server FDamage %f"), FDamage));
 
-	for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
-	{
-		attacker->BuffQueue[i]->CreateDamage(attacker, victim, dtype, damage, RDamage);
-		attacker->BuffQueue[i]->OnAttackLanded(attacker, victim, dtype, damage, RDamage);
+		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+		{
+			victim->BuffQueue[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
+		}
+		victim->CurrentHP -= FDamage;
+		if (attacker->BuffPropertyMap[HEROP::StealHealth] > 0)
+		{
+			attacker->CurrentHP += attacker->BuffPropertyMap[HEROP::StealHealth] * FDamage;
+		}
+
+		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+		{
+			attacker->BuffQueue[i]->CreateDamage(attacker, victim, dtype, damage, RDamage);
+			attacker->BuffQueue[i]->OnAttackLanded(attacker, victim, dtype, damage, RDamage);
+		}
+		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+		{
+			victim->BuffQueue[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
+		}
+		// 顯示傷害文字
+		ServerShowDamageEffect(victim->GetActorLocation(),
+			victim->GetActorLocation() - attacker->GetActorLocation(), FDamage);
 	}
-	for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
-	{
-		victim->BuffQueue[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
-	}
-	// 顯示傷害文字
-	ServerShowDamageEffect(victim->GetActorLocation(),
-		victim->GetActorLocation() - attacker->GetActorLocation(), FDamage);
+	/*
 	if (victim->BuffPropertyMap[HEROP::MinHealth] > 0 && victim->CurrentHP < victim->BuffPropertyMap[HEROP::MinHealth])
 	{
 		victim->CurrentHP = victim->BuffPropertyMap[HEROP::MinHealth];
@@ -573,6 +623,7 @@ void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHer
 	{
 		victim->CurrentHP = victim->BuffPropertyMap[HEROP::MaxHealth];
 	}
+	*/
 }
 
 bool AHeroCharacter::HealCompute_Validate(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount)
@@ -727,6 +778,37 @@ void AHeroCharacter::UpdateSAI()
 	}
 }
 
+bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos)
+{
+	// Check NoTarget or SmartCast
+	if (index < Skills.Num())
+	{
+		AHeroSkill* hs = Skills[index];
+		// 被動技
+		if (hs->SkillBehavior[EHeroBehavior::Passive])
+		{
+			return false;
+		}
+		// 不需指定或智能施法
+		else if (hs->SkillBehavior[EHeroBehavior::NoTarget] || hs->SmartCast)
+		{
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			FVector dir = Pos - GetActorLocation();
+			dir.Z = 0;
+			dir.Normalize();
+			ags->HeroUseSkill(this, index, dir, Pos);
+			return false;
+		}
+		// 顯示技能範圍提示
+		else
+		{
+			ShowSkillHint(index);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool AHeroCharacter::ShowSkillHint(int32 index)
 {
 	if (CurrentSkillHint)
@@ -773,10 +855,7 @@ bool AHeroCharacter::UseSkill(int32 index, FVector VFaceTo, FVector Pos)
 	{
 		if (Skills[index]->Skill_FaceSkill)
 		{
-			FVector dir = Pos - GetActorLocation();
-			dir.Z = 0;
-			dir.Normalize();
-			SetActorRotation(dir.Rotation());
+			SetActorRotation(VFaceTo.Rotation());
 		}
 		VFaceTo.Z = 0;
 		VFaceTo.Normalize();

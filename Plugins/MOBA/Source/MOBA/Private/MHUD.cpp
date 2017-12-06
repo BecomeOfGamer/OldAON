@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "MOBAPrivatePCH.h"
 #include "MHUD.h"
 #include <algorithm>
@@ -641,7 +641,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 		}
 		return;
 	}
-	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	
 	// 顯示技能提示
 	if(CurrentSelection.Num() > 0)
 	{
@@ -652,8 +652,8 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				if(HitBox.Contains(pos, ViewportScale))
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
-					bool res = CurrentSelection[0]->ShowSkillHint(idx);
-					ags->HeroUseSkill(CurrentSelection[0], idx, FVector(), FVector());
+					// Check NoTarget or SmartCast
+					bool res = CurrentSelection[0]->TriggerSkill(idx, FVector());
 					if(res)
 					{
 						RTSStatus = ERTSStatusEnum::SkillHint;

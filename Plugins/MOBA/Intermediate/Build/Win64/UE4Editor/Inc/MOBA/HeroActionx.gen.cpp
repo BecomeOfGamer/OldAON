@@ -64,26 +64,27 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroActionStatus(EHeroA
 			ReturnEnum->CppType = TEXT("EHeroActionStatus");
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnEnum->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnEnum, TEXT("AttackActor.ToolTip"), TEXT("???\x06e4H??"));
-			MetaData->SetValue(ReturnEnum, TEXT("AttackSceneObject.ToolTip"), TEXT("????\n???\x02f5??H"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackActor.ToolTip"), TEXT("\x8ddf\x8457\x4eba\x8d70"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackSceneObject.ToolTip"), TEXT("\x4e1f\x88dd\x7d66\x4eba"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlueprintType"), TEXT("true"));
-			MetaData->SetValue(ReturnEnum, TEXT("FollowActor.ToolTip"), TEXT("???\x02a8????w???H????"));
+			MetaData->SetValue(ReturnEnum, TEXT("FollowActor.ToolTip"), TEXT("\x79fb\x52d5\x5230\x6307\x5b9a\x7684\x4eba\x8eab\x908a"));
 			MetaData->SetValue(ReturnEnum, TEXT("ModuleRelativePath"), TEXT("Public/HeroActionx.h"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveAndAttack.ToolTip"), TEXT("?\x4cbe???????????w?\x0124H"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveToActor.ToolTip"), TEXT("???\x02a8????w?\x063c?"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveToPickup.ToolTip"), TEXT("???\x076b??w?\x063c\x042a??\x07af?"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveToPosition.ToolTip"), TEXT("???Q???l??"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveToThrowEqu.ToolTip"), TEXT("?\x07f8?"));
-			MetaData->SetValue(ReturnEnum, TEXT("MovingAttackActor.ToolTip"), TEXT("?????w???H"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellToActor.ToolTip"), TEXT("???w?a?I???\x07af?"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellToDirection.ToolTip"), TEXT("???w??"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellToPosition.ToolTip"), TEXT("A?I?a?O ???\x02a4??J???\x0124H???U?\x04e7???"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellToSelf.ToolTip"), TEXT("???V??"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveAndAttack.ToolTip"), TEXT("\x908a\x79fb\x52d5\x908a\x653b\x64ca\x6307\x5b9a\x6575\x4eba"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveToActor.ToolTip"), TEXT("\x79fb\x52d5\x5230\x6307\x5b9a\x76ee\x6a19"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveToPickup.ToolTip"), TEXT("\x4e0d\x9700\x6307\x5b9a\x76ee\x6a19\x7684\x6280\x80fd"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveToPosition.ToolTip"), TEXT("\x525b\x88ab\x521d\x59cb\x5316"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveToThrowEqu.ToolTip"), TEXT("\x64bf\x88dd"));
+			MetaData->SetValue(ReturnEnum, TEXT("MovingAttackActor.ToolTip"), TEXT("\x6253\x6307\x5b9a\x7684\x4eba"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellToActor.ToolTip"), TEXT("\x6307\x5b9a\x5730\x9ede\x7684\x6280\x80fd"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellToDirection.ToolTip"), TEXT("\x6307\x5b9a\x6280"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellToPosition.ToolTip"), TEXT("A\x9ede\x5730\x677f \x79fb\x52d5\x4e2d\x9047\x5230\x6575\x4eba\x505c\x4e0b\x4f86\x653b\x64ca"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellToSelf.ToolTip"), TEXT("\x6307\x5411\x6280"));
+			MetaData->SetValue(ReturnEnum, TEXT("ThrowEquToActor.ToolTip"), TEXT("\x4e1f\x88dd"));
 #endif
 		}
 		return ReturnEnum;
 	}
-	uint32 Get_Z_Construct_UEnum_MOBA_EHeroActionStatus_CRC() { return 3930572800U; }
+	uint32 Get_Z_Construct_UEnum_MOBA_EHeroActionStatus_CRC() { return 3680822728U; }
 class UScriptStruct* FHeroAction::StaticStruct()
 {
 	static class UScriptStruct* Singleton = NULL;

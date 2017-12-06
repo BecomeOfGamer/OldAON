@@ -114,7 +114,7 @@ void EmptyLinkFunctionForGeneratedCodeBulletActor() {}
 				MetaData->SetValue(NewProp_DestroyDelay, TEXT("ModuleRelativePath"), TEXT("Public/BulletActor.h"));
 				MetaData->SetValue(NewProp_BreakDistance, TEXT("Category"), TEXT("Bullet"));
 				MetaData->SetValue(NewProp_BreakDistance, TEXT("ModuleRelativePath"), TEXT("Public/BulletActor.h"));
-				MetaData->SetValue(NewProp_BreakDistance, TEXT("ToolTip"), TEXT("\x96e2")TEXT("Actor\x591a\x8fd1\x5c31\x7206\x70b8"));
+				MetaData->SetValue(NewProp_BreakDistance, TEXT("ToolTip"), TEXT("?\x2215")TEXT("ctor\x61ad\xeaf3?\x64a0\x6881???"));
 				MetaData->SetValue(NewProp_MoveSpeed, TEXT("Category"), TEXT("Bullet"));
 				MetaData->SetValue(NewProp_MoveSpeed, TEXT("ModuleRelativePath"), TEXT("Public/BulletActor.h"));
 				MetaData->SetValue(NewProp_FlyParticle, TEXT("Category"), TEXT("Bullet"));
@@ -129,7 +129,7 @@ void EmptyLinkFunctionForGeneratedCodeBulletActor() {}
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(ABulletActor, 1243215581);
+	IMPLEMENT_CLASS(ABulletActor, 1221135723);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_ABulletActor(Z_Construct_UClass_ABulletActor, &ABulletActor::StaticClass, TEXT("/Script/MOBA"), TEXT("ABulletActor"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(ABulletActor);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
