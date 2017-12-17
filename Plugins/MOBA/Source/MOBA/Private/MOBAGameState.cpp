@@ -114,17 +114,18 @@ void AMOBAGameState::CharacterStopMove_Implementation(AHeroCharacter* actor)
 	}
 }
 
-bool AMOBAGameState::HeroUseSkill_Validate(AHeroCharacter* hero, int32 index, const FVector& VFaceTo, const FVector& Pos)
+bool AMOBAGameState::HeroUseSkill_Validate(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index,
+	FVector VFaceTo, FVector Pos, AHeroCharacter* victim)
 {
 	return true;
 }
 
-void AMOBAGameState::HeroUseSkill_Implementation(AHeroCharacter* hero, int32 index, const FVector& VFaceTo,
-        const FVector& Pos)
+void AMOBAGameState::HeroUseSkill_Implementation(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, 
+	FVector VFaceTo, FVector Pos, AHeroCharacter* victim)
 {
 	if (Role == ROLE_Authority)
 	{
-		hero->UseSkill(index, VFaceTo, Pos);
+		hero->UseSkill(SpellType, index, VFaceTo, Pos, victim);
 	}
 }
 

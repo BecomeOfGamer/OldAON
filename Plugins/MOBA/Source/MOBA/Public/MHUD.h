@@ -8,14 +8,22 @@
 
 
 UENUM(BlueprintType)
-enum class ERTSStatusEnum : uint8
+enum class EMHUDStatus : uint8
 {
+	// 一般狀態
 	Normal,
+	// 強制移動狀態
 	Move,
+	// 強制攻擊狀態，可以強制攻擊某些中立或友方部隊
 	Attack,
+	// 準備丟裝狀態，再點一下可以把裝備丟到地上
 	ThrowEquipment,
+	// 顯示技能提示狀態，包括指定、指向、範圍技能
 	SkillHint,
-	ToNormal
+	// 回到一般狀態前的緩衝狀態
+	ToNormal,
+	// 結束列舉
+	EndBuffKind
 };
 UENUM(BlueprintType)
 enum class ERTSClickEnum : uint8
@@ -23,6 +31,28 @@ enum class ERTSClickEnum : uint8
 	LastRightClick,
 	LastLeftClick
 };
+
+UENUM(BlueprintType)
+enum class EMouseIconPosition : uint8
+{
+	LeftTop,
+	Center
+};
+
+USTRUCT(BlueprintType)
+struct FMousePointer
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInterface* mat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EMouseIconPosition pos;
+
+};
+
+
 class AMOBAPlayerController;
 class AHeroCharacter;
 class AEquipment;
@@ -86,6 +116,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void HeroAttackSceneObject(ASceneObject* SceneObj);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	AHeroCharacter* GetMouseTarget(float MinDistance);
 	
 	// use skill callback by localcontroller
 	void KeyboardCallUseSkill(int32 idx);
@@ -127,7 +160,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TArray<AHeroCharacter*> CurrentSelection;
 
+	// 準備要用的技能索引
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	int32 CurrentSkillIndex;
+
 	TArray<AHeroCharacter*> RemoveSelection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	AHeroCharacter* CurrentSelectTarget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TMap<FString,int32>  SkillMapping;
@@ -150,6 +190,10 @@ public:
 	FLinearColor	HPBarForeColor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FLinearColor	HPBarBackColor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FLinearColor	MPBarForeColor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FLinearColor	MPBarBackColor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	ERTSClickEnum	ClickStatus;
@@ -177,6 +221,13 @@ public:
 	uint32 bLeftShiftDown: 1;
 	uint32 bRightShiftDown: 1;
 
+	// 不同狀態的滑鼠遊標圖
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	TMap<EMHUDStatus, FMousePointer> MouseIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	FVector2D MouseSize;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	UTexture2D* NothingTexture;
 
@@ -191,7 +242,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	TArray<UMaterialInstanceDynamic*> EquipmentDMaterials;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	UMaterialInterface* ThrowMaterial;
 
@@ -199,7 +250,7 @@ public:
 	UMaterialInstanceDynamic* ThrowDMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	ERTSStatusEnum RTSStatus;
+	EMHUDStatus HUDStatus;
 
 
 	FString RButtonDownHitBox;
@@ -215,6 +266,8 @@ public:
 	int32 EquipmentIndex;
 
 	UTexture2D* ThrowTexture;
+
+	
 
 	float ViewportScale;
 

@@ -25,6 +25,7 @@ void EmptyLinkFunctionForGeneratedCodeMOBAGameState() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AMOBAGameState_CharacterStopMove();
 	MOBA_API UFunction* Z_Construct_UFunction_AMOBAGameState_ClearHeroAction();
 	MOBA_API UFunction* Z_Construct_UFunction_AMOBAGameState_HeroUseSkill();
+	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroActionStatus();
 	MOBA_API UFunction* Z_Construct_UFunction_AMOBAGameState_MakeRandom();
 	MOBA_API UFunction* Z_Construct_UFunction_AMOBAGameState_SetHeroAction();
 	MOBA_API UFunction* Z_Construct_UFunction_AMOBAGameState_SetObjectLocation();
@@ -65,13 +66,15 @@ void EmptyLinkFunctionForGeneratedCodeMOBAGameState() {}
 		ProcessEvent(FindFunctionChecked(NAME_AMOBAGameState_ClearHeroAction),&Parms);
 	}
 	static FName NAME_AMOBAGameState_HeroUseSkill = FName(TEXT("HeroUseSkill"));
-	void AMOBAGameState::HeroUseSkill(AHeroCharacter* hero, int32 index, FVector const& VFaceTo, FVector const& Pos)
+	void AMOBAGameState::HeroUseSkill(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim)
 	{
 		MOBAGameState_eventHeroUseSkill_Parms Parms;
 		Parms.hero=hero;
+		Parms.SpellType=SpellType;
 		Parms.index=index;
 		Parms.VFaceTo=VFaceTo;
 		Parms.Pos=Pos;
+		Parms.victim=victim;
 		ProcessEvent(FindFunctionChecked(NAME_AMOBAGameState_HeroUseSkill),&Parms);
 	}
 	static FName NAME_AMOBAGameState_MakeRandom = FName(TEXT("MakeRandom"));
@@ -220,9 +223,12 @@ void EmptyLinkFunctionForGeneratedCodeMOBAGameState() {}
 		if (!ReturnFunction)
 		{
 			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("HeroUseSkill"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x84A20CC0, 65535, sizeof(MOBAGameState_eventHeroUseSkill_Parms));
-			UProperty* NewProp_Pos = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Pos"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(Pos, MOBAGameState_eventHeroUseSkill_Parms), 0x0010000008000082, Z_Construct_UScriptStruct_FVector());
-			UProperty* NewProp_VFaceTo = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("VFaceTo"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(VFaceTo, MOBAGameState_eventHeroUseSkill_Parms), 0x0010000008000082, Z_Construct_UScriptStruct_FVector());
+			UProperty* NewProp_victim = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("victim"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(victim, MOBAGameState_eventHeroUseSkill_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
+			UProperty* NewProp_Pos = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Pos"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(Pos, MOBAGameState_eventHeroUseSkill_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
+			UProperty* NewProp_VFaceTo = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("VFaceTo"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(VFaceTo, MOBAGameState_eventHeroUseSkill_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
 			UProperty* NewProp_index = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("index"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(index, MOBAGameState_eventHeroUseSkill_Parms), 0x0010000000000080);
+			UProperty* NewProp_SpellType = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("SpellType"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(CPP_PROPERTY_BASE(SpellType, MOBAGameState_eventHeroUseSkill_Parms), 0x0010000000000080, Z_Construct_UEnum_MOBA_EHeroActionStatus());
+			UProperty* NewProp_SpellType_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_SpellType, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
 			UProperty* NewProp_hero = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("hero"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(hero, MOBAGameState_eventHeroUseSkill_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
 			ReturnFunction->Bind();
 			ReturnFunction->StaticLink();
@@ -230,8 +236,6 @@ void EmptyLinkFunctionForGeneratedCodeMOBAGameState() {}
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
 			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/MOBAGameState.h"));
-			MetaData->SetValue(NewProp_Pos, TEXT("NativeConst"), TEXT(""));
-			MetaData->SetValue(NewProp_VFaceTo, TEXT("NativeConst"), TEXT(""));
 #endif
 		}
 		return ReturnFunction;
@@ -333,7 +337,7 @@ void EmptyLinkFunctionForGeneratedCodeMOBAGameState() {}
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AMOBAGameState_CharacterMove(), "CharacterMove"); // 700002911
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AMOBAGameState_CharacterStopMove(), "CharacterStopMove"); // 1808413967
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AMOBAGameState_ClearHeroAction(), "ClearHeroAction"); // 3142009237
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AMOBAGameState_HeroUseSkill(), "HeroUseSkill"); // 525394106
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AMOBAGameState_HeroUseSkill(), "HeroUseSkill"); // 2149982990
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AMOBAGameState_MakeRandom(), "MakeRandom"); // 139820637
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AMOBAGameState_SetHeroAction(), "SetHeroAction"); // 1227057020
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AMOBAGameState_SetObjectLocation(), "SetObjectLocation"); // 1914805347
@@ -376,7 +380,7 @@ void EmptyLinkFunctionForGeneratedCodeMOBAGameState() {}
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AMOBAGameState, 455397159);
+	IMPLEMENT_CLASS(AMOBAGameState, 133781607);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AMOBAGameState(Z_Construct_UClass_AMOBAGameState, &AMOBAGameState::StaticClass, TEXT("/Script/MOBA"), TEXT("AMOBAGameState"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AMOBAGameState);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

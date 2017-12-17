@@ -23,12 +23,18 @@ AMHUD::AMHUD()
 {
 	LocalController = NULL;
 	SequenceNumber = 1;
+	for (int i = 0; i < (int)EMHUDStatus::EndBuffKind; ++i)
+	{
+		MouseIcon.Add((EMHUDStatus)i, FMousePointer());
+	}
+	MouseSize.X = 64;
+	MouseSize.Y = 64;
 }
 
 void AMHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	RTSStatus = ERTSStatusEnum::Normal;
+	HUDStatus = EMHUDStatus::Normal;
 	bMouseRButton = false;
 	bMouseLButton = false;
 	ClickedSelected = false;
@@ -77,7 +83,7 @@ void AMHUD::Tick(float DeltaSeconds)
 
 	if(RemoveSelection.Num() > 0)
 	{
-		RTSStatus = ERTSStatusEnum::Normal;
+		HUDStatus = EMHUDStatus::ToNormal;
 		for(AHeroCharacter* EachHero : RemoveSelection)
 		{
 			EachHero->SelectionOff();
@@ -88,11 +94,48 @@ void AMHUD::Tick(float DeltaSeconds)
 	OnSize();
 }
 
+AHeroCharacter* AMHUD::GetMouseTarget(float MinDistance)
+{
+	MinDistance = MinDistance*MinDistance;
+	AHeroCharacter* res = nullptr;
+	float mindis = MinDistance;
+	for (AHeroCharacter* EachHero : HeroCanSelection)
+	{
+		FVector pos = this->Project(EachHero->GetActorLocation());
+		EachHero->ScreenPosition.X = pos.X;
+		EachHero->ScreenPosition.Y = pos.Y;
+		float dis = FVector2D::DistSquared(CurrentMouseXY, EachHero->ScreenPosition);
+		if (dis < MinDistance && dis < mindis)
+		{
+			mindis = dis;
+			res = EachHero;
+		}
+	}
+	return res;
+}
+
 void AMHUD::DrawHUD()
 {
 	Super::DrawHUD();
-
-	if(RTSStatus == ERTSStatusEnum::Normal && bMouseLButton && IsGameRegion(CurrentMouseXY))
+	// 畫滑鼠icon
+	if (MouseIcon.Contains(HUDStatus) && MouseIcon[HUDStatus].mat)
+	{
+		if (MouseIcon[HUDStatus].pos == EMouseIconPosition::LeftTop)
+		{
+			DrawMaterialSimple(MouseIcon[HUDStatus].mat, CurrentMouseXY.X, CurrentMouseXY.Y,
+				MouseSize.X * ViewportScale, MouseSize.Y * ViewportScale);
+		}
+		else if (MouseIcon[HUDStatus].pos == EMouseIconPosition::Center)
+		{
+			int32 mouseW = MouseSize.X * ViewportScale;
+			int32 mouseH = MouseSize.Y * ViewportScale;
+			DrawMaterialSimple(MouseIcon[HUDStatus].mat,
+				CurrentMouseXY.X - mouseW*0.5, CurrentMouseXY.Y - mouseH*0.5,
+				mouseW, mouseH);
+		}
+	}
+	// 畫多選的box
+	if(HUDStatus == EMHUDStatus::Normal && bMouseLButton && IsGameRegion(CurrentMouseXY))
 	{
 		// selection box
 		if(FVector2D::DistSquared(InitialMouseXY, CurrentMouseXY) > 25)
@@ -155,10 +198,30 @@ void AMHUD::DrawHUD()
 			}
 		}
 		DrawText(EachHero->HeroName, FLinearColor(1, 1, 1), footpos.X - EachHero->HeroName.Len()*.5f * 15, footpos.Y);
+		headpos.Y += HPBarHeight + 1;
+		DrawRect(MPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
+		DrawRect(MPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetMPPercent(), HPBarHeight);
+		float maxmp = EachHero->CurrentMaxMP;
+		if (maxmp < 1500)
+		{
+			for (float i = 100; i < maxmp; i += 100)
+			{
+				float xpos = headpos.X - halfHPBarLength + hpBarLength * (i / maxmp);
+				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, MPBarBackColor);
+			}
+		}
+		else
+		{
+			for (float i = 500; i < maxmp; i += 500)
+			{
+				float xpos = headpos.X - halfHPBarLength + hpBarLength * (i / maxmp);
+				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, MPBarBackColor);
+			}
+		}
 	}
 	if(CurrentSelection.Num() > 0)
 	{
-		if(RTSStatus == ERTSStatusEnum::ThrowEquipment)
+		if(HUDStatus == EMHUDStatus::ThrowEquipment)
 		{
 			ThrowDMaterial->SetTextureParameterValue(TEXT("InputTexture"), ThrowTexture);
 			DrawMaterialSimple(ThrowDMaterial, CurrentMouseXY.X, CurrentMouseXY.Y,
@@ -349,7 +412,7 @@ void AMHUD::HeroAttackSceneObject(ASceneObject* SceneObj)
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			FHeroAction act;
 			act.ActionStatus = EHeroActionStatus::AttackSceneObject;
-			act.TargetActor = SceneObj;
+			//act.TargetActor = SceneObj;
 			act.SequenceNumber = SequenceNumber++;
 
 			for (AHeroCharacter* EachHero : CurrentSelection)
@@ -373,10 +436,11 @@ void AMHUD::KeyboardCallUseSkill(int32 idx)
 {
 	if (CurrentSelection.Num() > 0)
 	{
-		bool res = CurrentSelection[0]->ShowSkillHint(idx);
+		bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120 * ViewportScale));
+		CurrentSkillIndex = idx;
 		if (res)
 		{
-			RTSStatus = ERTSStatusEnum::SkillHint;
+			HUDStatus = EMHUDStatus::SkillHint;
 		}
 	}
 }
@@ -433,9 +497,9 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 	}
 	if(IsGameRegion(pos) && LocalController && !bClickHero)
 	{
-		switch(RTSStatus)
+		switch(HUDStatus)
 		{
-		case ERTSStatusEnum::Normal:
+		case EMHUDStatus::Normal:
 		{
 			if(CurrentSelection.Num() > 0)
 			{
@@ -470,16 +534,16 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 			}
 		}
 		break;
-		case ERTSStatusEnum::Move:
+		case EMHUDStatus::Move:
 			break;
-		case ERTSStatusEnum::Attack:
+		case EMHUDStatus::Attack:
 		{
 
 		}
 		break;
-		case ERTSStatusEnum::ThrowEquipment:
+		case EMHUDStatus::ThrowEquipment:
 			break;
-		case ERTSStatusEnum::SkillHint:
+		case EMHUDStatus::SkillHint:
 		{
 			// 取消技能
 			if(IsGameRegion(CurrentMouseXY))
@@ -487,7 +551,7 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 				if (CurrentSelection.Num() > 0)
 				{
 					CurrentSelection[0]->HideSkillHint();
-					RTSStatus = ERTSStatusEnum::Normal;
+					HUDStatus = EMHUDStatus::ToNormal;
 					//localController->AddHeroToMoveQueue(CurrentMouseHit, CurrentSelection);
 				}
 			}
@@ -566,7 +630,7 @@ void AMHUD::OnRMouseReleased(FVector2D pos)
 			EquipmentIndex = FCString::Atoi(*RButtonUpHitBox.Right(1)) - 1;
 			if(Selection->Equipments[EquipmentIndex])
 			{
-				RTSStatus = ERTSStatusEnum::ThrowEquipment;
+				HUDStatus = EMHUDStatus::ThrowEquipment;
 				ThrowTexture = Selection->Equipments[EquipmentIndex]->Head;
 			}
 			RButtonUpHitBox = RButtonDownHitBox = FString();
@@ -601,12 +665,13 @@ void AMHUD::OnLMousePressed1(FVector2D pos)
 
 void AMHUD::OnLMousePressed2(FVector2D pos)
 {
+	// Role == ROLE_Authority but Client Side
 	if(bNeedMouseLDown)
 	{
 		bNeedMouseLDown = false;
 		OnLMouseDown(pos);
 		// 設定SelectionBox初始位置
-		if(RTSStatus == ERTSStatusEnum::Normal)
+		if(HUDStatus == EMHUDStatus::Normal)
 		{
 			if(IsGameRegion(CurrentMouseXY)) // 取消選英雄
 			{
@@ -619,12 +684,30 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				UnSelectHero();
 			}
 		}
-		else if(RTSStatus == ERTSStatusEnum::SkillHint) // 放技能
+		else if(HUDStatus == EMHUDStatus::SkillHint) // 放技能
 		{
 			CurrentSelection[0]->HideSkillHint();
 			FHeroAction act;
-			act.ActionStatus = EHeroActionStatus::SpellToDirection;
+			AHeroSkill* hs = CurrentSelection[0]->GetCurrentSkill();
+			if (hs->SkillBehavior[HEROB::Directional])
+			{
+				act.ActionStatus = EHeroActionStatus::SpellToDirection;
+			}
+			else if (hs->SkillBehavior[HEROB::UnitTarget])
+			{
+				act.ActionStatus = EHeroActionStatus::SpellToActor;
+				act.TargetActor = CurrentSelectTarget;
+			}
+			else if (hs->SkillBehavior[HEROB::Aoe])
+			{
+				act.ActionStatus = EHeroActionStatus::SpellToPosition;
+			}
+			else if (hs->SkillBehavior[HEROB::NoTarget])
+			{
+				act.ActionStatus = EHeroActionStatus::SpellNow;
+			}
 			act.TargetIndex1 = CurrentSelection[0]->GetCurrentSkillIndex();
+
 			act.TargetVec1 = GetCurrentDirection();
 			act.TargetVec2 = CurrentMouseHit;
 			act.SequenceNumber = SequenceNumber++;
@@ -637,7 +720,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 			{
 				LocalController->ServerSetHeroAction(CurrentSelection[0], act);
 			}
-			RTSStatus = ERTSStatusEnum::ToNormal;
+			HUDStatus = EMHUDStatus::ToNormal;
 		}
 		return;
 	}
@@ -653,10 +736,11 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
 					// Check NoTarget or SmartCast
-					bool res = CurrentSelection[0]->TriggerSkill(idx, FVector());
+					bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120*ViewportScale));
+					CurrentSkillIndex = idx;
 					if(res)
 					{
-						RTSStatus = ERTSStatusEnum::SkillHint;
+						HUDStatus = EMHUDStatus::SkillHint;
 					}
 				}
 			}
@@ -683,6 +767,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 
 void AMHUD::OnLMouseReleased(FVector2D pos)
 {
+	// Server Side
 	// hitbox用
 	for(FMHitBox& HitBox : RTS_HitBoxMap)
 	{
@@ -694,7 +779,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 	}
 	bMouseLButton = false;
 	// 選英雄
-	if(RTSStatus == ERTSStatusEnum::Normal)
+	if(HUDStatus == EMHUDStatus::Normal)
 	{
 		if(IsGameRegion(CurrentMouseXY))
 		{
@@ -707,7 +792,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 		}
 	}
 	// 丟物品
-	if(RTSStatus == ERTSStatusEnum::ThrowEquipment)
+	if(HUDStatus == EMHUDStatus::ThrowEquipment)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("CurrentSelection.Num %d"),
 		                                 CurrentSelection.Num()));
@@ -730,7 +815,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 					LocalController->ServerSetHeroAction(EachHero, act);
 				}
 			}
-			RTSStatus = ERTSStatusEnum::Normal;
+			HUDStatus = EMHUDStatus::ToNormal;
 			ThrowTexture = NULL;
 		}
 	}
@@ -746,9 +831,9 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 			}
 		}
 	}
-	if(RTSStatus == ERTSStatusEnum::ToNormal)
+	if(HUDStatus == EMHUDStatus::ToNormal)
 	{
-		RTSStatus = ERTSStatusEnum::Normal;
+		HUDStatus = EMHUDStatus::Normal;
 	}
 }
 

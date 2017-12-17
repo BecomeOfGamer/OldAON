@@ -9,18 +9,20 @@
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 struct FHeroAction;
+class AHeroSkill;
+enum class EHeroActionStatus : uint8;
 struct FVector;
+class AHeroCharacter;
 class AHeroBuff;
 class UPrimitiveComponent;
 struct FKey;
-class AHeroCharacter;
 enum class EDamageType : uint8;
 #ifdef MOBA_HeroCharacter_generated_h
 #error "HeroCharacter.generated.h already included, missing '#pragma once' in HeroCharacter.h"
 #endif
 #define MOBA_HeroCharacter_generated_h
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_RPC_WRAPPERS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_RPC_WRAPPERS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
@@ -44,6 +46,14 @@ enum class EDamageType : uint8;
 		P_NATIVE_END; \
 	} \
  \
+	DECLARE_FUNCTION(execGetCurrentSkill) \
+	{ \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		*(AHeroSkill**)Z_Param__Result=this->GetCurrentSkill(); \
+		P_NATIVE_END; \
+	} \
+ \
 	DECLARE_FUNCTION(execGetCurrentSkillIndex) \
 	{ \
 		P_FINISH; \
@@ -54,12 +64,14 @@ enum class EDamageType : uint8;
  \
 	DECLARE_FUNCTION(execUseSkill) \
 	{ \
+		P_GET_ENUM(EHeroActionStatus,Z_Param_SpellType); \
 		P_GET_PROPERTY(UIntProperty,Z_Param_index); \
 		P_GET_STRUCT(FVector,Z_Param_VFaceTo); \
 		P_GET_STRUCT(FVector,Z_Param_Pos); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_victim); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		*(bool*)Z_Param__Result=this->UseSkill(Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos); \
+		*(bool*)Z_Param__Result=this->UseSkill(EHeroActionStatus(Z_Param_SpellType),Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos,Z_Param_victim); \
 		P_NATIVE_END; \
 	} \
  \
@@ -108,9 +120,10 @@ enum class EDamageType : uint8;
 	{ \
 		P_GET_PROPERTY(UIntProperty,Z_Param_index); \
 		P_GET_STRUCT(FVector,Z_Param_Pos); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_CurrentTarget); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		*(bool*)Z_Param__Result=this->TriggerSkill(Z_Param_index,Z_Param_Pos); \
+		*(bool*)Z_Param__Result=this->TriggerSkill(Z_Param_index,Z_Param_Pos,Z_Param_CurrentTarget); \
 		P_NATIVE_END; \
 	} \
  \
@@ -215,7 +228,7 @@ enum class EDamageType : uint8;
 	}
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_RPC_WRAPPERS_NO_PURE_DECLS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_RPC_WRAPPERS_NO_PURE_DECLS \
 	virtual bool DoAction_Validate(FHeroAction const& ); \
 	virtual void DoAction_Implementation(FHeroAction const& CurrentAction); \
 	virtual bool ServerPlayAttack_Validate(float , float ); \
@@ -239,6 +252,14 @@ enum class EDamageType : uint8;
 		P_NATIVE_END; \
 	} \
  \
+	DECLARE_FUNCTION(execGetCurrentSkill) \
+	{ \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		*(AHeroSkill**)Z_Param__Result=this->GetCurrentSkill(); \
+		P_NATIVE_END; \
+	} \
+ \
 	DECLARE_FUNCTION(execGetCurrentSkillIndex) \
 	{ \
 		P_FINISH; \
@@ -249,12 +270,14 @@ enum class EDamageType : uint8;
  \
 	DECLARE_FUNCTION(execUseSkill) \
 	{ \
+		P_GET_ENUM(EHeroActionStatus,Z_Param_SpellType); \
 		P_GET_PROPERTY(UIntProperty,Z_Param_index); \
 		P_GET_STRUCT(FVector,Z_Param_VFaceTo); \
 		P_GET_STRUCT(FVector,Z_Param_Pos); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_victim); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		*(bool*)Z_Param__Result=this->UseSkill(Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos); \
+		*(bool*)Z_Param__Result=this->UseSkill(EHeroActionStatus(Z_Param_SpellType),Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos,Z_Param_victim); \
 		P_NATIVE_END; \
 	} \
  \
@@ -303,9 +326,10 @@ enum class EDamageType : uint8;
 	{ \
 		P_GET_PROPERTY(UIntProperty,Z_Param_index); \
 		P_GET_STRUCT(FVector,Z_Param_Pos); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_CurrentTarget); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		*(bool*)Z_Param__Result=this->TriggerSkill(Z_Param_index,Z_Param_Pos); \
+		*(bool*)Z_Param__Result=this->TriggerSkill(Z_Param_index,Z_Param_Pos,Z_Param_CurrentTarget); \
 		P_NATIVE_END; \
 	} \
  \
@@ -410,7 +434,7 @@ enum class EDamageType : uint8;
 	}
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_EVENT_PARMS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_EVENT_PARMS \
 	struct HeroCharacter_eventAttackCompute_Parms \
 	{ \
 		AHeroCharacter* attacker; \
@@ -440,8 +464,8 @@ enum class EDamageType : uint8;
 	};
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_CALLBACK_WRAPPERS
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_INCLASS_NO_PURE_DECLS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_CALLBACK_WRAPPERS
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAHeroCharacter(); \
 	friend MOBA_API class UClass* Z_Construct_UClass_AHeroCharacter(); \
@@ -452,7 +476,7 @@ public: \
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_INCLASS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_INCLASS \
 private: \
 	static void StaticRegisterNativesAHeroCharacter(); \
 	friend MOBA_API class UClass* Z_Construct_UClass_AHeroCharacter(); \
@@ -463,7 +487,7 @@ public: \
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_STANDARD_CONSTRUCTORS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API AHeroCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AHeroCharacter) \
@@ -476,7 +500,7 @@ private: \
 public:
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_ENHANCED_CONSTRUCTORS \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API AHeroCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()) : Super(ObjectInitializer) { }; \
 private: \
@@ -489,31 +513,31 @@ DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(AHeroCharacter); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AHeroCharacter)
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_PRIVATE_PROPERTY_OFFSET
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_44_PROLOG \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_EVENT_PARMS
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_PRIVATE_PROPERTY_OFFSET
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_45_PROLOG \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_EVENT_PARMS
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_GENERATED_BODY_LEGACY \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_PRIVATE_PROPERTY_OFFSET \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_RPC_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_CALLBACK_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_INCLASS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_STANDARD_CONSTRUCTORS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_PRIVATE_PROPERTY_OFFSET \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_RPC_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_CALLBACK_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_INCLASS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_GENERATED_BODY \
+#define AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_PRIVATE_PROPERTY_OFFSET \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_RPC_WRAPPERS_NO_PURE_DECLS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_CALLBACK_WRAPPERS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_INCLASS_NO_PURE_DECLS \
-	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_47_ENHANCED_CONSTRUCTORS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_PRIVATE_PROPERTY_OFFSET \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_RPC_WRAPPERS_NO_PURE_DECLS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_CALLBACK_WRAPPERS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_INCLASS_NO_PURE_DECLS \
+	AON_Plugins_MOBA_Source_MOBA_Public_HeroCharacter_h_48_ENHANCED_CONSTRUCTORS \
 static_assert(false, "Unknown access specifier for GENERATED_BODY() macro in class HeroCharacter."); \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -525,7 +549,7 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 #define FOREACH_ENUM_EHEROBODYSTATUS(op) \
 	op(EHeroBodyStatus::Standing) \
 	op(EHeroBodyStatus::Moving) \
-	op(EHeroBodyStatus::Dazzing) \
+	op(EHeroBodyStatus::Stunning) \
 	op(EHeroBodyStatus::AttackWating) \
 	op(EHeroBodyStatus::AttackBegining) \
 	op(EHeroBodyStatus::AttackEnding) \

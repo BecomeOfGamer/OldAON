@@ -46,7 +46,6 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
         bool bGamepad)
 {
 	bool bResult = false;
-
 	if(GEngine->HMDDevice.IsValid())
 	{
 		bResult = GEngine->HMDDevice->HandleInputKey(PlayerInput, Key, EventType, AmountDepressed, bGamepad);
@@ -92,7 +91,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 	{
 		bResult = PlayerInput->InputKey(Key, EventType, AmountDepressed, bGamepad);
 
-		// TODO: Allow click key(s?) to be defined
+		// TODO: Allow click keys to be defined
 		if(bEnableClickEvents && (Key == EKeys::LeftMouseButton || Key == EKeys::RightMouseButton))
 		{
 			if (Key == EKeys::LeftMouseButton)
@@ -181,8 +180,8 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 			res = GetWorld()->LineTraceMultiByObjectType(Hits, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance,
 			        CollisionQuery);
 		}
-		// ?泱race ?唳?ctor
-		// ?唳?隞亥摰儔
+		// 只trace 地板的actor
+		// 地板名可以自定義
 		FVector HitPoint(0, 0, 0);
 		if (Hits.Num() > 0)
 		{
@@ -272,6 +271,7 @@ void AMOBAPlayerController::OnMouseLButtonPressed1()
 
 void AMOBAPlayerController::OnMouseLButtonPressed2()
 {
+	// Client Side
 	bMouseLButton = true;
 	if(Hud)
 	{
@@ -281,6 +281,7 @@ void AMOBAPlayerController::OnMouseLButtonPressed2()
 
 void AMOBAPlayerController::OnMouseLButtonReleased()
 {
+	// Client Side
 	bMouseLButton = false;
 	if(Hud)
 	{
@@ -375,14 +376,14 @@ void AMOBAPlayerController::ServerCharacterStopMove_Implementation(AHeroCharacte
 	}
 }
 
-bool AMOBAPlayerController::ServerHeroUseSkill_Validate(AHeroCharacter* hero, int32 index,
-        const FVector& VFaceTo, const FVector& Pos)
+bool AMOBAPlayerController::ServerHeroUseSkill_Validate(AHeroCharacter* hero, EHeroActionStatus SpellType,
+	int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerHeroUseSkill_Implementation(AHeroCharacter* hero, int32 index,
-        const FVector& VFaceTo, const FVector& Pos)
+void AMOBAPlayerController::ServerHeroUseSkill_Implementation(AHeroCharacter* hero, EHeroActionStatus SpellType, 
+	int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim)
 {
 	if (Role == ROLE_Authority)
 	{
@@ -390,7 +391,7 @@ void AMOBAPlayerController::ServerHeroUseSkill_Implementation(AHeroCharacter* he
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 		if (ags)
 		{
-			ags->HeroUseSkill(hero, index, VFaceTo, Pos);
+			ags->HeroUseSkill(hero, SpellType, index, VFaceTo, Pos, victim);
 		}
 	}
 }

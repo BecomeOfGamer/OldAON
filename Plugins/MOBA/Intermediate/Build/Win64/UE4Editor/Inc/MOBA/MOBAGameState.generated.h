@@ -1,4 +1,4 @@
-﻿// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 /*===========================================================================
 	Generated code exported from UnrealHeaderTool.
 	DO NOT modify this manually! Edit the corresponding .h files instead!
@@ -10,6 +10,7 @@
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 class AHeroCharacter;
 struct FHeroAction;
+enum class EHeroActionStatus : uint8;
 struct FVector;
 class AActor;
 #ifdef MOBA_MOBAGameState_generated_h
@@ -26,8 +27,8 @@ class AActor;
 	virtual void AppendHeroAction_Implementation(AHeroCharacter* hero, FHeroAction const& action); \
 	virtual bool SetHeroAction_Validate(AHeroCharacter* , FHeroAction const& ); \
 	virtual void SetHeroAction_Implementation(AHeroCharacter* hero, FHeroAction const& action); \
-	virtual bool HeroUseSkill_Validate(AHeroCharacter* , int32 , FVector const& , FVector const& ); \
-	virtual void HeroUseSkill_Implementation(AHeroCharacter* hero, int32 index, FVector const& VFaceTo, FVector const& Pos); \
+	virtual bool HeroUseSkill_Validate(AHeroCharacter* , EHeroActionStatus , int32 , FVector , FVector , AHeroCharacter* ); \
+	virtual void HeroUseSkill_Implementation(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim); \
 	virtual bool CharacterStopMove_Validate(AHeroCharacter* ); \
 	virtual void CharacterStopMove_Implementation(AHeroCharacter* hero); \
 	virtual bool CharacterMove_Validate(AHeroCharacter* , FVector const& ); \
@@ -105,17 +106,19 @@ class AActor;
 	DECLARE_FUNCTION(execHeroUseSkill) \
 	{ \
 		P_GET_OBJECT(AHeroCharacter,Z_Param_hero); \
+		P_GET_ENUM(EHeroActionStatus,Z_Param_SpellType); \
 		P_GET_PROPERTY(UIntProperty,Z_Param_index); \
 		P_GET_STRUCT(FVector,Z_Param_VFaceTo); \
 		P_GET_STRUCT(FVector,Z_Param_Pos); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_victim); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		if (!this->HeroUseSkill_Validate(Z_Param_hero,Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos)) \
+		if (!this->HeroUseSkill_Validate(Z_Param_hero,EHeroActionStatus(Z_Param_SpellType),Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos,Z_Param_victim)) \
 		{ \
 			RPC_ValidateFailed(TEXT("HeroUseSkill_Validate")); \
 			return; \
 		} \
-		this->HeroUseSkill_Implementation(Z_Param_hero,Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos); \
+		this->HeroUseSkill_Implementation(Z_Param_hero,EHeroActionStatus(Z_Param_SpellType),Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos,Z_Param_victim); \
 		P_NATIVE_END; \
 	} \
  \
@@ -173,8 +176,8 @@ class AActor;
 	virtual void AppendHeroAction_Implementation(AHeroCharacter* hero, FHeroAction const& action); \
 	virtual bool SetHeroAction_Validate(AHeroCharacter* , FHeroAction const& ); \
 	virtual void SetHeroAction_Implementation(AHeroCharacter* hero, FHeroAction const& action); \
-	virtual bool HeroUseSkill_Validate(AHeroCharacter* , int32 , FVector const& , FVector const& ); \
-	virtual void HeroUseSkill_Implementation(AHeroCharacter* hero, int32 index, FVector const& VFaceTo, FVector const& Pos); \
+	virtual bool HeroUseSkill_Validate(AHeroCharacter* , EHeroActionStatus , int32 , FVector , FVector , AHeroCharacter* ); \
+	virtual void HeroUseSkill_Implementation(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim); \
 	virtual bool CharacterStopMove_Validate(AHeroCharacter* ); \
 	virtual void CharacterStopMove_Implementation(AHeroCharacter* hero); \
 	virtual bool CharacterMove_Validate(AHeroCharacter* , FVector const& ); \
@@ -252,17 +255,19 @@ class AActor;
 	DECLARE_FUNCTION(execHeroUseSkill) \
 	{ \
 		P_GET_OBJECT(AHeroCharacter,Z_Param_hero); \
+		P_GET_ENUM(EHeroActionStatus,Z_Param_SpellType); \
 		P_GET_PROPERTY(UIntProperty,Z_Param_index); \
 		P_GET_STRUCT(FVector,Z_Param_VFaceTo); \
 		P_GET_STRUCT(FVector,Z_Param_Pos); \
+		P_GET_OBJECT(AHeroCharacter,Z_Param_victim); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		if (!this->HeroUseSkill_Validate(Z_Param_hero,Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos)) \
+		if (!this->HeroUseSkill_Validate(Z_Param_hero,EHeroActionStatus(Z_Param_SpellType),Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos,Z_Param_victim)) \
 		{ \
 			RPC_ValidateFailed(TEXT("HeroUseSkill_Validate")); \
 			return; \
 		} \
-		this->HeroUseSkill_Implementation(Z_Param_hero,Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos); \
+		this->HeroUseSkill_Implementation(Z_Param_hero,EHeroActionStatus(Z_Param_SpellType),Z_Param_index,Z_Param_VFaceTo,Z_Param_Pos,Z_Param_victim); \
 		P_NATIVE_END; \
 	} \
  \
@@ -334,9 +339,11 @@ class AActor;
 	struct MOBAGameState_eventHeroUseSkill_Parms \
 	{ \
 		AHeroCharacter* hero; \
+		EHeroActionStatus SpellType; \
 		int32 index; \
 		FVector VFaceTo; \
 		FVector Pos; \
+		AHeroCharacter* victim; \
 	}; \
 	struct MOBAGameState_eventSetHeroAction_Parms \
 	{ \

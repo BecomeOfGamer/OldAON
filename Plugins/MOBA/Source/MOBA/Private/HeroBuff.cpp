@@ -32,7 +32,7 @@ AHeroBuff* AHeroBuff::Clone()
 	data->Priority = Priority;
 	data->Name = Name;
 	data->Head = Head;
-	data->BuffKind = BuffKind;
+	data->BuffState = BuffState;
 	data->CanSuperposition = CanSuperposition;
 	data->Superposition = Superposition;
 	data->Duration = Duration;
@@ -47,7 +47,21 @@ void AHeroBuff::Tick(float DeltaTime)
 	{
 		if (BuffTarget.Num() > 0)
 		{
-			this->SetActorLocation(BuffTarget[0]->GetActorLocation());
+			switch (FollowPosition)
+			{
+			case EBuffPosition::Head:
+				this->SetActorLocation(BuffTarget[0]->PositionOnHead->GetComponentLocation());
+				break;
+			case EBuffPosition::Foot:
+				this->SetActorLocation(BuffTarget[0]->PositionUnderFoot->GetComponentLocation());
+				break;
+			case EBuffPosition::Root:
+				this->SetActorLocation(BuffTarget[0]->GetActorLocation());
+				break;
+			default:
+				break;
+			}
+			
 		}
 	}
 }

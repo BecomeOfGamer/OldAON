@@ -11,7 +11,7 @@ UENUM(BlueprintType)
 enum class EHeroBuffState : uint8
 {
 	//暈炫
-	Dazzing,
+	Stunning,
 	//禁移動
 	BanMove,
 	//禁攻擊
@@ -73,7 +73,7 @@ enum class EHeroBuffProperty : uint8
 	MoveSpeedConstant,
 	//攻速加成(百分比) EX. 2 2倍攻速突破基礎攻速限制
 	AttackSpeedRatio,
-	//攻速加成(固定值) EX. 200 增加200%攻速 最高500% 加基礎值100最高600
+	//攻速加成(固定值) EX. 0.5 增加50%攻速 最高500% 加基礎值100最高600
 	AttackSpeedConstant,
 	//吸收物理傷害(百分比) EX. 0.1 吸收受到的10%物理傷害
 	AbsorbPhysicalDamagePercentage,
@@ -171,6 +171,18 @@ enum class EHeroBuffUnique : uint8
 };
 #define HEROU EHeroBuffUnique
 
+// 特效跟隨的位置
+UENUM(BlueprintType)
+enum class EBuffPosition : uint8
+{
+	//頭上
+	Head,
+	//腳上
+	Foot,
+	//角色中心點
+	Root
+};
+
 USTRUCT(BlueprintType)
 struct FLevelVariable
 {
@@ -211,7 +223,7 @@ public:
 
 	//受到傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnUpgrade(AHeroCharacter* caster);
+	void OnUpgrade(AHeroCharacter* caster, int32 Level);
 
 	//受到傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
@@ -265,17 +277,20 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	FString Name;
 
-	// Follow Actor
+	// 是否跟著英雄 如果是跟在身上的特效需要打勾
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	bool FollowActor;
+
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	EBuffPosition FollowPosition;
 
 	// logo
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	UTexture2D * Head;
 
-	// 額外效果
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
-	TArray<EHeroBuffState> BuffKind;
+	// 額外效果 暈眩、禁言等
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	TArray<EHeroBuffState> BuffState;
 
 	// 額外加成
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
@@ -288,19 +303,20 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	TMap<EHeroBuffUnique, float> BuffUniqueMap;
 
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	TArray<AHeroCharacter*> BuffTarget;
 
 	// 是否能疊加
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	uint32 CanSuperposition:1;
 
 	// 疊加層數
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	int32 Superposition;
 
 	// 每一層持續時間
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Duration;
+
 };
 

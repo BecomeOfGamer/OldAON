@@ -21,7 +21,7 @@ enum class EHeroBodyStatus : uint8
 	//移動中
 	Moving,
 	//暈眩中
-	Dazzing,
+	Stunning,
 	//攻擊等待
 	AttackWating,
 	//攻擊前搖
@@ -40,6 +40,7 @@ class AEquipment;
 class ABulletActor;
 class AHeroSkill;
 class ASkillHintActor;
+
 
 UCLASS()
 class MOBA_API AHeroCharacter : public ACharacter
@@ -78,46 +79,46 @@ public:
 	UFUNCTION()
 	void OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SelectionOn();
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SelectionOff();
 
 	void CheckSelf(bool res, FString msg);
 
 	// for Game Logic
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	float GetSkillCDPercent(int32 n);
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	float GetHPPercent();
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	float GetMPPercent();
 
 	// 依等級更新血魔攻速
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void UpdateHPMPAS();
 
 	// 依等級更新力敏智
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void UpdateSAI();
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
-	bool TriggerSkill(int32 index, FVector Pos);
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	bool TriggerSkill(int32 index, FVector Pos, AHeroCharacter* CurrentTarget);
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	bool ShowSkillHint(int32 index);
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void HideSkillHint();
 
 
 	UFUNCTION(NetMulticast, WithValidation, Reliable)
 	void ServerPlayAttack(float duraction, float rate);
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void AddBuff(AHeroBuff* buff);
 	
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
@@ -125,17 +126,20 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_PlayAttack(float duraction, float rate);
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
-	bool UseSkill(int32 index, FVector VFaceTo, FVector Pos);
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	bool UseSkill(EHeroActionStatus SpellType, int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
 
-	UFUNCTION(BlueprintCallable, Category = "Hero")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	int32 GetCurrentSkillIndex();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	AHeroSkill* GetCurrentSkill();
 	
 	// 確定當前動作做完了沒
 	bool CheckCurrentActionFinish();
 
 	// 做動作
-	UFUNCTION(Server, WithValidation, Reliable, Category = "Hero")
+	UFUNCTION(Server, WithValidation, Reliable, Category = "MOBA")
 	void DoAction(const FHeroAction& CurrentAction);
 
 	// 停止目前所有動作
@@ -147,10 +151,11 @@ public:
 	
 	// 推出做完的動作
 	void PopAction();
-	// 做打人
+	// 使用打人
 	void DoAction_AttackActor(const FHeroAction& CurrentAction);
-	
-	// 做指向技
+	// 使用指定技
+	void DoAction_SpellToActor(const FHeroAction& CurrentAction);
+	// 使用指向技
 	void DoAction_SpellToDirection(const FHeroAction& CurrentAction);
 	void DoAction_AttackSceneObject(const FHeroAction& CurrentAction);
 	void DoAction_MoveToPickup(const FHeroAction& CurrentAction);
@@ -180,159 +185,164 @@ public:
 	TSubclassOf<ADamageEffect> ShowDamageEffect;
 
 	// 英雄名
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FString HeroName;
 
 	// 歷史說明
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FString HeroHistoryDescription;
 	
 	// 血條長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float HPBarLength;
-
+	
 	// 大頭貼
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	UTexture2D * Head;
 
 	// set by HUD
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FVector2D	ScreenPosition;
 	
-	// 基礎攻擊距離
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	// 英雄技能
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA", Replicated)
 	TArray<AHeroSkill*> Skills;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TArray<TSubclassOf<AHeroSkill>>	Skill_Classes;
 
 	// 基礎攻擊距離
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
-	float BaseAttackRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	float BaseAttackRange;
 	// 攻速加乘
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float AdditionAttackSpeed;
 	// 基礎攻速
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAttackSpeedSecond;
 	
 	// 基礎攻擊動畫時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAttackingAnimationTimeLength;
 	// 基礎攻擊前搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAttackingBeginingTimeLength;
 	// 基礎攻擊後搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAttackingEndingTimeLength;
 
 	// 基礎施法前等待時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseSpellingWatingTimeLength;
 	// 基礎施法動畫時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseSpellingAnimationTimeLength;
 	// 基礎施法前搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseSpellingBeginingTimeLength;
 	// 基礎施法後搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseSpellingEndingTimeLength;
+	
 
 	
 	// 追踨目標更新時間
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float FollowActorUpdateTimeGap;
 
 
 	// 基礎魔法受傷倍率
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseMagicInjuredRatio;
 	// 基礎物理受傷倍率
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BasePhysicsInjuredRatio;
 	// 基礎裝甲
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseArmor;
 	// 基礎攻擊力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAttack;
 	// 基礎移動速度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseMoveSpeed;
 
 	// 基礎回血
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseRegenHP;
 	// 基礎回魔
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseRegenMP;
 	// 基礎血量
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseHP;
 	// 基礎魔力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseMP;
 	// 基礎力量
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseStrength;
 	// 基礎敏捷
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAgility;
 	// 基礎智力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseIntelligence;
 
 	// 基礎掉率金錢
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseBountyGold;
 	
 
 	// 力量
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float Strength;
 	// 敏捷
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float Agility;
 	// 智力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float Intelligence;
 
 	// 每個等級提升的XXX不累加
 	// 每個等級提升的攻擊力
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	TArray<float> LevelProperty_Attack;
 	// 每個等級提升的力量
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	TArray<float> LevelProperty_Strength;
 	// 每個等級提升的敏捷
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	TArray<float> LevelProperty_Agility;
 	// 每個等級提升的智力
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	TArray<float> LevelProperty_Intelligence;
 	
 	// 當前技能提示
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	ASkillHintActor* CurrentSkillHint;
 
 	// 當前技能指向
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	FVector CurrentSkillDirection;
+
+	// 準備要用的技能索引
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	int32 CurrentSkillIndex;
 	
 	// 可以使用的技能點數
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	int32 Skill_Points;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	bool isSelection;
 
 	// 撿東西的距離
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float PickupObjectDistance;
 
 	// 最小移動距離
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MinimumDontMoveDistance;
 
 
@@ -398,6 +408,9 @@ public:
 	// 目前施法動畫時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float CurrentSpellingAnimationTimeLength;
+	// 施法速度
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	float CurrentSpellingRate;
 	// 目前施法前搖時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float CurrentSpellingBeginingTimeLength;
@@ -408,15 +421,15 @@ public:
 	// 目前攻擊計時器
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting", Replicated)
 	float AttackingCounting;
+	// 目前施法計時器
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting", Replicated)
+	float SpellingCounting;
 	// 追踨目標計時器
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting")
 	float FollowActorUpdateCounting;
-	// 施法計時器
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting")
-	float SpellingCounting;
 	// 暈炫倒數計時器
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting")
-	float DazzingLeftCounting;
+	float StunningLeftCounting;
 
 	// 目前等級
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
@@ -468,10 +481,8 @@ public:
 	float AdditionIntelligence;
 	// 目前攻擊距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	float CurrentAttackRadius;
-	// 準備要用的技能索引
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	int32 CurrentSkillIndex;
+	float CurrentAttackRange;
+	
 	// 裝備
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AEquipment*> Equipments;
@@ -502,5 +513,8 @@ public:
 	TMap<EHeroBuffProperty, float> DefaultBuffProperty;
 	
 	FVector LastMoveTarget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	FHeroAction LastUseSkill;
+
 };

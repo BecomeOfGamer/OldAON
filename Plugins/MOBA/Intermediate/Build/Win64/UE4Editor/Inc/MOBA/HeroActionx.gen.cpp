@@ -20,7 +20,7 @@ void EmptyLinkFunctionForGeneratedCodeHeroActionx() {}
 	MOBA_API UScriptStruct* Z_Construct_UScriptStruct_FHeroAction();
 	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector();
 	MOBA_API UClass* Z_Construct_UClass_AEquipment_NoRegister();
-	ENGINE_API UClass* Z_Construct_UClass_AActor_NoRegister();
+	MOBA_API UClass* Z_Construct_UClass_AHeroCharacter_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_UHeroActionx_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_UHeroActionx();
 	COREUOBJECT_API UClass* Z_Construct_UClass_UObject();
@@ -51,10 +51,10 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroActionStatus(EHeroA
 			EnumNames.Emplace(TEXT("EHeroActionStatus::AttackActor"), 4);
 			EnumNames.Emplace(TEXT("EHeroActionStatus::MovingAttackActor"), 5);
 			EnumNames.Emplace(TEXT("EHeroActionStatus::MoveAndAttack"), 6);
-			EnumNames.Emplace(TEXT("EHeroActionStatus::SpellToPosition"), 7);
-			EnumNames.Emplace(TEXT("EHeroActionStatus::SpellToActor"), 8);
+			EnumNames.Emplace(TEXT("EHeroActionStatus::SpellNow"), 7);
+			EnumNames.Emplace(TEXT("EHeroActionStatus::SpellToPosition"), 8);
 			EnumNames.Emplace(TEXT("EHeroActionStatus::SpellToDirection"), 9);
-			EnumNames.Emplace(TEXT("EHeroActionStatus::SpellToSelf"), 10);
+			EnumNames.Emplace(TEXT("EHeroActionStatus::SpellToActor"), 10);
 			EnumNames.Emplace(TEXT("EHeroActionStatus::MoveToPickup"), 11);
 			EnumNames.Emplace(TEXT("EHeroActionStatus::MoveToThrowEqu"), 12);
 			EnumNames.Emplace(TEXT("EHeroActionStatus::ThrowEquToActor"), 13);
@@ -64,27 +64,28 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroActionStatus(EHeroA
 			ReturnEnum->CppType = TEXT("EHeroActionStatus");
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnEnum->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnEnum, TEXT("AttackActor.ToolTip"), TEXT("\x8ddf\x8457\x4eba\x8d70"));
-			MetaData->SetValue(ReturnEnum, TEXT("AttackSceneObject.ToolTip"), TEXT("\x4e1f\x88dd\x7d66\x4eba"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackActor.ToolTip"), TEXT("\x6253\x6307\x5b9a\x7684\x4eba"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackSceneObject.ToolTip"), TEXT("\x7834\x58de\x5834\x666f\x7269\x4ef6"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlueprintType"), TEXT("true"));
-			MetaData->SetValue(ReturnEnum, TEXT("FollowActor.ToolTip"), TEXT("\x79fb\x52d5\x5230\x6307\x5b9a\x7684\x4eba\x8eab\x908a"));
+			MetaData->SetValue(ReturnEnum, TEXT("Default.ToolTip"), TEXT("\x7ad9\x8457\x4f11\x606f"));
+			MetaData->SetValue(ReturnEnum, TEXT("FollowActor.ToolTip"), TEXT("\x8ddf\x8457\x4eba\x8d70"));
 			MetaData->SetValue(ReturnEnum, TEXT("ModuleRelativePath"), TEXT("Public/HeroActionx.h"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveAndAttack.ToolTip"), TEXT("\x908a\x79fb\x52d5\x908a\x653b\x64ca\x6307\x5b9a\x6575\x4eba"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveToActor.ToolTip"), TEXT("\x79fb\x52d5\x5230\x6307\x5b9a\x76ee\x6a19"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveToPickup.ToolTip"), TEXT("\x4e0d\x9700\x6307\x5b9a\x76ee\x6a19\x7684\x6280\x80fd"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveToPosition.ToolTip"), TEXT("\x525b\x88ab\x521d\x59cb\x5316"));
-			MetaData->SetValue(ReturnEnum, TEXT("MoveToThrowEqu.ToolTip"), TEXT("\x64bf\x88dd"));
-			MetaData->SetValue(ReturnEnum, TEXT("MovingAttackActor.ToolTip"), TEXT("\x6253\x6307\x5b9a\x7684\x4eba"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellToActor.ToolTip"), TEXT("\x6307\x5b9a\x5730\x9ede\x7684\x6280\x80fd"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellToDirection.ToolTip"), TEXT("\x6307\x5b9a\x6280"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellToPosition.ToolTip"), TEXT("A\x9ede\x5730\x677f \x79fb\x52d5\x4e2d\x9047\x5230\x6575\x4eba\x505c\x4e0b\x4f86\x653b\x64ca"));
-			MetaData->SetValue(ReturnEnum, TEXT("SpellToSelf.ToolTip"), TEXT("\x6307\x5411\x6280"));
-			MetaData->SetValue(ReturnEnum, TEXT("ThrowEquToActor.ToolTip"), TEXT("\x4e1f\x88dd"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveAndAttack.ToolTip"), TEXT("A\x9ede\x5730\x677f \x79fb\x52d5\x4e2d\x9047\x5230\x6575\x4eba\x505c\x4e0b\x4f86\x653b\x64ca"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveToActor.ToolTip"), TEXT("\x79fb\x52d5\x5230\x6307\x5b9a\x7684\x4eba\x8eab\x908a"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveToPickup.ToolTip"), TEXT("\x64bf\x88dd"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveToPosition.ToolTip"), TEXT("\x79fb\x52d5\x5230\x6307\x5b9a\x76ee\x6a19"));
+			MetaData->SetValue(ReturnEnum, TEXT("MoveToThrowEqu.ToolTip"), TEXT("\x4e1f\x88dd"));
+			MetaData->SetValue(ReturnEnum, TEXT("MovingAttackActor.ToolTip"), TEXT("\x908a\x79fb\x52d5\x908a\x653b\x64ca\x6307\x5b9a\x6575\x4eba"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellNow.ToolTip"), TEXT("\x76f4\x63a5\x65bd\x653e\x6280\x80fd"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellToActor.ToolTip"), TEXT("\x6307\x5b9a\x6280"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellToDirection.ToolTip"), TEXT("\x6307\x5411\x6280"));
+			MetaData->SetValue(ReturnEnum, TEXT("SpellToPosition.ToolTip"), TEXT("\x6307\x5b9a\x5730\x9ede\x7684\x6280\x80fd"));
+			MetaData->SetValue(ReturnEnum, TEXT("ThrowEquToActor.ToolTip"), TEXT("\x4e1f\x88dd\x7d66\x4eba"));
 #endif
 		}
 		return ReturnEnum;
 	}
-	uint32 Get_Z_Construct_UEnum_MOBA_EHeroActionStatus_CRC() { return 3680822728U; }
+	uint32 Get_Z_Construct_UEnum_MOBA_EHeroActionStatus_CRC() { return 78845924U; }
 class UScriptStruct* FHeroAction::StaticStruct()
 {
 	static class UScriptStruct* Singleton = NULL;
@@ -117,7 +118,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFHeroAction
 			UProperty* NewProp_TargetVec2 = new(EC_InternalUseOnlyConstructor, ReturnStruct, TEXT("TargetVec2"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(TargetVec2, FHeroAction), 0x0010000000000005, Z_Construct_UScriptStruct_FVector());
 			UProperty* NewProp_TargetVec1 = new(EC_InternalUseOnlyConstructor, ReturnStruct, TEXT("TargetVec1"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(TargetVec1, FHeroAction), 0x0010000000000005, Z_Construct_UScriptStruct_FVector());
 			UProperty* NewProp_TargetEquipment = new(EC_InternalUseOnlyConstructor, ReturnStruct, TEXT("TargetEquipment"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(TargetEquipment, FHeroAction), 0x0010000000000005, Z_Construct_UClass_AEquipment_NoRegister());
-			UProperty* NewProp_TargetActor = new(EC_InternalUseOnlyConstructor, ReturnStruct, TEXT("TargetActor"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(TargetActor, FHeroAction), 0x0010000000000005, Z_Construct_UClass_AActor_NoRegister());
+			UProperty* NewProp_TargetActor = new(EC_InternalUseOnlyConstructor, ReturnStruct, TEXT("TargetActor"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(TargetActor, FHeroAction), 0x0010000000000005, Z_Construct_UClass_AHeroCharacter_NoRegister());
 			UProperty* NewProp_ActionStatus = new(EC_InternalUseOnlyConstructor, ReturnStruct, TEXT("ActionStatus"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(CPP_PROPERTY_BASE(ActionStatus, FHeroAction), 0x0010000000000005, Z_Construct_UEnum_MOBA_EHeroActionStatus());
 			UProperty* NewProp_ActionStatus_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_ActionStatus, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
 			ReturnStruct->StaticLink();
@@ -151,7 +152,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFHeroAction
 		}
 		return ReturnStruct;
 	}
-	uint32 Get_Z_Construct_UScriptStruct_FHeroAction_CRC() { return 820532355U; }
+	uint32 Get_Z_Construct_UScriptStruct_FHeroAction_CRC() { return 2912013724U; }
 	void UHeroActionx::StaticRegisterNativesUHeroActionx()
 	{
 	}

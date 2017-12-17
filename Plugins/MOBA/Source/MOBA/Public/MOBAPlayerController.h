@@ -60,7 +60,8 @@ public:
 	void ServerCharacterStopMove(AHeroCharacter* hero);
 	
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerHeroUseSkill(AHeroCharacter* hero, int32 index, const FVector& VFaceTo, const FVector& pos);
+	void ServerHeroUseSkill(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, 
+		FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerSetHeroAction(AHeroCharacter* hero, const FHeroAction& action);
@@ -85,5 +86,3 @@ public:
 
 	
 };
-
-

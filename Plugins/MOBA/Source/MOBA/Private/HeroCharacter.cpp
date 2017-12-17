@@ -59,7 +59,7 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	AttackingCounting = 0;
 	FollowActorUpdateCounting = 0;
 	SpellingCounting = 0;
-	DazzingLeftCounting = 0;
+	StunningLeftCounting = 0;
 
 	// 基礎攻擊前搖時間長度
 	BaseAttackingBeginingTimeLength = 0.5;
@@ -149,7 +149,7 @@ void AHeroCharacter::BeginPlay()
 		Equipments[idx] = NULL;
 	}
 	CurrentSkillHint = NULL;
-	CurrentSkillIndex = -1;
+	CurrentSkillIndex = 0;
 	
 
 	CurrentAttackingBeginingTimeLength = BaseAttackingBeginingTimeLength;
@@ -159,24 +159,29 @@ void AHeroCharacter::BeginPlay()
 	CurrentSpellingAnimationTimeLength = BaseSpellingAnimationTimeLength;
 	CurrentSpellingBeginingTimeLength = BaseSpellingBeginingTimeLength;
 	CurrentSpellingEndingTimeLength = BaseSpellingEndingTimeLength;
+	CurrentSpellingRate = CurrentSpellingAnimationTimeLength / (CurrentSpellingBeginingTimeLength + CurrentSpellingEndingTimeLength);
 	// 依等級更新力敏智
 	UpdateSAI();
 	// 依等級更新血魔攻速
 	UpdateHPMPAS();
 	CurrentHP = CurrentMaxHP;
 	CurrentMP = CurrentMaxMP;
-	CurrentAttackRadius = BaseAttackRadius;
+	CurrentAttackRange = BaseAttackRange;
 	CurrentAttack = BaseAttack;
 	CurrentArmor = BaseArmor;
-	
-	for (auto& Elem : Skill_Classes)
+	if (Role == ROLE_Authority)
 	{
-		Skills.Add(GetWorld()->SpawnActor<AHeroSkill>(Elem));
-	}
-
-	for (AHeroSkill*& Elem : Skills)
-	{
-		Elem->Caster = this;
+		for (auto& Elem : Skill_Classes)
+		{
+			Skills.Add(GetWorld()->SpawnActor<AHeroSkill>(Elem));
+		}
+		for (AHeroSkill*& Elem : Skills)
+		{
+			if (Elem)
+			{
+				Elem->Caster = this;
+			}
+		}
 	}
 
 	MinimumDontMoveDistance = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 30;
@@ -195,7 +200,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 			{
 				SwapProperty[Elem.Key] += Elem.Value;
 			}
-			for (EHeroBuffState& Elem : BuffQueue[i]->BuffKind)
+			for (EHeroBuffState& Elem : BuffQueue[i]->BuffState)
 			{
 				SwapState[Elem] = true;
 			}
@@ -203,6 +208,19 @@ void AHeroCharacter::Tick(float DeltaTime)
 		BuffStateMap = SwapState;
 		BuffPropertyMap = SwapProperty;
 	}
+	if (BuffStateMap[HEROS::Stunning])
+	{
+		BodyStatus = EHeroBodyStatus::Stunning;
+		LastMoveTarget = FVector::ZeroVector;
+	}
+	else if (EHeroBodyStatus::Stunning == BodyStatus)
+	{
+		if (!BuffStateMap[HEROS::Stunning])
+		{
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+	}
+	
 	{// 計算各種自然回復
 		CurrentHP += DeltaTime * CurrentRegenHP;
 	}
@@ -257,8 +275,8 @@ void AHeroCharacter::Tick(float DeltaTime)
 	FollowActorUpdateCounting += DeltaTime;
 	SpellingCounting += DeltaTime;
 	// 更新 Buff 持續時間
-	bool isLastFrameDazzing = (0 == DazzingLeftCounting);
-	DazzingLeftCounting = 0;
+	bool isLastFrameStunning = (0 == StunningLeftCounting);
+	StunningLeftCounting = 0;
 	for (int32 i = 0; i < BuffQueue.Num(); ++i)
 	{
 		// 移除時間到的Buff
@@ -273,23 +291,16 @@ void AHeroCharacter::Tick(float DeltaTime)
 			i--;
 		}
 	}
-	if (EHeroBodyStatus::Dazzing == BodyStatus)
-	{
-	}
-	// 如果醒了
-	if (!isLastFrameDazzing && DazzingLeftCounting == 0)
-	{
-	
-		LastMoveTarget = FVector::ZeroVector;
-		BodyStatus = EHeroBodyStatus::Standing;
-	}
 	// 算CD
 	for(int32 i = 0; i < Skills.Num(); ++i)
 	{
-		Skills[i]->CheckCD(DeltaTime);
+		if (Skills[i])
+		{
+			Skills[i]->CheckCD(DeltaTime);
+		}
 	}
 	// 是否有動作？
-	if (ActionQueue.Num() > 0 && !IsDead)
+	if (ActionQueue.Num() > 0 && !IsDead && EHeroBodyStatus::Stunning != BodyStatus)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Magenta, FString::Printf(L"ActionQueue %d", ActionQueue.Num()));
 		// 動作駐列最上層動作是否為當前動作
@@ -438,7 +449,21 @@ void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHer
 	if (Role == ROLE_Authority)
 	{
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		float Injury = ags->ArmorConvertToInjuryPersent(victim->CurrentArmor);
+		float Injury = 1;
+		switch (dtype)
+		{
+		case EDamageType::DAMAGE_PHYSICAL:
+			Injury = ags->ArmorConvertToInjuryPersent(victim->CurrentArmor);
+			break;
+		case EDamageType::DAMAGE_MAGICAL:
+
+			break;
+		case EDamageType::DAMAGE_PURE:
+			break;
+		default:
+			break;
+		}
+		
 		float RDamage = damage * Injury; // 扣防後傷害
 		float FDamage = RDamage; // 最終傷害
 		//ags->MakeRandom();
@@ -549,9 +574,9 @@ void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHer
 			{
 				FDamage -= victim->BuffPropertyMap[HEROP::BlockingMagicalConstant];
 			}
-			if (victim->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage] > 0)
+			if (victim->BuffPropertyMap[HEROP::AbsorbMagicalDamagePercentage] > 0)
 			{
-				victim->CurrentHP += victim->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage] * RDamage;
+				victim->CurrentHP += victim->BuffPropertyMap[HEROP::AbsorbMagicalDamagePercentage] * RDamage;
 			}
 			FDamage = FDamage * attacker->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage]
 				* victim->BuffPropertyMap[HEROP::MagicalDamageInputPercentage];
@@ -575,9 +600,9 @@ void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHer
 			{
 				FDamage -= victim->BuffPropertyMap[HEROP::BlockingPureConstant];
 			}
-			if (victim->BuffPropertyMap[HEROP::PureDamageOutputPercentage] > 0)
+			if (victim->BuffPropertyMap[HEROP::AbsorbPureDamagePercentage] > 0)
 			{
-				victim->CurrentHP += victim->BuffPropertyMap[HEROP::PureDamageOutputPercentage] * RDamage;
+				victim->CurrentHP += victim->BuffPropertyMap[HEROP::AbsorbPureDamagePercentage] * RDamage;
 			}
 			FDamage = FDamage * attacker->BuffPropertyMap[HEROP::PureDamageOutputPercentage]
 				* victim->BuffPropertyMap[HEROP::PureDamageInputPercentage];
@@ -647,7 +672,7 @@ void AHeroCharacter::HealCompute_Implementation(AHeroCharacter* caster, AHeroCha
 void AHeroCharacter::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
 {
 	AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
-	if (hud)
+	if (hud && hud->HUDStatus == EMHUDStatus::Normal)
 	{
 		// 按下左鍵
 		if (hud->bMouseLButton)
@@ -675,6 +700,11 @@ void AHeroCharacter::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey Butto
 				hud->HeroAttackHero(this);
 			}
 		}
+		hud->CurrentSelectTarget = nullptr;
+	}
+	else
+	{
+		hud->CurrentSelectTarget = this;
 	}
 }
 
@@ -778,11 +808,12 @@ void AHeroCharacter::UpdateSAI()
 	}
 }
 
-bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos)
+bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos, AHeroCharacter* CurrentTarget)
 {
 	// Check NoTarget or SmartCast
 	if (index < Skills.Num())
 	{
+		CurrentSkillIndex = index;
 		AHeroSkill* hs = Skills[index];
 		// 被動技
 		if (hs->SkillBehavior[EHeroBehavior::Passive])
@@ -796,12 +827,31 @@ bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos)
 			FVector dir = Pos - GetActorLocation();
 			dir.Z = 0;
 			dir.Normalize();
-			ags->HeroUseSkill(this, index, dir, Pos);
+			if (hs->SkillBehavior[EHeroBehavior::NoTarget])
+			{
+				ags->HeroUseSkill(this, EHeroActionStatus::SpellNow, index, dir, Pos, CurrentTarget);
+			}
+			else if (hs->SkillBehavior[EHeroBehavior::UnitTarget])
+			{
+				ags->HeroUseSkill(this, EHeroActionStatus::SpellToActor, index, dir, Pos, CurrentTarget);
+			}
+			else if (hs->SkillBehavior[EHeroBehavior::Directional])
+			{
+				ags->HeroUseSkill(this, EHeroActionStatus::SpellToDirection, index, dir, Pos, CurrentTarget);
+			}
+			else if (hs->SkillBehavior[EHeroBehavior::Aoe])
+			{
+				ags->HeroUseSkill(this, EHeroActionStatus::SpellToPosition, index, dir, Pos, CurrentTarget);
+			}
 			return false;
 		}
 		// 顯示技能範圍提示
 		else
 		{
+			if (hs->SkillBehavior[EHeroBehavior::UnitTarget])
+			{
+				
+			}
 			ShowSkillHint(index);
 			return true;
 		}
@@ -844,7 +894,7 @@ void AHeroCharacter::ServerPlayAttack_Implementation(float duraction, float rate
 	BP_PlayAttack(duraction, rate);
 }
 
-bool AHeroCharacter::UseSkill(int32 index, FVector VFaceTo, FVector Pos)
+bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim)
 {
 	if (index < 0)
 	{
@@ -859,7 +909,23 @@ bool AHeroCharacter::UseSkill(int32 index, FVector VFaceTo, FVector Pos)
 		}
 		VFaceTo.Z = 0;
 		VFaceTo.Normalize();
-		Skills[index]->BP_Skill(VFaceTo, Pos);
+		switch (SpellType)
+		{
+		case EHeroActionStatus::SpellNow:
+			Skills[index]->BP_SpellNow(VFaceTo, Pos);
+			break;
+		case EHeroActionStatus::SpellToPosition:
+			Skills[index]->BP_SpellToPosition(VFaceTo, Pos);
+			break;
+		case EHeroActionStatus::SpellToDirection:
+			Skills[index]->BP_SpellToDirection(VFaceTo, Pos);
+			break;
+		case EHeroActionStatus::SpellToActor:
+			Skills[index]->BP_SpellToActor(VFaceTo, Pos, victim);
+			break;
+		default:
+			break;
+		}
 	}
 	return true;
 }
@@ -870,11 +936,16 @@ int32 AHeroCharacter::GetCurrentSkillIndex()
 }
 
 
+AHeroSkill* AHeroCharacter::GetCurrentSkill()
+{
+	return Skills[CurrentSkillIndex];
+}
+
 bool AHeroCharacter::CheckCurrentActionFinish()
 {
 	AEquipment* TargetEquipment = Cast<AEquipment>(CurrentAction.TargetEquipment);
 	AHeroCharacter* TargetActor = Cast<AHeroCharacter>(CurrentAction.TargetActor);
-	ASceneObject* TargetSceneActor = Cast<ASceneObject>(CurrentAction.TargetActor);
+	//ASceneObject* TargetSceneActor = Cast<ASceneObject>(CurrentAction.TargetActor);
 	switch (BodyStatus)
 	{
 	case EHeroBodyStatus::Standing:
@@ -895,14 +966,17 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 			break;
 		case EHeroActionStatus::MoveAndAttack:
 			break;
+		case EHeroActionStatus::SpellNow:
+			return CurrentAction == LastUseSkill;
+			break;
 		case EHeroActionStatus::SpellToPosition:
+			return CurrentAction == LastUseSkill;
 			break;
 		case EHeroActionStatus::SpellToActor:
+			return CurrentAction == LastUseSkill;
 			break;
 		case EHeroActionStatus::SpellToDirection:
-			return true;
-			break;
-		case EHeroActionStatus::SpellToSelf:
+			return CurrentAction == LastUseSkill;
 			break;
 		case EHeroActionStatus::MoveToPickup:
 		{
@@ -942,22 +1016,16 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 			dir.Normalize();
 			// AddMovementInput will move actor with no rotation, no nav
 			//this->AddMovementInput(dir);
-			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Magenta, GetFullName() +
-				FString::Printf(TEXT("%s Dis %f"), *dir.ToString(), Distance));
 		}
 	}
 	break;
-	case EHeroBodyStatus::Dazzing:
+	case EHeroBodyStatus::Stunning:
 		break;
 	case EHeroBodyStatus::AttackWating:
 	case EHeroBodyStatus::AttackBegining:
 	case EHeroBodyStatus::AttackEnding:
 	{
 		if (TargetActor && TargetActor->CurrentHP <= 0)
-		{
-			return true;
-		}
-		if (TargetSceneActor && TargetSceneActor->CurrentHP <= 0)
 		{
 			return true;
 		}
@@ -1000,13 +1068,13 @@ void AHeroCharacter::DoAction_Implementation(const FHeroAction& CurrentAction)
 	case EHeroActionStatus::MoveAndAttack:
 		break;
 	case EHeroActionStatus::SpellToPosition:
+		DoAction_SpellToDirection(CurrentAction);
 		break;
 	case EHeroActionStatus::SpellToActor:
+		DoAction_SpellToActor(CurrentAction);
 		break;
 	case EHeroActionStatus::SpellToDirection:
 		DoAction_SpellToDirection(CurrentAction);
-		break;
-	case EHeroActionStatus::SpellToSelf:
 		break;
 	case EHeroActionStatus::MoveToPickup:
 		DoAction_MoveToPickup(CurrentAction);
@@ -1041,7 +1109,7 @@ void AHeroCharacter::DoNothing()
 		BodyStatus = EHeroBodyStatus::Standing;
 	}
 	break;
-	case EHeroBodyStatus::Dazzing:
+	case EHeroBodyStatus::Stunning:
 		break;
 	case EHeroBodyStatus::AttackWating:
 		break;
@@ -1060,7 +1128,7 @@ void AHeroCharacter::DoNothing()
 
 void AHeroCharacter::DoAction_MoveToPosition(const FHeroAction& CurrentAction)
 {
-	if (BodyStatus == EHeroBodyStatus::Dazzing && GetVelocity().Size() > 5)
+	if (BodyStatus == EHeroBodyStatus::Stunning && GetVelocity().Size() > 5)
 	{
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 		if (ags)
@@ -1101,15 +1169,14 @@ void AHeroCharacter::DoAction_MoveToPositionImpl(const FHeroAction& CurrentActio
 		}
 	}
 		break;
-	case EHeroBodyStatus::Dazzing:
+	case EHeroBodyStatus::Stunning:
 		break;
+	case EHeroBodyStatus::SpellWating:
 	case EHeroBodyStatus::SpellBegining:
-		BodyStatus = EHeroBodyStatus::Standing;
-		break;
 	case EHeroBodyStatus::SpellEnding:
-		BodyStatus = EHeroBodyStatus::Standing;
-		break;
+
 	default:
+		BodyStatus = EHeroBodyStatus::Standing;
 		break;
 	}
 }
@@ -1142,7 +1209,7 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Standing:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (CurrentAttackRadius > DistanceToTargetActor)
+		if (CurrentAttackRange > DistanceToTargetActor)
 		{
 			BodyStatus = EHeroBodyStatus::AttackWating;
 			IsAttacked = false;
@@ -1161,7 +1228,7 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Moving:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (CurrentAttackRadius > DistanceToTargetActor)
+		if (CurrentAttackRange > DistanceToTargetActor)
 		{
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			if (ags)
@@ -1182,7 +1249,7 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		}
 	}
 	break;
-	case EHeroBodyStatus::Dazzing:
+	case EHeroBodyStatus::Stunning:
 		break;
 	case EHeroBodyStatus::AttackWating:
 	{
@@ -1233,11 +1300,12 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		}
 	}
 	break;
+	case EHeroBodyStatus::SpellWating:
 	case EHeroBodyStatus::SpellBegining:
-		break;
 	case EHeroBodyStatus::SpellEnding:
-		break;
+
 	default:
+		BodyStatus = EHeroBodyStatus::Standing;
 		break;
 	}
 }
@@ -1261,77 +1329,6 @@ void AHeroCharacter::ServerShowDamageEffect(FVector pos, FVector dir, float Dama
 		TempDamageText->FlyDirection = dir;
 	}
 }
-
-void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
-{
-	switch (BodyStatus)
-	{
-	case EHeroBodyStatus::Moving:
-	{
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
-		{
-			ags->CharacterStopMove(this);
-		}
-	}
-	// no break;
-	case EHeroBodyStatus::Standing:
-	{
-		BodyStatus = EHeroBodyStatus::SpellWating;
-		SpellingCounting = 0;
-	}
-	break;
-	case EHeroBodyStatus::Dazzing:
-		break;
-	case EHeroBodyStatus::AttackWating:
-		break;
-	case EHeroBodyStatus::AttackBegining:
-		break;
-	case EHeroBodyStatus::AttackEnding:
-		break;
-	case EHeroBodyStatus::SpellWating:
-	{
-		if (SpellingCounting > CurrentSpellingWatingTimeLength)
-		{
-			BodyStatus = EHeroBodyStatus::SpellBegining;
-			SpellingCounting = 0;
-		}
-	}
-	break;
-	case EHeroBodyStatus::SpellBegining:
-	{
-		if (Role == ROLE_Authority)
-		{
-			if (SpellingCounting > CurrentSpellingBeginingTimeLength)
-			{
-				if (LastUseSkill != CurrentAction)
-				{
-					BodyStatus = EHeroBodyStatus::SpellEnding;
-					SpellingCounting = 0;
-					AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-					if (ags)
-					{
-						ags->HeroUseSkill(this, CurrentAction.TargetIndex1, CurrentAction.TargetVec1, CurrentAction.TargetVec2);
-					}
-				}
-				LastUseSkill = CurrentAction;
-			}
-		}
-	}
-	break;
-	case EHeroBodyStatus::SpellEnding:
-	{
-		if (SpellingCounting > CurrentSpellingBeginingTimeLength)
-		{
-			BodyStatus = EHeroBodyStatus::Standing;
-		}
-	}
-	break;
-	default:
-		break;
-	}
-}
-
 void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction)
 {
 	ASceneObject* TargetActor = Cast<ASceneObject>(CurrentAction.TargetActor);
@@ -1344,7 +1341,7 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 	case EHeroBodyStatus::Standing:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (CurrentAttackRadius > DistanceToTargetActor)
+		if (CurrentAttackRange > DistanceToTargetActor)
 		{
 			BodyStatus = EHeroBodyStatus::AttackWating;
 			IsAttacked = false;
@@ -1363,7 +1360,7 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 	case EHeroBodyStatus::Moving:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (CurrentAttackRadius > DistanceToTargetActor)
+		if (CurrentAttackRange > DistanceToTargetActor)
 		{
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			if (ags)
@@ -1384,7 +1381,7 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 		}
 	}
 	break;
-	case EHeroBodyStatus::Dazzing:
+	case EHeroBodyStatus::Stunning:
 		break;
 	case EHeroBodyStatus::AttackWating:
 	{
@@ -1432,11 +1429,12 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 		}
 	}
 	break;
+	case EHeroBodyStatus::SpellWating:
 	case EHeroBodyStatus::SpellBegining:
-		break;
 	case EHeroBodyStatus::SpellEnding:
-		break;
+
 	default:
+		BodyStatus = EHeroBodyStatus::Standing;
 		break;
 	}
 }
@@ -1486,7 +1484,7 @@ void AHeroCharacter::DoAction_MoveToPickup(const FHeroAction& CurrentAction)
 		}
 	}
 	break;
-	case EHeroBodyStatus::Dazzing:
+	case EHeroBodyStatus::Stunning:
 		break;
 	case EHeroBodyStatus::AttackWating:
 		break;
@@ -1494,11 +1492,12 @@ void AHeroCharacter::DoAction_MoveToPickup(const FHeroAction& CurrentAction)
 		break;
 	case EHeroBodyStatus::AttackEnding:
 		break;
+	case EHeroBodyStatus::SpellWating:
 	case EHeroBodyStatus::SpellBegining:
-		break;
 	case EHeroBodyStatus::SpellEnding:
-		break;
+
 	default:
+		BodyStatus = EHeroBodyStatus::Standing;
 		break;
 	}
 }
@@ -1550,7 +1549,7 @@ void AHeroCharacter::DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction)
 		}
 	}
 	break;
-	case EHeroBodyStatus::Dazzing:
+	case EHeroBodyStatus::Stunning:
 		break;
 	case EHeroBodyStatus::AttackWating:
 		break;
@@ -1558,14 +1557,185 @@ void AHeroCharacter::DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction)
 		break;
 	case EHeroBodyStatus::AttackEnding:
 		break;
+	case EHeroBodyStatus::SpellWating:
 	case EHeroBodyStatus::SpellBegining:
-		break;
 	case EHeroBodyStatus::SpellEnding:
+
+	default:
+		BodyStatus = EHeroBodyStatus::Standing;
 		break;
+	}
+}
+
+void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
+{
+	AHeroCharacter* TargetActor = Cast<AHeroCharacter>(CurrentAction.TargetActor);
+	FVector dir = TargetActor->GetActorLocation() - GetActorLocation();
+	dir.Z = 0;
+	dir.Normalize();
+	SetActorRotation(dir.Rotation());
+	switch (BodyStatus)
+	{
+	case EHeroBodyStatus::Standing:
+	{
+		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
+		if (CurrentAttackRange > DistanceToTargetActor)
+		{
+			BodyStatus = EHeroBodyStatus::SpellWating;
+			SpellingCounting = 0;
+		}
+		else
+		{
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, TargetActor->GetActorLocation());
+			}
+			BodyStatus = EHeroBodyStatus::Moving;
+		}
+	}
+	break;
+	case EHeroBodyStatus::Moving:
+	{
+		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
+		if (CurrentAttackRange > DistanceToTargetActor)
+		{
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterStopMove(this);
+			}
+			BodyStatus = EHeroBodyStatus::SpellWating;
+			SpellingCounting = 0;
+		}
+		else if (FollowActorUpdateCounting > FollowActorUpdateTimeGap)
+		{
+			FollowActorUpdateCounting = 0;
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
+			{
+				ags->CharacterMove(this, TargetActor->GetActorLocation());
+			}
+		}
+	}
+	break;
+	case EHeroBodyStatus::Stunning:
+		break;
+	case EHeroBodyStatus::SpellWating:
+	{
+		
+		if (SpellingCounting >= CurrentSpellingWatingTimeLength)
+		{
+			SpellingCounting = 0;
+			BodyStatus = EHeroBodyStatus::SpellBegining;
+			ServerPlayAttack(CurrentSpellingAnimationTimeLength, CurrentSpellingRate);
+		}
+		// 播放攻擊動畫
+		// ...
+	}
+	break;
+	case EHeroBodyStatus::SpellBegining:
+	{
+		if (SpellingCounting > CurrentSpellingBeginingTimeLength)
+		{
+			if (LastUseSkill != CurrentAction)
+			{
+				AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+				if (ags)
+				{
+					ags->HeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
+						CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+				}
+				BodyStatus = EHeroBodyStatus::SpellEnding;
+				LastUseSkill = CurrentAction;
+			}
+		}
+	}
+	break;
+	case EHeroBodyStatus::SpellEnding:
+	{
+		if (AttackingCounting > CurrentAttackingBeginingTimeLength + CurrentAttackingEndingTimeLength)
+		{
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+	}
+	break;
 	default:
 		break;
 	}
 }
+
+void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
+{
+	switch (BodyStatus)
+	{
+	case EHeroBodyStatus::Moving:
+	{
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (ags)
+		{
+			ags->CharacterStopMove(this);
+		}
+	}
+	// no break;
+	case EHeroBodyStatus::Standing:
+	{
+		BodyStatus = EHeroBodyStatus::SpellWating;
+		SpellingCounting = 0;
+	}
+	break;
+	case EHeroBodyStatus::Stunning:
+		break;
+	case EHeroBodyStatus::AttackWating:
+		break;
+	case EHeroBodyStatus::AttackBegining:
+		break;
+	case EHeroBodyStatus::AttackEnding:
+		break;
+	case EHeroBodyStatus::SpellWating:
+	{
+		if (SpellingCounting > CurrentSpellingWatingTimeLength)
+		{
+			BodyStatus = EHeroBodyStatus::SpellBegining;
+			SpellingCounting = 0;
+		}
+	}
+	break;
+	case EHeroBodyStatus::SpellBegining:
+	{
+		if (Role == ROLE_Authority)
+		{
+			if (SpellingCounting >= CurrentSpellingBeginingTimeLength)
+			{
+				if (LastUseSkill != CurrentAction)
+				{
+					BodyStatus = EHeroBodyStatus::SpellEnding;
+					SpellingCounting = 0;
+					AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+					if (ags)
+					{
+						ags->HeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
+							CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+					}
+					LastUseSkill = CurrentAction;
+				}
+			}
+		}
+	}
+	break;
+	case EHeroBodyStatus::SpellEnding:
+	{
+		if (SpellingCounting > CurrentSpellingBeginingTimeLength)
+		{
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+	}
+	break;
+	default:
+		break;
+	}
+}
+
 
 void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
@@ -1576,6 +1746,9 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AHeroCharacter, ActionQueue);
 	DOREPLIFETIME(AHeroCharacter, CurrentAction);
 	DOREPLIFETIME(AHeroCharacter, AttackingCounting);
+	DOREPLIFETIME(AHeroCharacter, CurrentSkillIndex);
+	DOREPLIFETIME(AHeroCharacter, Skills);
 	DOREPLIFETIME(AHeroCharacter, CurrentAttackSpeedSecond);
 	DOREPLIFETIME(AHeroCharacter, CurrentAttackingAnimationRate);
+	DOREPLIFETIME(AHeroCharacter, LastUseSkill);
 }

@@ -15,8 +15,9 @@ PRAGMA_DISABLE_OPTIMIZATION
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeHeroBuff() {}
 // Cross Module References
-	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroBuffUnique();
+	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EBuffPosition();
 	UPackage* Z_Construct_UPackage__Script_MOBA();
+	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroBuffUnique();
 	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroBuffProperty();
 	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroBuffState();
 	MOBA_API UScriptStruct* Z_Construct_UScriptStruct_FLevelVariable();
@@ -46,6 +47,44 @@ void EmptyLinkFunctionForGeneratedCodeHeroBuff() {}
 	ENGINE_API UClass* Z_Construct_UClass_AActor();
 	ENGINE_API UClass* Z_Construct_UClass_UTexture2D_NoRegister();
 // End Cross Module References
+static UEnum* EBuffPosition_StaticEnum()
+{
+	static UEnum* Singleton = nullptr;
+	if (!Singleton)
+	{
+		Singleton = GetStaticEnum(Z_Construct_UEnum_MOBA_EBuffPosition, Z_Construct_UPackage__Script_MOBA(), TEXT("EBuffPosition"));
+	}
+	return Singleton;
+}
+static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EBuffPosition(EBuffPosition_StaticEnum, TEXT("/Script/MOBA"), TEXT("EBuffPosition"), false, nullptr, nullptr);
+	UEnum* Z_Construct_UEnum_MOBA_EBuffPosition()
+	{
+		UPackage* Outer = Z_Construct_UPackage__Script_MOBA();
+		extern uint32 Get_Z_Construct_UEnum_MOBA_EBuffPosition_CRC();
+		static UEnum* ReturnEnum = FindExistingEnumIfHotReloadOrDynamic(Outer, TEXT("EBuffPosition"), 0, Get_Z_Construct_UEnum_MOBA_EBuffPosition_CRC(), false);
+		if (!ReturnEnum)
+		{
+			ReturnEnum = new(EC_InternalUseOnlyConstructor, Outer, TEXT("EBuffPosition"), RF_Public|RF_Transient|RF_MarkAsNative) UEnum(FObjectInitializer());
+			TArray<TPair<FName, int64>> EnumNames;
+			EnumNames.Emplace(TEXT("EBuffPosition::Head"), 0);
+			EnumNames.Emplace(TEXT("EBuffPosition::Foot"), 1);
+			EnumNames.Emplace(TEXT("EBuffPosition::Root"), 2);
+			EnumNames.Emplace(TEXT("EBuffPosition::EBuffPosition_MAX"), 3);
+			ReturnEnum->SetEnums(EnumNames, UEnum::ECppForm::EnumClass);
+			ReturnEnum->CppType = TEXT("EBuffPosition");
+#if WITH_METADATA
+			UMetaData* MetaData = ReturnEnum->GetOutermost()->GetMetaData();
+			MetaData->SetValue(ReturnEnum, TEXT("BlueprintType"), TEXT("true"));
+			MetaData->SetValue(ReturnEnum, TEXT("Foot.ToolTip"), TEXT("\x8173\x4e0a"));
+			MetaData->SetValue(ReturnEnum, TEXT("Head.ToolTip"), TEXT("\x982d\x4e0a"));
+			MetaData->SetValue(ReturnEnum, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
+			MetaData->SetValue(ReturnEnum, TEXT("Root.ToolTip"), TEXT("\x89d2\x8272\x4e2d\x5fc3\x9ede"));
+			MetaData->SetValue(ReturnEnum, TEXT("ToolTip"), TEXT("\x7279\x6548\x8ddf\x96a8\x7684\x4f4d\x7f6e"));
+#endif
+		}
+		return ReturnEnum;
+	}
+	uint32 Get_Z_Construct_UEnum_MOBA_EBuffPosition_CRC() { return 1411808195U; }
 static UEnum* EHeroBuffUnique_StaticEnum()
 {
 	static UEnum* Singleton = nullptr;
@@ -180,7 +219,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffProperty(EHeroB
 			MetaData->SetValue(ReturnEnum, TEXT("AttackBounsConstantWhite.ToolTip"), TEXT("\x653b\x64ca\x52a0\x6210(\x56fa\x5b9a\x503c) EX. 30 \x653b\x64ca\x767d\x5b57+30 \x53ef\x4ee5\x88ab\x5176\x5b83\x653b\x64ca\x52a0\x6210\x5f71\x97ff"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackBounsPercentage.ToolTip"), TEXT("\x653b\x64ca\x52a0\x6210(\x767e\x5206\x6bd4) EX. 2 \x653b\x64ca\x767d\x5b57\x4e58")TEXT("2\x52a0\x5230\x7da0\x5b57 \x4e0d\x88ab\x5176\x5b83\x653b\x64ca\x52a0\x6210\x5f71\x97ff"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackMiss.ToolTip"), TEXT("\x653b\x64ca\x5931\x8aa4\x6a5f\x7387 EX. 0.15 15%\x7684\x6a5f\x7387miss"));
-			MetaData->SetValue(ReturnEnum, TEXT("AttackSpeedConstant.ToolTip"), TEXT("\x653b\x901f\x52a0\x6210(\x56fa\x5b9a\x503c) EX. 200 \x589e\x52a0")TEXT("200%\x653b\x901f \x6700\x9ad8")TEXT("500% \x52a0\x57fa\x790e\x503c")TEXT("100\x6700\x9ad8")TEXT("600"));
+			MetaData->SetValue(ReturnEnum, TEXT("AttackSpeedConstant.ToolTip"), TEXT("\x653b\x901f\x52a0\x6210(\x56fa\x5b9a\x503c) EX. 0.5 \x589e\x52a0")TEXT("50%\x653b\x901f \x6700\x9ad8")TEXT("500% \x52a0\x57fa\x790e\x503c")TEXT("100\x6700\x9ad8")TEXT("600"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackSpeedRatio.ToolTip"), TEXT("\x653b\x901f\x52a0\x6210(\x767e\x5206\x6bd4) EX. 2 2\x500d\x653b\x901f\x7a81\x7834\x57fa\x790e\x653b\x901f\x9650\x5236"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlockingMagical.ToolTip"), TEXT("\x683c\x6a94\x9b54\x6cd5\x6a5f\x7387 EX. 0.25 25%\x7684\x6a5f\x7387\x683c\x6a94\x9b54\x6cd5\x50b7\x5bb3"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlockingMagicalConstant.ToolTip"), TEXT("\x683c\x6a94\x56fa\x5b9a\x9b54\x6cd5\x50b7\x5bb3 EX. 200 \x4efb\x4f55\x9b54\x6cd5\x50b7\x5bb3\x5148\x683c\x6a94")TEXT("200"));
@@ -215,7 +254,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffProperty(EHeroB
 		}
 		return ReturnEnum;
 	}
-	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBuffProperty_CRC() { return 2944642018U; }
+	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBuffProperty_CRC() { return 4275175091U; }
 static UEnum* EHeroBuffState_StaticEnum()
 {
 	static UEnum* Singleton = nullptr;
@@ -235,7 +274,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffState(EHeroBuff
 		{
 			ReturnEnum = new(EC_InternalUseOnlyConstructor, Outer, TEXT("EHeroBuffState"), RF_Public|RF_Transient|RF_MarkAsNative) UEnum(FObjectInitializer());
 			TArray<TPair<FName, int64>> EnumNames;
-			EnumNames.Emplace(TEXT("EHeroBuffState::Dazzing"), 0);
+			EnumNames.Emplace(TEXT("EHeroBuffState::Stunning"), 0);
 			EnumNames.Emplace(TEXT("EHeroBuffState::BanMove"), 1);
 			EnumNames.Emplace(TEXT("EHeroBuffState::BanAttack"), 2);
 			EnumNames.Emplace(TEXT("EHeroBuffState::BanSkill"), 3);
@@ -264,7 +303,6 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffState(EHeroBuff
 			MetaData->SetValue(ReturnEnum, TEXT("BanMove.ToolTip"), TEXT("\x7981\x79fb\x52d5"));
 			MetaData->SetValue(ReturnEnum, TEXT("BanSkill.ToolTip"), TEXT("\x7981\x6280\x80fd"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlueprintType"), TEXT("true"));
-			MetaData->SetValue(ReturnEnum, TEXT("Dazzing.ToolTip"), TEXT("\x6688\x70ab"));
 			MetaData->SetValue(ReturnEnum, TEXT("EndBuffKind.ToolTip"), TEXT("\x7d50\x675f\x5217\x8209"));
 			MetaData->SetValue(ReturnEnum, TEXT("Invulnerable.ToolTip"), TEXT("\x7121\x6575"));
 			MetaData->SetValue(ReturnEnum, TEXT("MagicalImmune.ToolTip"), TEXT("\x9b54\x6cd5\x514d\x75ab"));
@@ -272,11 +310,12 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBuffState(EHeroBuff
 			MetaData->SetValue(ReturnEnum, TEXT("PhysicalImmune.ToolTip"), TEXT("\x7269\x7406\x514d\x75ab"));
 			MetaData->SetValue(ReturnEnum, TEXT("PureImmune.ToolTip"), TEXT("\x771f\x50b7\x514d\x75ab"));
 			MetaData->SetValue(ReturnEnum, TEXT("Sleeping.ToolTip"), TEXT("\x7761\x7720\xff0c\x88ab\x653b\x64ca\x6703\x9192\x4f86"));
+			MetaData->SetValue(ReturnEnum, TEXT("Stunning.ToolTip"), TEXT("\x6688\x70ab"));
 #endif
 		}
 		return ReturnEnum;
 	}
-	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBuffState_CRC() { return 3767796058U; }
+	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBuffState_CRC() { return 4269166635U; }
 class UScriptStruct* FLevelVariable::StaticStruct()
 {
 	static class UScriptStruct* Singleton = NULL;
@@ -461,10 +500,11 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelVariable
 		ProcessEvent(FindFunctionChecked(NAME_AHeroBuff_OnStealLife),&Parms);
 	}
 	static FName NAME_AHeroBuff_OnUpgrade = FName(TEXT("OnUpgrade"));
-	void AHeroBuff::OnUpgrade(AHeroCharacter* caster)
+	void AHeroBuff::OnUpgrade(AHeroCharacter* caster, int32 Level)
 	{
 		HeroBuff_eventOnUpgrade_Parms Parms;
 		Parms.caster=caster;
+		Parms.Level=Level;
 		ProcessEvent(FindFunctionChecked(NAME_AHeroBuff_OnUpgrade),&Parms);
 	}
 	void AHeroBuff::StaticRegisterNativesAHeroBuff()
@@ -874,6 +914,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelVariable
 		if (!ReturnFunction)
 		{
 			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("OnUpgrade"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x08020800, 65535, sizeof(HeroBuff_eventOnUpgrade_Parms));
+			UProperty* NewProp_Level = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Level"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(Level, HeroBuff_eventOnUpgrade_Parms), 0x0010000000000080);
 			UProperty* NewProp_caster = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("caster"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(caster, HeroBuff_eventOnUpgrade_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
 			ReturnFunction->Bind();
 			ReturnFunction->StaticLink();
@@ -922,11 +963,11 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelVariable
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroBuff_OnStealLife());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroBuff_OnUpgrade());
 
-				UProperty* NewProp_Duration = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Duration"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(Duration, AHeroBuff), 0x0010000000000015);
-				UProperty* NewProp_Superposition = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Superposition"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(Superposition, AHeroBuff), 0x0010000000000015);
+				UProperty* NewProp_Duration = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Duration"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(Duration, AHeroBuff), 0x0010000000000005);
+				UProperty* NewProp_Superposition = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Superposition"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(Superposition, AHeroBuff), 0x0010000000000005);
 				CPP_BOOL_PROPERTY_BITMASK_STRUCT(CanSuperposition, AHeroBuff);
-				UProperty* NewProp_CanSuperposition = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CanSuperposition"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(CanSuperposition, AHeroBuff), 0x0010000000000015, CPP_BOOL_PROPERTY_BITMASK(CanSuperposition, AHeroBuff), sizeof(uint8), false);
-				UProperty* NewProp_BuffTarget = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffTarget"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(BuffTarget, AHeroBuff), 0x0010000000000015);
+				UProperty* NewProp_CanSuperposition = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CanSuperposition"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(CanSuperposition, AHeroBuff), 0x0010000000000005, CPP_BOOL_PROPERTY_BITMASK(CanSuperposition, AHeroBuff), sizeof(uint8), false);
+				UProperty* NewProp_BuffTarget = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffTarget"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(BuffTarget, AHeroBuff), 0x0010000000000005);
 				UProperty* NewProp_BuffTarget_Inner = new(EC_InternalUseOnlyConstructor, NewProp_BuffTarget, TEXT("BuffTarget"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UClass_AHeroCharacter_NoRegister());
 				UProperty* NewProp_BuffUniqueMap = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffUniqueMap"), RF_Public|RF_Transient|RF_MarkAsNative) UMapProperty(CPP_PROPERTY_BASE(BuffUniqueMap, AHeroBuff), 0x0010000000000005);
 				UProperty* NewProp_BuffUniqueMap_Key_KeyProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffUniqueMap, TEXT("BuffUniqueMap_Key"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000001, Z_Construct_UEnum_MOBA_EHeroBuffUnique());
@@ -939,10 +980,12 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelVariable
 				UProperty* NewProp_BuffPropertyMap_Key_KeyProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap, TEXT("BuffPropertyMap_Key"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000001, Z_Construct_UEnum_MOBA_EHeroBuffProperty());
 				UProperty* NewProp_BuffPropertyMap_ValueProp = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap, TEXT("BuffPropertyMap"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(FObjectInitializer(), EC_CppProperty, 1, 0x0000000000000001);
 				UProperty* NewProp_BuffPropertyMap_Key_KeyProp_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_BuffPropertyMap_Key_KeyProp, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
-				UProperty* NewProp_BuffKind = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffKind"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(BuffKind, AHeroBuff), 0x0010000000000015);
-				UProperty* NewProp_BuffKind_Inner = new(EC_InternalUseOnlyConstructor, NewProp_BuffKind, TEXT("BuffKind"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UEnum_MOBA_EHeroBuffState());
-				UProperty* NewProp_BuffKind_Inner_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_BuffKind_Inner, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
+				UProperty* NewProp_BuffState = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BuffState"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(BuffState, AHeroBuff), 0x0010000000000005);
+				UProperty* NewProp_BuffState_Inner = new(EC_InternalUseOnlyConstructor, NewProp_BuffState, TEXT("BuffState"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UEnum_MOBA_EHeroBuffState());
+				UProperty* NewProp_BuffState_Inner_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_BuffState_Inner, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
 				UProperty* NewProp_Head = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Head"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(Head, AHeroBuff), 0x0010000000000015, Z_Construct_UClass_UTexture2D_NoRegister());
+				UProperty* NewProp_FollowPosition = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("FollowPosition"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(CPP_PROPERTY_BASE(FollowPosition, AHeroBuff), 0x0010000000000005, Z_Construct_UEnum_MOBA_EBuffPosition());
+				UProperty* NewProp_FollowPosition_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_FollowPosition, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
 				CPP_BOOL_PROPERTY_BITMASK_STRUCT(FollowActor, AHeroBuff);
 				UProperty* NewProp_FollowActor = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("FollowActor"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(FollowActor, AHeroBuff), 0x0010000000000015, CPP_BOOL_PROPERTY_BITMASK(FollowActor, AHeroBuff), sizeof(bool), true);
 				UProperty* NewProp_Name = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Name"), RF_Public|RF_Transient|RF_MarkAsNative) UStrProperty(CPP_PROPERTY_BASE(Name, AHeroBuff), 0x0010000000000015);
@@ -964,7 +1007,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelVariable
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroBuff_OnHealLanded(), "OnHealLanded"); // 2236767232
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroBuff_OnHeroKilled(), "OnHeroKilled"); // 1162514466
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroBuff_OnStealLife(), "OnStealLife"); // 1256104908
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroBuff_OnUpgrade(), "OnUpgrade"); // 4279430653
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroBuff_OnUpgrade(), "OnUpgrade"); // 3497607348
 				static TCppClassTypeInfo<TCppClassTypeTraits<AHeroBuff> > StaticCppClassTypeInfo;
 				OuterClass->SetCppTypeInfo(&StaticCppClassTypeInfo);
 				OuterClass->StaticLink();
@@ -992,15 +1035,17 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelVariable
 				MetaData->SetValue(NewProp_BuffPropertyMap, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BuffPropertyMap, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
 				MetaData->SetValue(NewProp_BuffPropertyMap, TEXT("ToolTip"), TEXT("\x984d\x5916\x52a0\x6210"));
-				MetaData->SetValue(NewProp_BuffKind, TEXT("Category"), TEXT("MOBA"));
-				MetaData->SetValue(NewProp_BuffKind, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
-				MetaData->SetValue(NewProp_BuffKind, TEXT("ToolTip"), TEXT("\x984d\x5916\x6548\x679c"));
+				MetaData->SetValue(NewProp_BuffState, TEXT("Category"), TEXT("MOBA"));
+				MetaData->SetValue(NewProp_BuffState, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
+				MetaData->SetValue(NewProp_BuffState, TEXT("ToolTip"), TEXT("\x984d\x5916\x6548\x679c \x6688\x7729\x3001\x7981\x8a00\x7b49"));
 				MetaData->SetValue(NewProp_Head, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Head, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
 				MetaData->SetValue(NewProp_Head, TEXT("ToolTip"), TEXT("logo"));
+				MetaData->SetValue(NewProp_FollowPosition, TEXT("Category"), TEXT("MOBA"));
+				MetaData->SetValue(NewProp_FollowPosition, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
 				MetaData->SetValue(NewProp_FollowActor, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_FollowActor, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
-				MetaData->SetValue(NewProp_FollowActor, TEXT("ToolTip"), TEXT("Follow Actor"));
+				MetaData->SetValue(NewProp_FollowActor, TEXT("ToolTip"), TEXT("\x662f\x5426\x8ddf\x8457\x82f1\x96c4 \x5982\x679c\x662f\x8ddf\x5728\x8eab\x4e0a\x7684\x7279\x6548\x9700\x8981\x6253\x52fe"));
 				MetaData->SetValue(NewProp_Name, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Name, TEXT("ModuleRelativePath"), TEXT("Public/HeroBuff.h"));
 				MetaData->SetValue(NewProp_Name, TEXT("ToolTip"), TEXT("Buff \x540d\x5b57"));
@@ -1013,7 +1058,7 @@ static struct FScriptStruct_MOBA_StaticRegisterNativesFLevelVariable
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroBuff, 3002562628);
+	IMPLEMENT_CLASS(AHeroBuff, 3028648001);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroBuff(Z_Construct_UClass_AHeroBuff, &AHeroBuff::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroBuff"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroBuff);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

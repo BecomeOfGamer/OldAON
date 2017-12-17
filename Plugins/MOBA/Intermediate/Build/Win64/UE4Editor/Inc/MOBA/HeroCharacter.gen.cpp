@@ -26,6 +26,8 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_DoAction();
 	MOBA_API UScriptStruct* Z_Construct_UScriptStruct_FHeroAction();
+	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_GetCurrentSkill();
+	MOBA_API UClass* Z_Construct_UClass_AHeroSkill_NoRegister();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_GetCurrentSkillIndex();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_GetHPPercent();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_GetMPPercent();
@@ -44,12 +46,12 @@ void EmptyLinkFunctionForGeneratedCodeHeroCharacter() {}
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UpdateSAI();
 	MOBA_API UFunction* Z_Construct_UFunction_AHeroCharacter_UseSkill();
+	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroActionStatus();
 	ENGINE_API UClass* Z_Construct_UClass_ACharacter();
 	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroBuffProperty();
 	MOBA_API UEnum* Z_Construct_UEnum_MOBA_EHeroBuffState();
 	MOBA_API UClass* Z_Construct_UClass_AEquipment_NoRegister();
 	MOBA_API UClass* Z_Construct_UClass_ASkillHintActor_NoRegister();
-	MOBA_API UClass* Z_Construct_UClass_AHeroSkill_NoRegister();
 	COREUOBJECT_API UClass* Z_Construct_UClass_UClass();
 	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector2D();
 	ENGINE_API UClass* Z_Construct_UClass_UTexture2D_NoRegister();
@@ -79,7 +81,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			TArray<TPair<FName, int64>> EnumNames;
 			EnumNames.Emplace(TEXT("EHeroBodyStatus::Standing"), 0);
 			EnumNames.Emplace(TEXT("EHeroBodyStatus::Moving"), 1);
-			EnumNames.Emplace(TEXT("EHeroBodyStatus::Dazzing"), 2);
+			EnumNames.Emplace(TEXT("EHeroBodyStatus::Stunning"), 2);
 			EnumNames.Emplace(TEXT("EHeroBodyStatus::AttackWating"), 3);
 			EnumNames.Emplace(TEXT("EHeroBodyStatus::AttackBegining"), 4);
 			EnumNames.Emplace(TEXT("EHeroBodyStatus::AttackEnding"), 5);
@@ -95,18 +97,18 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			MetaData->SetValue(ReturnEnum, TEXT("AttackEnding.ToolTip"), TEXT("\x653b\x64ca\x5f8c\x6416"));
 			MetaData->SetValue(ReturnEnum, TEXT("AttackWating.ToolTip"), TEXT("\x653b\x64ca\x7b49\x5f85"));
 			MetaData->SetValue(ReturnEnum, TEXT("BlueprintType"), TEXT("true"));
-			MetaData->SetValue(ReturnEnum, TEXT("Dazzing.ToolTip"), TEXT("\x6688\x7729\x4e2d"));
 			MetaData->SetValue(ReturnEnum, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 			MetaData->SetValue(ReturnEnum, TEXT("Moving.ToolTip"), TEXT("\x79fb\x52d5\x4e2d"));
 			MetaData->SetValue(ReturnEnum, TEXT("SpellBegining.ToolTip"), TEXT("\x65bd\x6cd5\x524d\x6416"));
 			MetaData->SetValue(ReturnEnum, TEXT("SpellEnding.ToolTip"), TEXT("\x65bd\x6cd5\x5f8c\x6416"));
 			MetaData->SetValue(ReturnEnum, TEXT("SpellWating.ToolTip"), TEXT("\x65bd\x6cd5\x524d\x7b49\x5f85"));
 			MetaData->SetValue(ReturnEnum, TEXT("Standing.ToolTip"), TEXT("\x7ad9\x8457\x767c\x5446"));
+			MetaData->SetValue(ReturnEnum, TEXT("Stunning.ToolTip"), TEXT("\x6688\x7729\x4e2d"));
 #endif
 		}
 		return ReturnEnum;
 	}
-	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBodyStatus_CRC() { return 787714524U; }
+	uint32 Get_Z_Construct_UEnum_MOBA_EHeroBodyStatus_CRC() { return 3948668989U; }
 	static FName NAME_AHeroCharacter_AttackCompute = FName(TEXT("AttackCompute"));
 	void AHeroCharacter::AttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage)
 	{
@@ -156,6 +158,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			{ "AddBuff", (Native)&AHeroCharacter::execAddBuff },
 			{ "AttackCompute", (Native)&AHeroCharacter::execAttackCompute },
 			{ "DoAction", (Native)&AHeroCharacter::execDoAction },
+			{ "GetCurrentSkill", (Native)&AHeroCharacter::execGetCurrentSkill },
 			{ "GetCurrentSkillIndex", (Native)&AHeroCharacter::execGetCurrentSkillIndex },
 			{ "GetHPPercent", (Native)&AHeroCharacter::execGetHPPercent },
 			{ "GetMPPercent", (Native)&AHeroCharacter::execGetMPPercent },
@@ -190,7 +193,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -247,10 +250,32 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 			MetaData->SetValue(ReturnFunction, TEXT("ToolTip"), TEXT("\x505a\x52d5\x4f5c"));
 			MetaData->SetValue(NewProp_CurrentAction, TEXT("NativeConst"), TEXT(""));
+#endif
+		}
+		return ReturnFunction;
+	}
+	UFunction* Z_Construct_UFunction_AHeroCharacter_GetCurrentSkill()
+	{
+		struct HeroCharacter_eventGetCurrentSkill_Parms
+		{
+			AHeroSkill* ReturnValue;
+		};
+		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("GetCurrentSkill"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x04020401, 65535, sizeof(HeroCharacter_eventGetCurrentSkill_Parms));
+			UProperty* NewProp_ReturnValue = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("ReturnValue"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(ReturnValue, HeroCharacter_eventGetCurrentSkill_Parms), 0x0010000000000580, Z_Construct_UClass_AHeroSkill_NoRegister());
+			ReturnFunction->Bind();
+			ReturnFunction->StaticLink();
+#if WITH_METADATA
+			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
+			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
 		return ReturnFunction;
@@ -271,7 +296,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -293,7 +318,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -315,7 +340,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -339,7 +364,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 			MetaData->SetValue(ReturnFunction, TEXT("ToolTip"), TEXT("for Game Logic"));
 #endif
@@ -376,7 +401,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -418,7 +443,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -435,7 +460,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -478,7 +503,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -490,6 +515,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 		{
 			int32 index;
 			FVector Pos;
+			AHeroCharacter* CurrentTarget;
 			bool ReturnValue;
 		};
 		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
@@ -499,13 +525,14 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("TriggerSkill"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x04820401, 65535, sizeof(HeroCharacter_eventTriggerSkill_Parms));
 			CPP_BOOL_PROPERTY_BITMASK_STRUCT(ReturnValue, HeroCharacter_eventTriggerSkill_Parms);
 			UProperty* NewProp_ReturnValue = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("ReturnValue"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(ReturnValue, HeroCharacter_eventTriggerSkill_Parms), 0x0010000000000580, CPP_BOOL_PROPERTY_BITMASK(ReturnValue, HeroCharacter_eventTriggerSkill_Parms), sizeof(bool), true);
+			UProperty* NewProp_CurrentTarget = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("CurrentTarget"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(CurrentTarget, HeroCharacter_eventTriggerSkill_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
 			UProperty* NewProp_Pos = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Pos"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(Pos, HeroCharacter_eventTriggerSkill_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
 			UProperty* NewProp_index = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("index"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(index, HeroCharacter_eventTriggerSkill_Parms), 0x0010000000000080);
 			ReturnFunction->Bind();
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -522,7 +549,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 			MetaData->SetValue(ReturnFunction, TEXT("ToolTip"), TEXT("\x4f9d\x7b49\x7d1a\x66f4\x65b0\x8840\x9b54\x653b\x901f"));
 #endif
@@ -540,7 +567,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 			MetaData->SetValue(ReturnFunction, TEXT("ToolTip"), TEXT("\x4f9d\x7b49\x7d1a\x66f4\x65b0\x529b\x654f\x667a"));
 #endif
@@ -551,9 +578,11 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 	{
 		struct HeroCharacter_eventUseSkill_Parms
 		{
+			EHeroActionStatus SpellType;
 			int32 index;
 			FVector VFaceTo;
 			FVector Pos;
+			AHeroCharacter* victim;
 			bool ReturnValue;
 		};
 		UObject* Outer = Z_Construct_UClass_AHeroCharacter();
@@ -563,14 +592,17 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 			ReturnFunction = new(EC_InternalUseOnlyConstructor, Outer, TEXT("UseSkill"), RF_Public|RF_Transient|RF_MarkAsNative) UFunction(FObjectInitializer(), nullptr, (EFunctionFlags)0x04820401, 65535, sizeof(HeroCharacter_eventUseSkill_Parms));
 			CPP_BOOL_PROPERTY_BITMASK_STRUCT(ReturnValue, HeroCharacter_eventUseSkill_Parms);
 			UProperty* NewProp_ReturnValue = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("ReturnValue"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(ReturnValue, HeroCharacter_eventUseSkill_Parms), 0x0010000000000580, CPP_BOOL_PROPERTY_BITMASK(ReturnValue, HeroCharacter_eventUseSkill_Parms), sizeof(bool), true);
+			UProperty* NewProp_victim = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("victim"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(victim, HeroCharacter_eventUseSkill_Parms), 0x0010000000000080, Z_Construct_UClass_AHeroCharacter_NoRegister());
 			UProperty* NewProp_Pos = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("Pos"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(Pos, HeroCharacter_eventUseSkill_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
 			UProperty* NewProp_VFaceTo = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("VFaceTo"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(VFaceTo, HeroCharacter_eventUseSkill_Parms), 0x0010000000000080, Z_Construct_UScriptStruct_FVector());
 			UProperty* NewProp_index = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("index"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(index, HeroCharacter_eventUseSkill_Parms), 0x0010000000000080);
+			UProperty* NewProp_SpellType = new(EC_InternalUseOnlyConstructor, ReturnFunction, TEXT("SpellType"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(CPP_PROPERTY_BASE(SpellType, HeroCharacter_eventUseSkill_Parms), 0x0010000000000080, Z_Construct_UEnum_MOBA_EHeroActionStatus());
+			UProperty* NewProp_SpellType_Underlying = new(EC_InternalUseOnlyConstructor, NewProp_SpellType, TEXT("UnderlyingType"), RF_Public|RF_Transient|RF_MarkAsNative) UByteProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000);
 			ReturnFunction->Bind();
 			ReturnFunction->StaticLink();
 #if WITH_METADATA
 			UMetaData* MetaData = ReturnFunction->GetOutermost()->GetMetaData();
-			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("Hero"));
+			MetaData->SetValue(ReturnFunction, TEXT("Category"), TEXT("MOBA"));
 			MetaData->SetValue(ReturnFunction, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 #endif
 		}
@@ -597,6 +629,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_AttackCompute());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_DoAction());
+				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetCurrentSkill());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetCurrentSkillIndex());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetHPPercent());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_GetMPPercent());
@@ -613,6 +646,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UpdateSAI());
 				OuterClass->LinkChild(Z_Construct_UFunction_AHeroCharacter_UseSkill());
 
+				UProperty* NewProp_LastUseSkill = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("LastUseSkill"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(LastUseSkill, AHeroCharacter), 0x0010000000000025, Z_Construct_UScriptStruct_FHeroAction());
 				UProperty* NewProp_DefaultBuffProperty = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("DefaultBuffProperty"), RF_Public|RF_Transient|RF_MarkAsNative) UMapProperty(CPP_PROPERTY_BASE(DefaultBuffProperty, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_DefaultBuffProperty_Key_KeyProp = new(EC_InternalUseOnlyConstructor, NewProp_DefaultBuffProperty, TEXT("DefaultBuffProperty_Key"), RF_Public|RF_Transient|RF_MarkAsNative) UEnumProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000001, Z_Construct_UEnum_MOBA_EHeroBuffProperty());
 				UProperty* NewProp_DefaultBuffProperty_ValueProp = new(EC_InternalUseOnlyConstructor, NewProp_DefaultBuffProperty, TEXT("DefaultBuffProperty"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(FObjectInitializer(), EC_CppProperty, 1, 0x0000000000000001);
@@ -638,8 +672,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				UProperty* NewProp_ActionQueue_Inner = new(EC_InternalUseOnlyConstructor, NewProp_ActionQueue, TEXT("ActionQueue"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UScriptStruct_FHeroAction());
 				UProperty* NewProp_Equipments = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Equipments"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(Equipments, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_Equipments_Inner = new(EC_InternalUseOnlyConstructor, NewProp_Equipments, TEXT("Equipments"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UClass_AEquipment_NoRegister());
-				UProperty* NewProp_CurrentSkillIndex = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSkillIndex"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(CurrentSkillIndex, AHeroCharacter), 0x0010000000000025);
-				UProperty* NewProp_CurrentAttackRadius = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackRadius"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackRadius, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_CurrentAttackRange = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackRange"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackRange, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_AdditionIntelligence = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("AdditionIntelligence"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(AdditionIntelligence, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_AdditionAgility = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("AdditionAgility"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(AdditionAgility, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_AdditionStrength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("AdditionStrength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(AdditionStrength, AHeroCharacter), 0x0010000000000005);
@@ -656,12 +689,13 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				UProperty* NewProp_CurrentMaxHP = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentMaxHP"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentMaxHP, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentMoveSpeed = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentMoveSpeed"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentMoveSpeed, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentLevel = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentLevel"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(CurrentLevel, AHeroCharacter), 0x0010000000000005);
-				UProperty* NewProp_DazzingLeftCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("DazzingLeftCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(DazzingLeftCounting, AHeroCharacter), 0x0010000000000005);
-				UProperty* NewProp_SpellingCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("SpellingCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(SpellingCounting, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_StunningLeftCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("StunningLeftCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(StunningLeftCounting, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_FollowActorUpdateCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("FollowActorUpdateCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(FollowActorUpdateCounting, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_SpellingCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("SpellingCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(SpellingCounting, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_AttackingCounting = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("AttackingCounting"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(AttackingCounting, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_CurrentSpellingEndingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingEndingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingEndingTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentSpellingBeginingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingBeginingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingBeginingTimeLength, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_CurrentSpellingRate = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingRate"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingRate, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentSpellingAnimationTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingAnimationTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingAnimationTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentSpellingWatingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSpellingWatingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentSpellingWatingTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_CurrentAttackingEndingTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentAttackingEndingTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(CurrentAttackingEndingTimeLength, AHeroCharacter), 0x0010000000000005);
@@ -680,6 +714,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				CPP_BOOL_PROPERTY_BITMASK_STRUCT(isSelection, AHeroCharacter);
 				UProperty* NewProp_isSelection = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("isSelection"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(isSelection, AHeroCharacter), 0x0010000000000005, CPP_BOOL_PROPERTY_BITMASK(isSelection, AHeroCharacter), sizeof(bool), true);
 				UProperty* NewProp_Skill_Points = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Skill_Points"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(Skill_Points, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_CurrentSkillIndex = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSkillIndex"), RF_Public|RF_Transient|RF_MarkAsNative) UIntProperty(CPP_PROPERTY_BASE(CurrentSkillIndex, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_CurrentSkillDirection = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSkillDirection"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(CurrentSkillDirection, AHeroCharacter), 0x0010000000000015, Z_Construct_UScriptStruct_FVector());
 				UProperty* NewProp_CurrentSkillHint = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("CurrentSkillHint"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(CurrentSkillHint, AHeroCharacter), 0x0010000000000015, Z_Construct_UClass_ASkillHintActor_NoRegister());
 				UProperty* NewProp_LevelProperty_Intelligence = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("LevelProperty_Intelligence"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(LevelProperty_Intelligence, AHeroCharacter), 0x0010000000000015);
@@ -716,10 +751,10 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				UProperty* NewProp_BaseAttackingAnimationTimeLength = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackingAnimationTimeLength"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackingAnimationTimeLength, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_BaseAttackSpeedSecond = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackSpeedSecond"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackSpeedSecond, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_AdditionAttackSpeed = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("AdditionAttackSpeed"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(AdditionAttackSpeed, AHeroCharacter), 0x0010000000000005);
-				UProperty* NewProp_BaseAttackRadius = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackRadius"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackRadius, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_BaseAttackRange = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("BaseAttackRange"), RF_Public|RF_Transient|RF_MarkAsNative) UFloatProperty(CPP_PROPERTY_BASE(BaseAttackRange, AHeroCharacter), 0x0010000000000005);
 				UProperty* NewProp_Skill_Classes = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Skill_Classes"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(Skill_Classes, AHeroCharacter), 0x0014000000000005);
 				UProperty* NewProp_Skill_Classes_Inner = new(EC_InternalUseOnlyConstructor, NewProp_Skill_Classes, TEXT("Skill_Classes"), RF_Public|RF_Transient|RF_MarkAsNative) UClassProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0004000000000000, Z_Construct_UClass_AHeroSkill_NoRegister(), Z_Construct_UClass_UClass());
-				UProperty* NewProp_Skills = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Skills"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(Skills, AHeroCharacter), 0x0010000000000005);
+				UProperty* NewProp_Skills = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Skills"), RF_Public|RF_Transient|RF_MarkAsNative) UArrayProperty(CPP_PROPERTY_BASE(Skills, AHeroCharacter), 0x0010000000000025);
 				UProperty* NewProp_Skills_Inner = new(EC_InternalUseOnlyConstructor, NewProp_Skills, TEXT("Skills"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(FObjectInitializer(), EC_CppProperty, 0, 0x0000000000000000, Z_Construct_UClass_AHeroSkill_NoRegister());
 				UProperty* NewProp_ScreenPosition = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("ScreenPosition"), RF_Public|RF_Transient|RF_MarkAsNative) UStructProperty(CPP_PROPERTY_BASE(ScreenPosition, AHeroCharacter), 0x0010000000000005, Z_Construct_UScriptStruct_FVector2D());
 				UProperty* NewProp_Head = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("Head"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(Head, AHeroCharacter), 0x0010000000000005, Z_Construct_UClass_UTexture2D_NoRegister());
@@ -733,25 +768,26 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				UProperty* NewProp_SelectionDecal = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("SelectionDecal"), RF_Public|RF_Transient|RF_MarkAsNative) UObjectProperty(CPP_PROPERTY_BASE(SelectionDecal, AHeroCharacter), 0x001000000008001d, Z_Construct_UClass_UDecalComponent_NoRegister());
 				CPP_BOOL_PROPERTY_BITMASK_STRUCT(IsDebug, AHeroCharacter);
 				UProperty* NewProp_IsDebug = new(EC_InternalUseOnlyConstructor, OuterClass, TEXT("IsDebug"), RF_Public|RF_Transient|RF_MarkAsNative) UBoolProperty(FObjectInitializer(), EC_CppProperty, CPP_BOOL_PROPERTY_OFFSET(IsDebug, AHeroCharacter), 0x0010000000000015, CPP_BOOL_PROPERTY_BITMASK(IsDebug, AHeroCharacter), sizeof(bool), true);
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_AddBuff(), "AddBuff"); // 1992653910
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_AddBuff(), "AddBuff"); // 2574047493
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_AttackCompute(), "AttackCompute"); // 21798285
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_BP_PlayAttack(), "BP_PlayAttack"); // 2693622208
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_DoAction(), "DoAction"); // 2284941708
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetCurrentSkillIndex(), "GetCurrentSkillIndex"); // 3198225587
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetHPPercent(), "GetHPPercent"); // 2662852471
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetMPPercent(), "GetMPPercent"); // 3667680972
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetSkillCDPercent(), "GetSkillCDPercent"); // 3225554263
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_DoAction(), "DoAction"); // 1611678369
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetCurrentSkill(), "GetCurrentSkill"); // 1009937299
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetCurrentSkillIndex(), "GetCurrentSkillIndex"); // 1359522272
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetHPPercent(), "GetHPPercent"); // 1897808420
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetMPPercent(), "GetMPPercent"); // 892730271
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_GetSkillCDPercent(), "GetSkillCDPercent"); // 2284843660
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_HealCompute(), "HealCompute"); // 4161279553
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_HideSkillHint(), "HideSkillHint"); // 427071617
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_HideSkillHint(), "HideSkillHint"); // 4141694418
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_OnMouseClicked(), "OnMouseClicked"); // 1273128435
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOff(), "SelectionOff"); // 1526153471
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOn(), "SelectionOn"); // 798867789
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOff(), "SelectionOff"); // 3042895276
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_SelectionOn(), "SelectionOn"); // 3224658974
 				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ServerPlayAttack(), "ServerPlayAttack"); // 3516323136
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint(), "ShowSkillHint"); // 3961161328
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_TriggerSkill(), "TriggerSkill"); // 3990884558
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS(), "UpdateHPMPAS"); // 1210657723
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateSAI(), "UpdateSAI"); // 347021170
-				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UseSkill(), "UseSkill"); // 3587030035
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_ShowSkillHint(), "ShowSkillHint"); // 62071587
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_TriggerSkill(), "TriggerSkill"); // 3211257233
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateHPMPAS(), "UpdateHPMPAS"); // 1315125293
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UpdateSAI(), "UpdateSAI"); // 1522205246
+				OuterClass->AddFunctionToFunctionMapWithOverriddenName(Z_Construct_UFunction_AHeroCharacter_UseSkill(), "UseSkill"); // 3240754596
 				static TCppClassTypeInfo<TCppClassTypeTraits<AHeroCharacter> > StaticCppClassTypeInfo;
 				OuterClass->SetCppTypeInfo(&StaticCppClassTypeInfo);
 				OuterClass->StaticLink();
@@ -760,6 +796,8 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				MetaData->SetValue(OuterClass, TEXT("HideCategories"), TEXT("Navigation"));
 				MetaData->SetValue(OuterClass, TEXT("IncludePath"), TEXT("HeroCharacter.h"));
 				MetaData->SetValue(OuterClass, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_LastUseSkill, TEXT("Category"), TEXT("Current"));
+				MetaData->SetValue(NewProp_LastUseSkill, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_DefaultBuffProperty, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_DefaultBuffProperty, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BuffPropertyMap, TEXT("Category"), TEXT("Current"));
@@ -780,12 +818,9 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				MetaData->SetValue(NewProp_Equipments, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_Equipments, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_Equipments, TEXT("ToolTip"), TEXT("\x88dd\x5099"));
-				MetaData->SetValue(NewProp_CurrentSkillIndex, TEXT("Category"), TEXT("Current"));
-				MetaData->SetValue(NewProp_CurrentSkillIndex, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_CurrentSkillIndex, TEXT("ToolTip"), TEXT("\x6e96\x5099\x8981\x7528\x7684\x6280\x80fd\x7d22\x5f15"));
-				MetaData->SetValue(NewProp_CurrentAttackRadius, TEXT("Category"), TEXT("Current"));
-				MetaData->SetValue(NewProp_CurrentAttackRadius, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_CurrentAttackRadius, TEXT("ToolTip"), TEXT("\x76ee\x524d\x653b\x64ca\x8ddd\x96e2"));
+				MetaData->SetValue(NewProp_CurrentAttackRange, TEXT("Category"), TEXT("Current"));
+				MetaData->SetValue(NewProp_CurrentAttackRange, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_CurrentAttackRange, TEXT("ToolTip"), TEXT("\x76ee\x524d\x653b\x64ca\x8ddd\x96e2"));
 				MetaData->SetValue(NewProp_AdditionIntelligence, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_AdditionIntelligence, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_AdditionIntelligence, TEXT("ToolTip"), TEXT("\x5916\x52a0\x667a\x529b"));
@@ -834,15 +869,15 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				MetaData->SetValue(NewProp_CurrentLevel, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_CurrentLevel, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_CurrentLevel, TEXT("ToolTip"), TEXT("\x76ee\x524d\x7b49\x7d1a"));
-				MetaData->SetValue(NewProp_DazzingLeftCounting, TEXT("Category"), TEXT("Counting"));
-				MetaData->SetValue(NewProp_DazzingLeftCounting, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_DazzingLeftCounting, TEXT("ToolTip"), TEXT("\x6688\x70ab\x5012\x6578\x8a08\x6642\x5668"));
-				MetaData->SetValue(NewProp_SpellingCounting, TEXT("Category"), TEXT("Counting"));
-				MetaData->SetValue(NewProp_SpellingCounting, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_SpellingCounting, TEXT("ToolTip"), TEXT("\x65bd\x6cd5\x8a08\x6642\x5668"));
+				MetaData->SetValue(NewProp_StunningLeftCounting, TEXT("Category"), TEXT("Counting"));
+				MetaData->SetValue(NewProp_StunningLeftCounting, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_StunningLeftCounting, TEXT("ToolTip"), TEXT("\x6688\x70ab\x5012\x6578\x8a08\x6642\x5668"));
 				MetaData->SetValue(NewProp_FollowActorUpdateCounting, TEXT("Category"), TEXT("Counting"));
 				MetaData->SetValue(NewProp_FollowActorUpdateCounting, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_FollowActorUpdateCounting, TEXT("ToolTip"), TEXT("\x8ffd\x8e28\x76ee\x6a19\x8a08\x6642\x5668"));
+				MetaData->SetValue(NewProp_SpellingCounting, TEXT("Category"), TEXT("Counting"));
+				MetaData->SetValue(NewProp_SpellingCounting, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_SpellingCounting, TEXT("ToolTip"), TEXT("\x76ee\x524d\x65bd\x6cd5\x8a08\x6642\x5668"));
 				MetaData->SetValue(NewProp_AttackingCounting, TEXT("Category"), TEXT("Counting"));
 				MetaData->SetValue(NewProp_AttackingCounting, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_AttackingCounting, TEXT("ToolTip"), TEXT("\x76ee\x524d\x653b\x64ca\x8a08\x6642\x5668"));
@@ -852,6 +887,9 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				MetaData->SetValue(NewProp_CurrentSpellingBeginingTimeLength, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_CurrentSpellingBeginingTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_CurrentSpellingBeginingTimeLength, TEXT("ToolTip"), TEXT("\x76ee\x524d\x65bd\x6cd5\x524d\x6416\x6642\x9593\x9577\x5ea6"));
+				MetaData->SetValue(NewProp_CurrentSpellingRate, TEXT("Category"), TEXT("Current"));
+				MetaData->SetValue(NewProp_CurrentSpellingRate, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_CurrentSpellingRate, TEXT("ToolTip"), TEXT("\x65bd\x6cd5\x901f\x5ea6"));
 				MetaData->SetValue(NewProp_CurrentSpellingAnimationTimeLength, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_CurrentSpellingAnimationTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_CurrentSpellingAnimationTimeLength, TEXT("ToolTip"), TEXT("\x76ee\x524d\x65bd\x6cd5\x52d5\x756b\x6642\x9593\x9577\x5ea6"));
@@ -882,134 +920,137 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 				MetaData->SetValue(NewProp_TeamId, TEXT("Category"), TEXT("Current"));
 				MetaData->SetValue(NewProp_TeamId, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_TeamId, TEXT("ToolTip"), TEXT("\x968a\x4f0did"));
-				MetaData->SetValue(NewProp_MinimumDontMoveDistance, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_MinimumDontMoveDistance, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_MinimumDontMoveDistance, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_MinimumDontMoveDistance, TEXT("ToolTip"), TEXT("\x6700\x5c0f\x79fb\x52d5\x8ddd\x96e2"));
-				MetaData->SetValue(NewProp_PickupObjectDistance, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_PickupObjectDistance, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_PickupObjectDistance, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_PickupObjectDistance, TEXT("ToolTip"), TEXT("\x64bf\x6771\x897f\x7684\x8ddd\x96e2"));
-				MetaData->SetValue(NewProp_isSelection, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_isSelection, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_isSelection, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_Skill_Points, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_Skill_Points, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Skill_Points, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_Skill_Points, TEXT("ToolTip"), TEXT("\x53ef\x4ee5\x4f7f\x7528\x7684\x6280\x80fd\x9ede\x6578"));
-				MetaData->SetValue(NewProp_CurrentSkillDirection, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_CurrentSkillIndex, TEXT("Category"), TEXT("Current"));
+				MetaData->SetValue(NewProp_CurrentSkillIndex, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_CurrentSkillIndex, TEXT("ToolTip"), TEXT("\x6e96\x5099\x8981\x7528\x7684\x6280\x80fd\x7d22\x5f15"));
+				MetaData->SetValue(NewProp_CurrentSkillDirection, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_CurrentSkillDirection, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_CurrentSkillDirection, TEXT("ToolTip"), TEXT("\x7576\x524d\x6280\x80fd\x6307\x5411"));
-				MetaData->SetValue(NewProp_CurrentSkillHint, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_CurrentSkillHint, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_CurrentSkillHint, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_CurrentSkillHint, TEXT("ToolTip"), TEXT("\x7576\x524d\x6280\x80fd\x63d0\x793a"));
-				MetaData->SetValue(NewProp_LevelProperty_Intelligence, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_LevelProperty_Intelligence, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_LevelProperty_Intelligence, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_LevelProperty_Intelligence, TEXT("ToolTip"), TEXT("\x6bcf\x500b\x7b49\x7d1a\x63d0\x5347\x7684\x667a\x529b"));
-				MetaData->SetValue(NewProp_LevelProperty_Agility, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_LevelProperty_Agility, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_LevelProperty_Agility, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_LevelProperty_Agility, TEXT("ToolTip"), TEXT("\x6bcf\x500b\x7b49\x7d1a\x63d0\x5347\x7684\x654f\x6377"));
-				MetaData->SetValue(NewProp_LevelProperty_Strength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_LevelProperty_Strength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_LevelProperty_Strength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_LevelProperty_Strength, TEXT("ToolTip"), TEXT("\x6bcf\x500b\x7b49\x7d1a\x63d0\x5347\x7684\x529b\x91cf"));
-				MetaData->SetValue(NewProp_LevelProperty_Attack, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_LevelProperty_Attack, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_LevelProperty_Attack, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_LevelProperty_Attack, TEXT("ToolTip"), TEXT("\x6bcf\x500b\x7b49\x7d1a\x63d0\x5347\x7684XXX\x4e0d\x7d2f\x52a0\n\x6bcf\x500b\x7b49\x7d1a\x63d0\x5347\x7684\x653b\x64ca\x529b"));
-				MetaData->SetValue(NewProp_Intelligence, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_Intelligence, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Intelligence, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_Intelligence, TEXT("ToolTip"), TEXT("\x667a\x529b"));
-				MetaData->SetValue(NewProp_Agility, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_Agility, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Agility, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_Agility, TEXT("ToolTip"), TEXT("\x654f\x6377"));
-				MetaData->SetValue(NewProp_Strength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_Strength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Strength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_Strength, TEXT("ToolTip"), TEXT("\x529b\x91cf"));
-				MetaData->SetValue(NewProp_BaseBountyGold, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseBountyGold, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseBountyGold, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseBountyGold, TEXT("ToolTip"), TEXT("\x57fa\x790e\x6389\x7387\x91d1\x9322"));
-				MetaData->SetValue(NewProp_BaseIntelligence, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseIntelligence, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseIntelligence, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseIntelligence, TEXT("ToolTip"), TEXT("\x57fa\x790e\x667a\x529b"));
-				MetaData->SetValue(NewProp_BaseAgility, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseAgility, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseAgility, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseAgility, TEXT("ToolTip"), TEXT("\x57fa\x790e\x654f\x6377"));
-				MetaData->SetValue(NewProp_BaseStrength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseStrength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseStrength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseStrength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x529b\x91cf"));
-				MetaData->SetValue(NewProp_BaseMP, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseMP, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseMP, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseMP, TEXT("ToolTip"), TEXT("\x57fa\x790e\x9b54\x529b"));
-				MetaData->SetValue(NewProp_BaseHP, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseHP, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseHP, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseHP, TEXT("ToolTip"), TEXT("\x57fa\x790e\x8840\x91cf"));
-				MetaData->SetValue(NewProp_BaseRegenMP, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseRegenMP, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseRegenMP, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseRegenMP, TEXT("ToolTip"), TEXT("\x57fa\x790e\x56de\x9b54"));
-				MetaData->SetValue(NewProp_BaseRegenHP, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseRegenHP, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseRegenHP, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseRegenHP, TEXT("ToolTip"), TEXT("\x57fa\x790e\x56de\x8840"));
-				MetaData->SetValue(NewProp_BaseMoveSpeed, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseMoveSpeed, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseMoveSpeed, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseMoveSpeed, TEXT("ToolTip"), TEXT("\x57fa\x790e\x79fb\x52d5\x901f\x5ea6"));
-				MetaData->SetValue(NewProp_BaseAttack, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseAttack, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseAttack, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseAttack, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x64ca\x529b"));
-				MetaData->SetValue(NewProp_BaseArmor, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseArmor, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseArmor, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseArmor, TEXT("ToolTip"), TEXT("\x57fa\x790e\x88dd\x7532"));
-				MetaData->SetValue(NewProp_BasePhysicsInjuredRatio, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BasePhysicsInjuredRatio, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BasePhysicsInjuredRatio, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BasePhysicsInjuredRatio, TEXT("ToolTip"), TEXT("\x57fa\x790e\x7269\x7406\x53d7\x50b7\x500d\x7387"));
-				MetaData->SetValue(NewProp_BaseMagicInjuredRatio, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseMagicInjuredRatio, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseMagicInjuredRatio, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseMagicInjuredRatio, TEXT("ToolTip"), TEXT("\x57fa\x790e\x9b54\x6cd5\x53d7\x50b7\x500d\x7387"));
-				MetaData->SetValue(NewProp_FollowActorUpdateTimeGap, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_FollowActorUpdateTimeGap, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_FollowActorUpdateTimeGap, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_FollowActorUpdateTimeGap, TEXT("ToolTip"), TEXT("\x8ffd\x8e28\x76ee\x6a19\x66f4\x65b0\x6642\x9593"));
-				MetaData->SetValue(NewProp_BaseSpellingEndingTimeLength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseSpellingEndingTimeLength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseSpellingEndingTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseSpellingEndingTimeLength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x65bd\x6cd5\x5f8c\x6416\x6642\x9593\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_BaseSpellingBeginingTimeLength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseSpellingBeginingTimeLength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseSpellingBeginingTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseSpellingBeginingTimeLength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x65bd\x6cd5\x524d\x6416\x6642\x9593\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_BaseSpellingAnimationTimeLength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseSpellingAnimationTimeLength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseSpellingAnimationTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseSpellingAnimationTimeLength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x65bd\x6cd5\x52d5\x756b\x6642\x9593\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_BaseSpellingWatingTimeLength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseSpellingWatingTimeLength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseSpellingWatingTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseSpellingWatingTimeLength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x65bd\x6cd5\x524d\x7b49\x5f85\x6642\x9593\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_BaseAttackingEndingTimeLength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseAttackingEndingTimeLength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseAttackingEndingTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseAttackingEndingTimeLength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x64ca\x5f8c\x6416\x6642\x9593\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_BaseAttackingBeginingTimeLength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseAttackingBeginingTimeLength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseAttackingBeginingTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseAttackingBeginingTimeLength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x64ca\x524d\x6416\x6642\x9593\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_BaseAttackingAnimationTimeLength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseAttackingAnimationTimeLength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseAttackingAnimationTimeLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseAttackingAnimationTimeLength, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x64ca\x52d5\x756b\x6642\x9593\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_BaseAttackSpeedSecond, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseAttackSpeedSecond, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_BaseAttackSpeedSecond, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_BaseAttackSpeedSecond, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x901f"));
-				MetaData->SetValue(NewProp_AdditionAttackSpeed, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_AdditionAttackSpeed, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_AdditionAttackSpeed, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_AdditionAttackSpeed, TEXT("ToolTip"), TEXT("\x653b\x901f\x52a0\x4e58"));
-				MetaData->SetValue(NewProp_BaseAttackRadius, TEXT("Category"), TEXT("Hero"));
-				MetaData->SetValue(NewProp_BaseAttackRadius, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_BaseAttackRadius, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x64ca\x8ddd\x96e2"));
-				MetaData->SetValue(NewProp_Skill_Classes, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_BaseAttackRange, TEXT("Category"), TEXT("MOBA"));
+				MetaData->SetValue(NewProp_BaseAttackRange, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
+				MetaData->SetValue(NewProp_BaseAttackRange, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x64ca\x8ddd\x96e2"));
+				MetaData->SetValue(NewProp_Skill_Classes, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Skill_Classes, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_Skills, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_Skills, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Skills, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
-				MetaData->SetValue(NewProp_Skills, TEXT("ToolTip"), TEXT("\x57fa\x790e\x653b\x64ca\x8ddd\x96e2"));
-				MetaData->SetValue(NewProp_ScreenPosition, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_Skills, TEXT("ToolTip"), TEXT("\x82f1\x96c4\x6280\x80fd"));
+				MetaData->SetValue(NewProp_ScreenPosition, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_ScreenPosition, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_ScreenPosition, TEXT("ToolTip"), TEXT("set by HUD"));
-				MetaData->SetValue(NewProp_Head, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_Head, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_Head, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_Head, TEXT("ToolTip"), TEXT("\x5927\x982d\x8cbc"));
-				MetaData->SetValue(NewProp_HPBarLength, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_HPBarLength, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_HPBarLength, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_HPBarLength, TEXT("ToolTip"), TEXT("\x8840\x689d\x9577\x5ea6"));
-				MetaData->SetValue(NewProp_HeroHistoryDescription, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_HeroHistoryDescription, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_HeroHistoryDescription, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_HeroHistoryDescription, TEXT("ToolTip"), TEXT("\x6b77\x53f2\x8aaa\x660e"));
-				MetaData->SetValue(NewProp_HeroName, TEXT("Category"), TEXT("Hero"));
+				MetaData->SetValue(NewProp_HeroName, TEXT("Category"), TEXT("MOBA"));
 				MetaData->SetValue(NewProp_HeroName, TEXT("ModuleRelativePath"), TEXT("Public/HeroCharacter.h"));
 				MetaData->SetValue(NewProp_HeroName, TEXT("ToolTip"), TEXT("\x82f1\x96c4\x540d"));
 				MetaData->SetValue(NewProp_ShowDamageEffect, TEXT("Category"), TEXT("Interaction"));
@@ -1037,7 +1078,7 @@ static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EHeroBodyStatus(EHeroBod
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AHeroCharacter, 2251822010);
+	IMPLEMENT_CLASS(AHeroCharacter, 1512799543);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AHeroCharacter(Z_Construct_UClass_AHeroCharacter, &AHeroCharacter::StaticClass, TEXT("/Script/MOBA"), TEXT("AHeroCharacter"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AHeroCharacter);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

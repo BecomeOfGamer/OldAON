@@ -26,7 +26,8 @@ public:
 	void CharacterStopMove(AHeroCharacter* hero);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void HeroUseSkill(AHeroCharacter* hero, int32 index, const FVector& VFaceTo, const FVector& Pos);
+	void HeroUseSkill(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, 
+		FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void SetHeroAction(AHeroCharacter* hero, const FHeroAction& action);
