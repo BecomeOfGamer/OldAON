@@ -736,6 +736,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
 					// Check NoTarget or SmartCast
+					//CurrentSelection[0]->SetOwner(LocalController);
 					bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120*ViewportScale));
 					CurrentSkillIndex = idx;
 					if(res)

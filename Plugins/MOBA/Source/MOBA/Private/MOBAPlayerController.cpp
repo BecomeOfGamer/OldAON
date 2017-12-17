@@ -37,7 +37,7 @@ void AMOBAPlayerController::BeginPlay()
 	{
 		if (*ActorItr != this)
 		{
-			ActorItr->SetOwner(this);
+			//ActorItr->SetOwner(this);
 		}
 	}
 }

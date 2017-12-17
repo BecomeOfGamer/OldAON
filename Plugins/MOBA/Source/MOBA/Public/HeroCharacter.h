@@ -40,7 +40,7 @@ class AEquipment;
 class ABulletActor;
 class AHeroSkill;
 class ASkillHintActor;
-
+class AMOBAPlayerController;
 
 UCLASS()
 class MOBA_API AHeroCharacter : public ACharacter
@@ -516,5 +516,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	FHeroAction LastUseSkill;
+
+	AMOBAPlayerController* apc;
 
 };

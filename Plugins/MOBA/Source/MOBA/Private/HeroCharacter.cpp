@@ -14,6 +14,8 @@
 #include "PaperFlipbook.h"
 #include "SceneObject.h"
 #include "HeroSkill.h"
+#include "MOBAPlayerController.h"
+#include "Engine/World.h"
 
 
 AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
@@ -139,6 +141,8 @@ void AHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();	
 	GetCapsuleComponent()->OnClicked.AddDynamic(this, &AHeroCharacter::OnMouseClicked);
+
+	localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
 
 	SelectionDecal->SetVisibility(false);
 	isSelection = false;
@@ -827,21 +831,22 @@ bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos, AHeroCharacter* Curr
 			FVector dir = Pos - GetActorLocation();
 			dir.Z = 0;
 			dir.Normalize();
+			AMOBAPlayerController* PC = Cast<AMOBAPlayerController>(GetController());
 			if (hs->SkillBehavior[EHeroBehavior::NoTarget])
 			{
-				ags->HeroUseSkill(this, EHeroActionStatus::SpellNow, index, dir, Pos, CurrentTarget);
+				localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellNow, index, dir, Pos, CurrentTarget);
 			}
 			else if (hs->SkillBehavior[EHeroBehavior::UnitTarget])
 			{
-				ags->HeroUseSkill(this, EHeroActionStatus::SpellToActor, index, dir, Pos, CurrentTarget);
+				localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToActor, index, dir, Pos, CurrentTarget);
 			}
 			else if (hs->SkillBehavior[EHeroBehavior::Directional])
 			{
-				ags->HeroUseSkill(this, EHeroActionStatus::SpellToDirection, index, dir, Pos, CurrentTarget);
+				localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToDirection, index, dir, Pos, CurrentTarget);
 			}
 			else if (hs->SkillBehavior[EHeroBehavior::Aoe])
 			{
-				ags->HeroUseSkill(this, EHeroActionStatus::SpellToPosition, index, dir, Pos, CurrentTarget);
+				localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToPosition, index, dir, Pos, CurrentTarget);
 			}
 			return false;
 		}
@@ -1100,12 +1105,7 @@ void AHeroCharacter::DoNothing()
 		break;
 	case EHeroBodyStatus::Moving:
 	{
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
-		{
-			ags->CharacterStopMove(this);
-		}
-		
+		localPC->ServerCharacterStopMove(this);
 		BodyStatus = EHeroBodyStatus::Standing;
 	}
 	break;
@@ -1570,6 +1570,10 @@ void AHeroCharacter::DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction)
 void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 {
 	AHeroCharacter* TargetActor = Cast<AHeroCharacter>(CurrentAction.TargetActor);
+	if (!TargetActor)
+	{
+		return;
+	}
 	FVector dir = TargetActor->GetActorLocation() - GetActorLocation();
 	dir.Z = 0;
 	dir.Normalize();

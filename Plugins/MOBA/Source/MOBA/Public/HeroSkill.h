@@ -31,7 +31,7 @@ enum class EHeroBehavior : uint8
 	Directional,
 	//瞬發技，沒有前搖
 	Immediate,
-	//火箭那種可以自動施法的
+	//玉子的火箭那種可以自動施法的
 	Autocast,
 	//被綁時無法放招
 	BanMoveDisables,

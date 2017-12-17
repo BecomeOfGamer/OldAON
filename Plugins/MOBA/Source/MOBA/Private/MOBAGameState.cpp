@@ -125,6 +125,16 @@ void AMOBAGameState::HeroUseSkill_Implementation(AHeroCharacter* hero, EHeroActi
 {
 	if (Role == ROLE_Authority)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("Server HeroUseSkill %d"), index));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("Client HeroUseSkill %d"), index));
+	}
+	if (Role == ROLE_Authority)
+	{
 		hero->UseSkill(SpellType, index, VFaceTo, Pos, victim);
 	}
 }
