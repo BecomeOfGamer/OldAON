@@ -867,7 +867,7 @@ bool AHeroCharacter::ShowSkillHint(int32 index)
 	}
 	if(index < Skills.Num())
 	{
-		CurrentSkillHint = GetWorld()->SpawnActor<ASkillHintActor>(Skills[index]->Skill_HintActor);
+		CurrentSkillHint = GetWorld()->SpawnActor<ASkillHintActor>(Skills[index]->HintActor);
 		CurrentSkillIndex = index;
 		return true;
 	}
@@ -903,7 +903,7 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 	// 設定面對施法的位置
 	if (Skills.Num() > index)
 	{
-		if (Skills[index]->Skill_FaceSkill)
+		if (Skills[index]->FaceSkill)
 		{
 			SetActorRotation(VFaceTo.Rotation());
 		}
@@ -1598,7 +1598,7 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Moving:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (CurrentAttackRange > DistanceToTargetActor)
+		if (Skills[CurrentAction.TargetIndex1]->CastRange > DistanceToTargetActor)
 		{
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			if (ags)

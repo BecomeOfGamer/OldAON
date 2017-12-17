@@ -108,7 +108,7 @@ public:
 	float GetSkillCDPercent();
 
 	// 技能發動者
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
 	AHeroCharacter* Caster;
 
 	// 技能行為
@@ -117,57 +117,57 @@ public:
 
 	// 技能名字
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	FString Skill_Name;
+	FString Name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	bool SmartCast;
 
 	// 使用了技能後是否面對技能
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	bool Skill_FaceSkill;
+	bool FaceSkill;
 
 	// 施法距離
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hero")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float CastRange;
 
 	// 技能描述
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	FSkillDescription Skill_Description;
+	FSkillDescription Description;
 
 	// 技能圖片
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	UTexture2D* Skill_Texture;
+	UTexture2D* Texture;
 
 	// 所有技能提示
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	TSubclassOf<ASkillHintActor> Skill_HintActor;
+	TSubclassOf<ASkillHintActor> HintActor;
 
 	// 儲存所有技能每個等級的CD時間
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	FLevelCDs Skill_LevelCDs;
+	FLevelCDs LevelCDs;
 
 	// 是否在CD中
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	bool Skill_CDing;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	bool CDing;
 
 	// 當前CD秒數，CD秒數等於Skill_MaxCD時就是CD結束
 	// Skill_CurrentCD will accumulation every frame
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float Skill_CurrentCD;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	float CurrentCD;
 
 	// 當前技能CD時間
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float Skill_MaxCD;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	float MaxCD;
 
-	// 當前所有技能原始CD時間
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float Skill_BaseCD;
+	// 當前技能原始CD時間
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	float BaseCD;
 
-	// 當前所有的技能等級
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	int32 Skill_Level;
+	// 當前技能等級
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	int32 CurrentLevel;
 
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TMap<FString, FLevelVariable> VariableMap;
 	
 };
