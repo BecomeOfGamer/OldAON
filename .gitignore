@@ -50,6 +50,8 @@ SourceArt/**/*.tga
 
 # Binary Files
 Binaries/*
+Plugins/MOBA/Binaries/*
+Plugins/MOBA/Intermediate/*
 
 # Builds
 Build/*
