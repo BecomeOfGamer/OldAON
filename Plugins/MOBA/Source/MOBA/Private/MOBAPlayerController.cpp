@@ -25,11 +25,11 @@ void AMOBAPlayerController::BeginPlay()
 	if (Hud)
 	{
 		Hud->LocalController = this;
-		SkillMapping.Add(EKeys::Q);
 		SkillMapping.Add(EKeys::W);
 		SkillMapping.Add(EKeys::E);
 		SkillMapping.Add(EKeys::R);
 		SkillMapping.Add(EKeys::T);
+		SkillMapping.Add(EKeys::D);
 	}
 	bMouseRButton = false;
 	bMouseLButton = false;

@@ -16,34 +16,21 @@ class MOBA_API AMOBAGameState : public AGameStateBase
 	GENERATED_BODY()
 public:
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void SetObjectLocation(AActor* actor, const FVector& pos);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void CharacterMove(AHeroCharacter* hero, const FVector& action);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void CharacterStopMove(AHeroCharacter* hero);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void HeroUseSkill(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, 
 		FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void SetHeroAction(AHeroCharacter* hero, const FHeroAction& action);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void AppendHeroAction(AHeroCharacter* hero, const FHeroAction& action);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ClearHeroAction(AHeroCharacter* hero, const FHeroAction& action);
-
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void MakeRandom();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA", Replicated)
-	int32 RandomSeed;
-	
+		
 	// 每1點力量增加血量
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	float StrengthToHP;

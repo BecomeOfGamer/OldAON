@@ -517,6 +517,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	FHeroAction LastUseSkill;
 
-	AMOBAPlayerController* apc;
+	AMOBAPlayerController* localPC;
 
 };
