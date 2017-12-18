@@ -447,7 +447,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float CurrentHP;
 	// 魔力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float CurrentMP;
 	// 回血
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")

@@ -43,20 +43,6 @@ enum class EHeroBehavior : uint8
 #define HEROB EHeroBehavior
 
 USTRUCT(BlueprintType)
-struct FLevelCDs
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<float> CDs;
-
-	float operator[](int32 n)
-	{
-		return CDs[n];
-	}
-};
-
-USTRUCT(BlueprintType)
 struct FSkillDescription
 {
 	GENERATED_USTRUCT_BODY()
@@ -145,9 +131,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	TSubclassOf<ASkillHintActor> HintActor;
 
-	// 儲存所有技能每個等級的CD時間
+	// 儲存每個等級的CD時間
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	FLevelCDs LevelCDs;
+	TArray<float> LevelCD;
+
+	// 儲存每個等級的魔力消耗
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	TArray<float> LevelManaCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
+	float CurrnetManaCost;
 
 	// 是否在CD中
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)

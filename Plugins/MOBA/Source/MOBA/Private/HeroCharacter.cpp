@@ -844,36 +844,39 @@ bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos, AHeroCharacter* Curr
 			return false;
 		}
 		// 不需指定或智能施法
-		else if (!hs->CDing &&(hs->SkillBehavior[EHeroBehavior::NoTarget] || hs->SmartCast))
+		else if (!hs->CDing && hs->CurrnetManaCost <= CurrentMP)
 		{
-			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			FVector dir = Pos - GetActorLocation();
-			dir.Z = 0;
-			dir.Normalize();
-			AMOBAPlayerController* PC = Cast<AMOBAPlayerController>(GetController());
-			if (hs->SkillBehavior[EHeroBehavior::NoTarget])
+			if (hs->SkillBehavior[EHeroBehavior::NoTarget] || hs->SmartCast)
 			{
-				localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellNow, index, dir, Pos, CurrentTarget);
+				AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+				FVector dir = Pos - GetActorLocation();
+				dir.Z = 0;
+				dir.Normalize();
+				AMOBAPlayerController* PC = Cast<AMOBAPlayerController>(GetController());
+				if (hs->SkillBehavior[EHeroBehavior::NoTarget])
+				{
+					localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellNow, index, dir, Pos, CurrentTarget);
+				}
+				else if (hs->SkillBehavior[EHeroBehavior::UnitTarget])
+				{
+					localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToActor, index, dir, Pos, CurrentTarget);
+				}
+				else if (hs->SkillBehavior[EHeroBehavior::Directional])
+				{
+					localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToDirection, index, dir, Pos, CurrentTarget);
+				}
+				else if (hs->SkillBehavior[EHeroBehavior::Aoe])
+				{
+					localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToPosition, index, dir, Pos, CurrentTarget);
+				}
+				return false;
 			}
-			else if (hs->SkillBehavior[EHeroBehavior::UnitTarget])
+			// 顯示技能範圍提示
+			else
 			{
-				localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToActor, index, dir, Pos, CurrentTarget);
+				ShowSkillHint(index);
+				return true;
 			}
-			else if (hs->SkillBehavior[EHeroBehavior::Directional])
-			{
-				localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToDirection, index, dir, Pos, CurrentTarget);
-			}
-			else if (hs->SkillBehavior[EHeroBehavior::Aoe])
-			{
-				localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToPosition, index, dir, Pos, CurrentTarget);
-			}
-			return false;
-		}
-		// 顯示技能範圍提示
-		else if (!hs->CDing)
-		{
-			ShowSkillHint(index);
-			return true;
 		}
 	}
 	return false;
@@ -947,6 +950,7 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 			break;
 		}
 		Skills[index]->StartCD();
+		CurrentMP -= Skills[index]->CurrnetManaCost;
 	}
 	return true;
 }
@@ -1688,6 +1692,7 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AHeroCharacter, Equipments);
 	DOREPLIFETIME(AHeroCharacter, CurrentHP);
+	DOREPLIFETIME(AHeroCharacter, CurrentMP);
 	DOREPLIFETIME(AHeroCharacter, BodyStatus);
 	DOREPLIFETIME(AHeroCharacter, ActionQueue);
 	DOREPLIFETIME(AHeroCharacter, CurrentAction);
