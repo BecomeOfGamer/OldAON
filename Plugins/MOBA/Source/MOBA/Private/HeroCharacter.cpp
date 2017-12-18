@@ -832,7 +832,7 @@ bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos, AHeroCharacter* Curr
 			return false;
 		}
 		// 不需指定或智能施法
-		else if (hs->SkillBehavior[EHeroBehavior::NoTarget] || hs->SmartCast)
+		else if (!hs->CDing &&(hs->SkillBehavior[EHeroBehavior::NoTarget] || hs->SmartCast))
 		{
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			FVector dir = Pos - GetActorLocation();
@@ -858,12 +858,8 @@ bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos, AHeroCharacter* Curr
 			return false;
 		}
 		// 顯示技能範圍提示
-		else
+		else if (!hs->CDing)
 		{
-			if (hs->SkillBehavior[EHeroBehavior::UnitTarget])
-			{
-				
-			}
 			ShowSkillHint(index);
 			return true;
 		}
@@ -912,8 +908,8 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 	{
 		index = CurrentSkillIndex;
 	}
-	// 設定面對施法的位置
-	if (Skills.Num() > index)
+	// 設定面對施法的位置，而且沒在cd
+	if (Skills.Num() > index && !Skills[index]->CDing)
 	{
 		if (Skills[index]->FaceSkill)
 		{
@@ -938,6 +934,7 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 		default:
 			break;
 		}
+		Skills[index]->StartCD();
 	}
 	return true;
 }

@@ -39,14 +39,10 @@ void AMOBAGameState::AppendHeroAction(AHeroCharacter* hero, const FHeroAction& a
 }
 
 
-
-
 void AMOBAGameState::ClearHeroAction(AHeroCharacter* hero, const FHeroAction& action)
 {
 	hero->ActionQueue.Empty();
 }
-
-
 
 void AMOBAGameState::CharacterMove(AHeroCharacter* actor, const FVector& pos)
 {
@@ -56,8 +52,6 @@ void AMOBAGameState::CharacterMove(AHeroCharacter* actor, const FVector& pos)
 		NavSys->SimpleMoveToLocation(actor->GetController(), pos);
 	}
 }
-
-
 
 void AMOBAGameState::CharacterStopMove(AHeroCharacter* actor)
 {

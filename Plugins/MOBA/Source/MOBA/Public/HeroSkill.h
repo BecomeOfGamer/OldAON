@@ -102,6 +102,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_SpellToActor(FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
 
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void StartCD();
+
 	// called every frame
 	void CheckCD(float DeltaTime);
 
@@ -147,12 +150,12 @@ public:
 	FLevelCDs LevelCDs;
 
 	// 是否在CD中
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	bool CDing;
 
 	// 當前CD秒數，CD秒數等於Skill_MaxCD時就是CD結束
 	// Skill_CurrentCD will accumulation every frame
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float CurrentCD;
 
 	// 當前技能CD時間
@@ -164,7 +167,7 @@ public:
 	float BaseCD;
 
 	// 當前技能等級
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	int32 CurrentLevel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

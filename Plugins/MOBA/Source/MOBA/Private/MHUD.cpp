@@ -237,7 +237,7 @@ void AMHUD::DrawHUD()
 				if(skhb && SkillDMaterials.Num() > idx && selectHero->Skills.Num() > idx)
 				{
 					SkillDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Skills[idx]->Texture);
-					SkillDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->GetSkillCDPercent(idx));
+					SkillDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->Skills[idx]->GetSkillCDPercent());
 					DrawMaterialSimple(SkillDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
 					                   skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
 				}
