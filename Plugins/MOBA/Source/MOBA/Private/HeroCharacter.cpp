@@ -217,6 +217,8 @@ void AHeroCharacter::Tick(float DeltaTime)
 		BuffStateMap = SwapState;
 		BuffPropertyMap = SwapProperty;
 	}
+	// 更新血魔攻速
+	UpdateHPMPAS();
 	if (BuffStateMap[HEROS::Stunning])
 	{
 		BodyStatus = EHeroBodyStatus::Stunning;
@@ -230,10 +232,20 @@ void AHeroCharacter::Tick(float DeltaTime)
 		}
 	}
 	
-	
 	{// 計算各種自然回復
-		CurrentHP += DeltaTime * CurrentRegenHP;
-		CurrentMP += DeltaTime * CurrentRegenMP;
+		if (CurrentHP > 0)
+		{
+			CurrentHP += DeltaTime * CurrentRegenHP;
+			CurrentMP += DeltaTime * CurrentRegenMP;
+			if (CurrentHP > CurrentMaxHP)
+			{
+				CurrentHP = CurrentMaxHP;
+			}
+			if (CurrentMP > CurrentMaxMP)
+			{
+				CurrentMP = CurrentMaxMP;
+			}
+		}
 	}
 	if (CurrentSkillHint)
 	{
@@ -778,14 +790,14 @@ void AHeroCharacter::UpdateHPMPAS()
 	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	if (ags) 
 	{
-		CurrentMaxHP = BaseHP + BaseStrength * ags->StrengthToHP;
-		CurrentRegenHP = BaseRegenHP + BaseStrength * ags->StrengthToHealingHP;
-		CurrentMaxMP = BaseMP + BaseIntelligence * ags->IntelligenceToMP;
-		CurrentRegenMP = BaseRegenMP + BaseIntelligence * ags->IntelligenceToHealingMP;
+		CurrentMaxHP = BaseHP + Strength * ags->StrengthToHP;
+		CurrentRegenHP = BaseRegenHP + Strength * ags->StrengthToHealingHP;
+		CurrentMaxMP = BaseMP + Intelligence * ags->IntelligenceToMP;
+		CurrentRegenMP = BaseRegenMP + Intelligence * ags->IntelligenceToHealingMP;
 
-		CurrentAttackSpeed = BaseMP + BaseAgility * ags->AgilityToAttackSpeed;
+		CurrentAttackSpeed = BaseMP + Agility * ags->AgilityToAttackSpeed;
 		CurrentAttackSpeedSecond = BaseAttackSpeedSecond / (1 + CurrentAttackSpeed * 0.01);
-		CurrentArmor = BaseArmor + BaseAgility * ags->AgilityToDefense;
+		CurrentArmor = BaseArmor + Agility * ags->AgilityToDefense;
 		CurrentAttackingAnimationTimeLength = BaseAttackingAnimationTimeLength / CurrentAttackSpeedSecond;
 		CurrentAttackingAnimationRate = BaseAttackingAnimationTimeLength / CurrentAttackSpeedSecond;
 	}
