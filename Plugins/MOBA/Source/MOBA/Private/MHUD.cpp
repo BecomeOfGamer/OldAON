@@ -60,6 +60,10 @@ void AMHUD::BeginPlay()
 		GetSkillPosition(i, p1, s1);
 		FString skname = FString::Printf(TEXT("Skill%d"), i + 1);
 		RTS_AddHitBox(p1, s1, skname, false, 0);
+		FString sklvname = FString::Printf(TEXT("SkillLvUp%d"), i + 1);
+		s1.Y = 50;
+		p1.Y -= 50;
+		RTS_AddHitBox(p1, s1, sklvname, false, 0);
 		SkillMapping.Add(skname, i);
 		if(SkillMaterial)
 		{
@@ -233,6 +237,7 @@ void AMHUD::DrawHUD()
 			for(int32 idx = 0; idx < 4; ++idx)
 			{
 				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("Skill%d"), idx + 1));
+				FMHitBox* sklvhb = FindHitBoxByName(FString::Printf(TEXT("SkillLvUp%d"), idx + 1));
 
 				if(skhb && SkillDMaterials.Num() > idx && selectHero->Skills.Num() > idx)
 				{
@@ -240,6 +245,11 @@ void AMHUD::DrawHUD()
 					SkillDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->Skills[idx]->GetSkillCDPercent());
 					DrawMaterialSimple(SkillDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
 					                   skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
+					if (sklvhb && SkillLevelUpMaterial && selectHero->Skills[idx]->CanLevelUp())
+					{
+						DrawMaterialSimple(SkillLevelUpMaterial, sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale,
+							sklvhb->Size.X * ViewportScale, sklvhb->Size.Y * ViewportScale);
+					}
 				}
 			}
 		}
@@ -255,7 +265,7 @@ void AMHUD::DrawHUD()
 					if(EquipmentDMaterials.Num() > idx && selectHero->Equipments.Num() > idx && selectHero->Equipments[idx])
 					{
 						EquipmentDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Equipments[idx]->Head);
-						EquipmentDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->GetSkillCDPercent(idx));
+						//EquipmentDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->GetSkillCDPercent(idx));
 						DrawMaterialSimple(EquipmentDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
 						                   skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
 					}
@@ -730,9 +740,9 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 	{
 		for(FMHitBox& HitBox : RTS_HitBoxMap)
 		{
-			if(HitBox.GetName().Left(5) == TEXT("Skill"))
+			if (HitBox.GetName().Left(5) == TEXT("Skill") && HitBox.GetName().Len() == 6)
 			{
-				if(HitBox.Contains(pos, ViewportScale))
+				if (HitBox.Contains(pos, ViewportScale))
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
 					// Check NoTarget or SmartCast
@@ -740,6 +750,21 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 					bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120*ViewportScale));
 					CurrentSkillIndex = idx;
 					if(res)
+					{
+						HUDStatus = EMHUDStatus::SkillHint;
+					}
+				}
+			}
+			else if (HitBox.GetName().Left(5) == TEXT("SkillLvUp") && HitBox.GetName().Len() == 11)
+			{
+				if (HitBox.Contains(pos, ViewportScale))
+				{
+					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
+					// Check NoTarget or SmartCast
+					//CurrentSelection[0]->SetOwner(LocalController);
+					bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120 * ViewportScale));
+					CurrentSkillIndex = idx;
+					if (res)
 					{
 						HUDStatus = EMHUDStatus::SkillHint;
 					}

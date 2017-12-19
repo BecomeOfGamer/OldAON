@@ -91,10 +91,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void StartCD();
 
+	bool CanLevelUp();
+
 	// called every frame
 	void CheckCD(float DeltaTime);
 
 	float GetSkillCDPercent();
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
+#endif
 
 	// 技能發動者
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
@@ -162,6 +169,10 @@ public:
 	// 當前技能等級
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	int32 CurrentLevel;
+
+	// 當前技能CD時間
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	int32 MaxLevel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TMap<FString, FLevelVariable> VariableMap;

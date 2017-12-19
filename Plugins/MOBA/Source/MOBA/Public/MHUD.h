@@ -232,6 +232,9 @@ public:
 	UTexture2D* NothingTexture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	UMaterialInterface* SkillLevelUpMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	UMaterialInterface* SkillMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
