@@ -755,19 +755,14 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 					}
 				}
 			}
-			else if (HitBox.GetName().Left(5) == TEXT("SkillLvUp") && HitBox.GetName().Len() == 11)
+			else if (HitBox.GetName().Left(9) == TEXT("SkillLvUp") && HitBox.GetName().Len() == 10)
 			{
 				if (HitBox.Contains(pos, ViewportScale))
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
 					// Check NoTarget or SmartCast
 					//CurrentSelection[0]->SetOwner(LocalController);
-					bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120 * ViewportScale));
-					CurrentSkillIndex = idx;
-					if (res)
-					{
-						HUDStatus = EMHUDStatus::SkillHint;
-					}
+					LocalController->ServerHeroSkillLevelUp(CurrentSelection[0], idx);
 				}
 			}
 		}

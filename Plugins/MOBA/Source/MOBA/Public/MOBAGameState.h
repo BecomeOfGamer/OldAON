@@ -25,6 +25,8 @@ public:
 	void HeroUseSkill(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, 
 		FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
 
+	void HeroSkillLevelUp(AHeroCharacter* hero, int32 idx);
+
 	void SetHeroAction(AHeroCharacter* hero, const FHeroAction& action);
 
 	void AppendHeroAction(AHeroCharacter* hero, const FHeroAction& action);

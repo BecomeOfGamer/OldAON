@@ -78,3 +78,11 @@ void AMOBAGameState::HeroUseSkill(AHeroCharacter* hero, EHeroActionStatus SpellT
 	hero->UseSkill(SpellType, index, VFaceTo, Pos, victim);
 }
 
+void AMOBAGameState::HeroSkillLevelUp(AHeroCharacter* hero, int32 idx)
+{
+	if (hero->Skills.Num() > idx && idx >= 0)
+	{
+		hero->Skills[idx]->LevelUp();
+	}
+}
+

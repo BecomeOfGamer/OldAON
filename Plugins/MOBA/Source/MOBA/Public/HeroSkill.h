@@ -91,6 +91,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void StartCD();
 
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void EndCD();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void LevelUp();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	bool CanLevelUp();
 
 	// called every frame

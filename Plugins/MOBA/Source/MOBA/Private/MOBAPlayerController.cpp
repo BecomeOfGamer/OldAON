@@ -33,13 +33,6 @@ void AMOBAPlayerController::BeginPlay()
 	}
 	bMouseRButton = false;
 	bMouseLButton = false;
-	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		if (*ActorItr != this)
-		{
-			//ActorItr->SetOwner(this);
-		}
-	}
 }
 
 bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float AmountDepressed,
@@ -387,7 +380,6 @@ void AMOBAPlayerController::ServerHeroUseSkill_Implementation(AHeroCharacter* he
 {
 	if (Role == ROLE_Authority)
 	{
-		UE_LOG(MOBA_Log, Log, TEXT("%s HeroUseSkill"), *GetFullName());
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 		if (ags)
 		{
@@ -395,3 +387,21 @@ void AMOBAPlayerController::ServerHeroUseSkill_Implementation(AHeroCharacter* he
 		}
 	}
 }
+
+bool AMOBAPlayerController::ServerHeroSkillLevelUp_Validate(AHeroCharacter* hero, int32 idx)
+{
+	return true;
+}
+
+void AMOBAPlayerController::ServerHeroSkillLevelUp_Implementation(AHeroCharacter* hero, int32 idx)
+{
+	if (Role == ROLE_Authority)
+	{
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (ags)
+		{
+			ags->HeroSkillLevelUp(hero, idx);
+		}
+	}
+}
+
