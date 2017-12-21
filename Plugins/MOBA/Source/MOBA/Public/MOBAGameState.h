@@ -57,6 +57,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	float AgilityToWalkSpeed;
 
+	// 每級經驗值對應表
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	TArray<int32> EXPLevelMap;
+
+	// 最大等級
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	int32 MaxLevel;
+
 	UFUNCTION(BlueprintCallable, Category = "AONGameState")
 	float ArmorConvertToInjuryPersent(float armor);
 	

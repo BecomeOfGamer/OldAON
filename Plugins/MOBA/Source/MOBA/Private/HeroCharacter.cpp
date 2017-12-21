@@ -189,6 +189,15 @@ void AHeroCharacter::BeginPlay()
 	}
 
 	MinimumDontMoveDistance = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 30;
+
+	if (EXPLevelMap.Num() == 0)
+	{
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (ags)
+		{
+			EXPLevelMap = ags->EXPLevelMap;
+		}
+	}
 }
 
 // Called every frame
@@ -906,6 +915,36 @@ void AHeroCharacter::HideSkillHint()
 	CurrentSkillHint = NULL;
 }
 
+
+void AHeroCharacter::ForceLevelUp()
+{
+	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	if (CurrentLevel + 1 <= ags->MaxLevel)
+	{
+		CurrentLevel++;
+		CurrentSkillPoints++;
+	}
+	CurrentEXP = 0;
+	for (int32 i = 0; i < EXPLevelMap.Num(); ++i)
+	{
+		CurrentEXP += EXPLevelMap[i];
+	}
+}
+
+void AHeroCharacter::ComputeEXPLevel()
+{
+	int32 tmpexp = CurrentEXP;
+	int level = 0;
+	for (int32 i = 0; i < EXPLevelMap.Num(); ++i)
+	{
+		tmpexp -= EXPLevelMap[i];
+		if (tmpexp > 0)
+		{
+			level++;
+		}
+	}
+	CurrentLevel = level;
+}
 
 bool AHeroCharacter::ServerPlayAttack_Validate(float duraction, float rate)
 {
@@ -1702,4 +1741,7 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AHeroCharacter, CurrentAttackSpeedSecond);
 	DOREPLIFETIME(AHeroCharacter, CurrentAttackingAnimationRate);
 	DOREPLIFETIME(AHeroCharacter, LastUseSkill);
+	DOREPLIFETIME(AHeroCharacter, CurrentSkillPoints);
+	DOREPLIFETIME(AHeroCharacter, CurrentLevel);
+	DOREPLIFETIME(AHeroCharacter, CurrentEXP);
 }

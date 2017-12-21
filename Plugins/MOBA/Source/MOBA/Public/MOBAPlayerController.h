@@ -75,6 +75,11 @@ public:
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerHeroSkillLevelUp(AHeroCharacter* hero, int32 idx);
 	
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	void ServerHeroForceLevelUp(AHeroCharacter* hero);
+
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	void ServerHeroComputeEXPLevel(AHeroCharacter* hero);
 
 	FVector2D GetMouseScreenPosition();
 

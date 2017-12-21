@@ -114,6 +114,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void HideSkillHint();
 
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void ForceLevelUp();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void ComputeEXPLevel();
+
 
 	UFUNCTION(NetMulticast, WithValidation, Reliable)
 	void ServerPlayAttack(float duraction, float rate);
@@ -331,8 +337,20 @@ public:
 	int32 CurrentSkillIndex;
 	
 	// 可以使用的技能點數
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	int32 CurrentSkillPoints;
+
+	// 目前等級
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	int32 CurrentLevel;
+
+	// 目前經驗值
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	int32 CurrentEXP;
+
+	// 每級經驗值對應表
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	int32 Skill_Points;
+	TArray<int32> EXPLevelMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	bool isSelection;
@@ -431,9 +449,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting")
 	float StunningLeftCounting;
 
-	// 目前等級
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	int32 CurrentLevel;
 	// 移動速度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float CurrentMoveSpeed;

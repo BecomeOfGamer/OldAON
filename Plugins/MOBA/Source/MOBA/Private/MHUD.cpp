@@ -48,7 +48,7 @@ void AMHUD::BeginPlay()
 	{
 		FVector2D p1, s1;
 		GetEquipmentPosition(i, p1, s1);
-		RTS_AddHitBox(p1, s1, FString::Printf(TEXT("Equipment%d"), i + 1), false, 0);
+		RTS_AddHitBox(p1, s1, FString::Printf(TEXT("Equipment%d"), i + 1), 0, false);
 		if(EquipmentMaterial)
 		{
 			EquipmentDMaterials.Add(UMaterialInstanceDynamic::Create(EquipmentMaterial, this));
@@ -59,16 +59,22 @@ void AMHUD::BeginPlay()
 		FVector2D p1, s1;
 		GetSkillPosition(i, p1, s1);
 		FString skname = FString::Printf(TEXT("Skill%d"), i + 1);
-		RTS_AddHitBox(p1, s1, skname, false, 0);
+		RTS_AddHitBox(p1, s1, skname, 0, false);
 		FString sklvname = FString::Printf(TEXT("SkillLvUp%d"), i + 1);
-		s1.Y = 50;
-		p1.Y -= 50;
-		RTS_AddHitBox(p1, s1, sklvname, false, 0);
+		s1.Y = s1.Y * 0.25;
+		p1.Y -= s1.Y;
+		RTS_AddHitBox(p1, s1, sklvname, 0, false);
 		SkillMapping.Add(skname, i);
 		if(SkillMaterial)
 		{
 			SkillDMaterials.Add(UMaterialInstanceDynamic::Create(SkillMaterial, this));
 		}
+	}
+	{
+		FVector2D p1, s1;
+		GetExpPosition(p1, s1);
+		FString skname = "EXP";
+		RTS_AddHitBox(p1, s1, skname, -99, false);
 	}
 	if(ThrowMaterial)
 	{
@@ -121,23 +127,7 @@ AHeroCharacter* AMHUD::GetMouseTarget(float MinDistance)
 void AMHUD::DrawHUD()
 {
 	Super::DrawHUD();
-	// 畫滑鼠icon
-	if (MouseIcon.Contains(HUDStatus) && MouseIcon[HUDStatus].mat)
-	{
-		if (MouseIcon[HUDStatus].pos == EMouseIconPosition::LeftTop)
-		{
-			DrawMaterialSimple(MouseIcon[HUDStatus].mat, CurrentMouseXY.X, CurrentMouseXY.Y,
-				MouseSize.X * ViewportScale, MouseSize.Y * ViewportScale);
-		}
-		else if (MouseIcon[HUDStatus].pos == EMouseIconPosition::Center)
-		{
-			int32 mouseW = MouseSize.X * ViewportScale;
-			int32 mouseH = MouseSize.Y * ViewportScale;
-			DrawMaterialSimple(MouseIcon[HUDStatus].mat,
-				CurrentMouseXY.X - mouseW*0.5, CurrentMouseXY.Y - mouseH*0.5,
-				mouseW, mouseH);
-		}
-	}
+	
 	// 畫多選的box
 	if(HUDStatus == EMHUDStatus::Normal && bMouseLButton && IsGameRegion(CurrentMouseXY))
 	{
@@ -278,6 +268,23 @@ void AMHUD::DrawHUD()
 			}
 		}
 	}
+	// 畫滑鼠icon
+	if (MouseIcon.Contains(HUDStatus) && MouseIcon[HUDStatus].mat)
+	{
+		if (MouseIcon[HUDStatus].pos == EMouseIconPosition::LeftTop)
+		{
+			DrawMaterialSimple(MouseIcon[HUDStatus].mat, CurrentMouseXY.X, CurrentMouseXY.Y,
+				MouseSize.X * ViewportScale, MouseSize.Y * ViewportScale);
+		}
+		else if (MouseIcon[HUDStatus].pos == EMouseIconPosition::Center)
+		{
+			int32 mouseW = MouseSize.X * ViewportScale;
+			int32 mouseH = MouseSize.Y * ViewportScale;
+			DrawMaterialSimple(MouseIcon[HUDStatus].mat,
+				CurrentMouseXY.X - mouseW*0.5, CurrentMouseXY.Y - mouseH*0.5,
+				mouseW, mouseH);
+		}
+	}
 }
 
 bool AMHUD::CheckInSelectionBox(FVector2D pos)
@@ -318,8 +325,8 @@ FMHitBox* AMHUD::FindHitBoxByName(const FString& name)
 	return nullptr;
 }
 
-void AMHUD::RTS_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, bool bConsumesInput,
-                             int32 Priority)
+void AMHUD::RTS_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name,
+	int32 Priority, bool bConsumesInput)
 {
 	bool bAdded = false;
 	for(int32 Index = 0; Index < RTS_HitBoxMap.Num(); ++Index)

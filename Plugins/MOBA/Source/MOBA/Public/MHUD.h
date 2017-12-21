@@ -99,8 +99,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void RTS_MouseRButtonPressed();
 
+	// 加入一個可以被點選的按鈕
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void RTS_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, bool bConsumesInput, int32 Priority);
+	void RTS_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, 
+		int32 Priority, bool bConsumesInput);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	bool IsGameRegion(FVector2D pos);
@@ -153,6 +155,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void GetSkillPosition(int32 n, FVector2D& pos, FVector2D& size);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GetExpPosition(FVector2D& pos, FVector2D& size);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TArray<AHeroCharacter*> HeroCanSelection;

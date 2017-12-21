@@ -405,3 +405,23 @@ void AMOBAPlayerController::ServerHeroSkillLevelUp_Implementation(AHeroCharacter
 	}
 }
 
+
+bool AMOBAPlayerController::ServerHeroForceLevelUp_Validate(AHeroCharacter* hero)
+{
+	return true;
+}
+
+void AMOBAPlayerController::ServerHeroForceLevelUp_Implementation(AHeroCharacter* hero)
+{
+	hero->ForceLevelUp();
+}
+
+bool AMOBAPlayerController::ServerHeroComputeEXPLevel_Validate(AHeroCharacter* hero)
+{
+	return true;
+}
+
+void AMOBAPlayerController::ServerHeroComputeEXPLevel_Implementation(AHeroCharacter* hero)
+{
+	hero->ComputeEXPLevel();
+}
