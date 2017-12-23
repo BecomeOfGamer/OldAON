@@ -996,10 +996,11 @@ float AHeroCharacter::GetCurrentExpPercent()
 			float molecular = CurrentEXP - EXPIncreaseArray[i];
 			return molecular / denominator;
 		}
-	}	
+	}
+	return 1;
 }
 
-float AHeroCharacter::AddExpCompute(float exp)
+void AHeroCharacter::AddExpCompute(float exp)
 {
 	CurrentEXP += exp;
 	for (int32 i = 0; i < EXPIncreaseArray.Num() + 1; ++i)

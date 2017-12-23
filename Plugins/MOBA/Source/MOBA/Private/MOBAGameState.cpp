@@ -53,6 +53,7 @@ TArray<int32> AMOBAGameState::GetEXPIncreaseArray()
 		exp += EXPLevelArray[i];
 		res.Push(exp);
 	}
+	return res;
 }
 
 void AMOBAGameState::CharacterMove(AHeroCharacter* actor, const FVector& pos)

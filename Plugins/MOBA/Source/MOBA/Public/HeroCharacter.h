@@ -138,7 +138,7 @@ public:
 	float GetCurrentExpPercent();
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	float AddExpCompute(float exp);
+	void AddExpCompute(float exp);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	AHeroSkill* GetCurrentSkill();
