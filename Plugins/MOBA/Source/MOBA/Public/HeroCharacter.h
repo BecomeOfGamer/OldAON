@@ -350,6 +350,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	int32 CurrentEXP;
 
+	// 死亡給敵經驗值
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	int32 BountyEXP;
+
+	// 死亡給敵金錢
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	int32 BountyGold;
+
 	// 每級經驗值對應表
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TArray<int32> EXPIncreaseArray;

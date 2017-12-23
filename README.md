@@ -9,15 +9,14 @@
 
 # 怎麼使用 How to use ?
 
-install UE4.17.2 https://www.unrealengine.com/
-
-git clone https://github.com/RemakeAONTeam/AON.git
-git lfs fetch
-git lfs pull
-右鍵點AON.uproject=>Switch Unreal Engine Version選4.17
-打開產生的AON.sln 按ctrl+F5就可以了
+- install UE4.17.2 https://www.unrealengine.com/
+- git clone https://github.com/RemakeAONTeam/AON.git
+- git lfs fetch
+- git lfs pull
+- 右鍵點AON.uproject=>Switch Unreal Engine Version選4.17
+- 打開產生的AON.sln 按ctrl+F5就可以了
 
 # 怎麼更新 How to update ?
-git pull
-git lfs fetch
-git lfs pull
+- git pull
+- git lfs fetch
+- git lfs pull
