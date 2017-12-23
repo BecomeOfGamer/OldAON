@@ -80,28 +80,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void ClearAllSelection();
 
-	TArray<FMHitBox>	RTS_HitBoxMap;
+	TArray<FMHitBox>	MOBA_HitBoxMap;
 
 	FMHitBox* FindHitBoxByName(const FString& name);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void RTS_HitBoxRButtonPressed(const FString& name);
+	void MOBA_HitBoxRButtonPressed(const FString& name);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void RTS_HitBoxRButtonReleased(const FString& name);
+	void MOBA_HitBoxRButtonReleased(const FString& name);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void RTS_HitBoxLButtonPressed(const FString& name);
+	void MOBA_HitBoxLButtonPressed(const FString& name);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void RTS_HitBoxLButtonReleased(const FString& name);
+	void MOBA_HitBoxLButtonReleased(const FString& name);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void RTS_MouseRButtonPressed();
+	void MOBA_MouseRButtonPressed();
 
 	// 加入一個可以被點選的按鈕
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void RTS_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, 
+	void MOBA_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, 
 		int32 Priority, bool bConsumesInput);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")

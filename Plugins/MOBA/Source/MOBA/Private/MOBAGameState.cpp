@@ -44,6 +44,17 @@ void AMOBAGameState::ClearHeroAction(AHeroCharacter* hero, const FHeroAction& ac
 	hero->ActionQueue.Empty();
 }
 
+TArray<int32> AMOBAGameState::GetEXPIncreaseArray()
+{
+	TArray<int32> res;
+	int exp = 0;
+	for (int32 i = 0; i < EXPLevelArray.Num(); ++i)
+	{
+		exp += EXPLevelArray[i];
+		res.Push(exp);
+	}
+}
+
 void AMOBAGameState::CharacterMove(AHeroCharacter* actor, const FVector& pos)
 {
 	UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();

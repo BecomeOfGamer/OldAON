@@ -32,6 +32,9 @@ public:
 	void AppendHeroAction(AHeroCharacter* hero, const FHeroAction& action);
 
 	void ClearHeroAction(AHeroCharacter* hero, const FHeroAction& action);
+
+	// IncreaseMap
+	TArray<int32> GetEXPIncreaseArray();
 		
 	// 每1點力量增加血量
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
@@ -59,7 +62,7 @@ public:
 
 	// 每級經驗值對應表
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	TArray<int32> EXPLevelMap;
+	TArray<int32> EXPLevelArray;
 
 	// 最大等級
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

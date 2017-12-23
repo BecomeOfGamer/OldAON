@@ -116,11 +116,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void ForceLevelUp();
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void ComputeEXPLevel();
-
-
+	
 	UFUNCTION(NetMulticast, WithValidation, Reliable)
 	void ServerPlayAttack(float duraction, float rate);
 
@@ -137,6 +133,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	int32 GetCurrentSkillIndex();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	float GetCurrentExpPercent();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	float AddExpCompute(float exp);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	AHeroSkill* GetCurrentSkill();
@@ -350,7 +352,7 @@ public:
 
 	// 每級經驗值對應表
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	TArray<int32> EXPLevelMap;
+	TArray<int32> EXPIncreaseArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	bool isSelection;

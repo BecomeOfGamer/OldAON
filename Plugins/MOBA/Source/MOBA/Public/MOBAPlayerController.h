@@ -79,7 +79,7 @@ public:
 	void ServerHeroForceLevelUp(AHeroCharacter* hero);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerHeroComputeEXPLevel(AHeroCharacter* hero);
+	void ServerHeroAddExpCompute(AHeroCharacter* hero, float exp);
 
 	FVector2D GetMouseScreenPosition();
 

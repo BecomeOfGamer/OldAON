@@ -190,12 +190,12 @@ void AHeroCharacter::BeginPlay()
 
 	MinimumDontMoveDistance = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 30;
 
-	if (EXPLevelMap.Num() == 0)
+	if (EXPIncreaseArray.Num() == 0)
 	{
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 		if (ags)
 		{
-			EXPLevelMap = ags->EXPLevelMap;
+			EXPIncreaseArray = ags->GetEXPIncreaseArray();
 		}
 	}
 }
@@ -925,26 +925,12 @@ void AHeroCharacter::ForceLevelUp()
 		CurrentSkillPoints++;
 	}
 	CurrentEXP = 0;
-	for (int32 i = 0; i < EXPLevelMap.Num(); ++i)
+	for (int32 i = 0; i < EXPIncreaseArray.Num() && i <= CurrentLevel; ++i)
 	{
-		CurrentEXP += EXPLevelMap[i];
+		CurrentEXP = EXPIncreaseArray[i];
 	}
 }
 
-void AHeroCharacter::ComputeEXPLevel()
-{
-	int32 tmpexp = CurrentEXP;
-	int level = 0;
-	for (int32 i = 0; i < EXPLevelMap.Num(); ++i)
-	{
-		tmpexp -= EXPLevelMap[i];
-		if (tmpexp > 0)
-		{
-			level++;
-		}
-	}
-	CurrentLevel = level;
-}
 
 bool AHeroCharacter::ServerPlayAttack_Validate(float duraction, float rate)
 {
@@ -999,6 +985,35 @@ int32 AHeroCharacter::GetCurrentSkillIndex()
 	return CurrentSkillIndex;
 }
 
+
+float AHeroCharacter::GetCurrentExpPercent()
+{
+	for (int32 i = 0; i < EXPIncreaseArray.Num()+1; ++i)
+	{
+		if (CurrentEXP > EXPIncreaseArray[i] && CurrentEXP < EXPIncreaseArray[i+1])
+		{
+			float denominator = EXPIncreaseArray[i + 1] - EXPIncreaseArray[i];
+			float molecular = CurrentEXP - EXPIncreaseArray[i];
+			return molecular / denominator;
+		}
+	}	
+}
+
+float AHeroCharacter::AddExpCompute(float exp)
+{
+	CurrentEXP += exp;
+	for (int32 i = 0; i < EXPIncreaseArray.Num() + 1; ++i)
+	{
+		if (CurrentEXP > EXPIncreaseArray[i] && CurrentEXP < EXPIncreaseArray[i + 1])
+		{
+			if (CurrentLevel < i + 1)
+			{
+				// TODO: call level up
+				CurrentLevel = i + 1;
+			}
+		}
+	}
+}
 
 AHeroSkill* AHeroCharacter::GetCurrentSkill()
 {

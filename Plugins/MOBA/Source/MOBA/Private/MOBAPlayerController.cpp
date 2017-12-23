@@ -416,12 +416,12 @@ void AMOBAPlayerController::ServerHeroForceLevelUp_Implementation(AHeroCharacter
 	hero->ForceLevelUp();
 }
 
-bool AMOBAPlayerController::ServerHeroComputeEXPLevel_Validate(AHeroCharacter* hero)
+bool AMOBAPlayerController::ServerHeroAddExpCompute_Validate(AHeroCharacter* hero, float exp)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerHeroComputeEXPLevel_Implementation(AHeroCharacter* hero)
+void AMOBAPlayerController::ServerHeroAddExpCompute_Implementation(AHeroCharacter* hero, float exp)
 {
-	hero->ComputeEXPLevel();
+	hero->AddExpCompute(exp);
 }

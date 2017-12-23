@@ -48,7 +48,7 @@ void AMHUD::BeginPlay()
 	{
 		FVector2D p1, s1;
 		GetEquipmentPosition(i, p1, s1);
-		RTS_AddHitBox(p1, s1, FString::Printf(TEXT("Equipment%d"), i + 1), 0, false);
+		MOBA_AddHitBox(p1, s1, FString::Printf(TEXT("Equipment%d"), i + 1), 0, false);
 		if(EquipmentMaterial)
 		{
 			EquipmentDMaterials.Add(UMaterialInstanceDynamic::Create(EquipmentMaterial, this));
@@ -59,11 +59,11 @@ void AMHUD::BeginPlay()
 		FVector2D p1, s1;
 		GetSkillPosition(i, p1, s1);
 		FString skname = FString::Printf(TEXT("Skill%d"), i + 1);
-		RTS_AddHitBox(p1, s1, skname, 0, false);
+		MOBA_AddHitBox(p1, s1, skname, 0, false);
 		FString sklvname = FString::Printf(TEXT("SkillLvUp%d"), i + 1);
 		s1.Y = s1.Y * 0.25;
 		p1.Y -= s1.Y;
-		RTS_AddHitBox(p1, s1, sklvname, 0, false);
+		MOBA_AddHitBox(p1, s1, sklvname, 0, false);
 		SkillMapping.Add(skname, i);
 		if(SkillMaterial)
 		{
@@ -74,7 +74,7 @@ void AMHUD::BeginPlay()
 		FVector2D p1, s1;
 		GetExpPosition(p1, s1);
 		FString skname = "EXP";
-		RTS_AddHitBox(p1, s1, skname, -99, false);
+		MOBA_AddHitBox(p1, s1, skname, -99, false);
 	}
 	if(ThrowMaterial)
 	{
@@ -213,6 +213,9 @@ void AMHUD::DrawHUD()
 			}
 		}
 	}
+	{
+		FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
+	}
 	if(CurrentSelection.Num() > 0)
 	{
 		if(HUDStatus == EMHUDStatus::ThrowEquipment)
@@ -315,38 +318,38 @@ void AMHUD::ClearAllSelection()
 
 FMHitBox* AMHUD::FindHitBoxByName(const FString& name)
 {
-	for(int32 Index = 0; Index < RTS_HitBoxMap.Num(); ++Index)
+	for(int32 Index = 0; Index < MOBA_HitBoxMap.Num(); ++Index)
 	{
-		if(RTS_HitBoxMap[Index].GetName() == name)
+		if(MOBA_HitBoxMap[Index].GetName() == name)
 		{
-			return &RTS_HitBoxMap[Index];
+			return &MOBA_HitBoxMap[Index];
 		}
 	}
 	return nullptr;
 }
 
-void AMHUD::RTS_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name,
+void AMHUD::MOBA_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name,
 	int32 Priority, bool bConsumesInput)
 {
 	bool bAdded = false;
-	for(int32 Index = 0; Index < RTS_HitBoxMap.Num(); ++Index)
+	for(int32 Index = 0; Index < MOBA_HitBoxMap.Num(); ++Index)
 	{
-		if(RTS_HitBoxMap[Index].GetPriority() < Priority)
+		if(MOBA_HitBoxMap[Index].GetPriority() < Priority)
 		{
-			RTS_HitBoxMap.Insert(FMHitBox(Position, Size, Name, bConsumesInput, Priority), Index);
+			MOBA_HitBoxMap.Insert(FMHitBox(Position, Size, Name, bConsumesInput, Priority), Index);
 			bAdded = true;
 			break;
 		}
 	}
 	if(!bAdded)
 	{
-		RTS_HitBoxMap.Add(FMHitBox(Position, Size, Name, bConsumesInput, Priority));
+		MOBA_HitBoxMap.Add(FMHitBox(Position, Size, Name, bConsumesInput, Priority));
 	}
 }
 
 bool AMHUD::IsGameRegion(FVector2D pos)
 {
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
@@ -499,7 +502,7 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 {
 	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	// hitbox用
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
@@ -600,24 +603,24 @@ void AMHUD::OnRMousePressed2(FVector2D pos)
 	}
 	bMouseRButton = true;
 	// 裝備事件
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
-			RTS_HitBoxRButtonPressed(HitBox.GetName());
+			MOBA_HitBoxRButtonPressed(HitBox.GetName());
 			if(HitBox.ConsumesInput())
 			{
 				break;  //Early out if this box consumed the click
 			}
 		}
 	}
-	RTS_MouseRButtonPressed();
+	MOBA_MouseRButtonPressed();
 }
 
 void AMHUD::OnRMouseReleased(FVector2D pos)
 {
 	// hitbox用
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
@@ -627,11 +630,11 @@ void AMHUD::OnRMouseReleased(FVector2D pos)
 	}
 	bMouseRButton = false;
 	// 裝備事件
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
-			RTS_HitBoxRButtonReleased(HitBox.GetName());
+			MOBA_HitBoxRButtonReleased(HitBox.GetName());
 			if(HitBox.ConsumesInput())
 			{
 				break;  //Early out if this box consumed the click
@@ -659,7 +662,7 @@ void AMHUD::OnRMouseReleased(FVector2D pos)
 void AMHUD::OnLMouseDown(FVector2D pos)
 {
 	// hitbox用
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
@@ -745,7 +748,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 	// 顯示技能提示
 	if(CurrentSelection.Num() > 0)
 	{
-		for(FMHitBox& HitBox : RTS_HitBoxMap)
+		for(FMHitBox& HitBox : MOBA_HitBoxMap)
 		{
 			if (HitBox.GetName().Left(5) == TEXT("Skill") && HitBox.GetName().Len() == 6)
 			{
@@ -775,11 +778,11 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 		}
 	}
 	// 發事件給BP
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
-			RTS_HitBoxLButtonPressed(HitBox.GetName());
+			MOBA_HitBoxLButtonPressed(HitBox.GetName());
 			if (SkillMapping.Contains(HitBox.GetName()))
 			{
 				CurrentSelection[0]->ShowSkillHint(SkillMapping.FindRef(HitBox.GetName()));
@@ -797,7 +800,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 {
 	// Server Side
 	// hitbox用
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
@@ -848,11 +851,11 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 		}
 	}
 	// 發事件給BP
-	for(FMHitBox& HitBox : RTS_HitBoxMap)
+	for(FMHitBox& HitBox : MOBA_HitBoxMap)
 	{
 		if(HitBox.Contains(pos, ViewportScale))
 		{
-			RTS_HitBoxLButtonReleased(HitBox.GetName());
+			MOBA_HitBoxLButtonReleased(HitBox.GetName());
 			if(HitBox.ConsumesInput())
 			{
 				break;  //Early out if this box consumed the click
