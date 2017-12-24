@@ -213,11 +213,10 @@ void AMHUD::DrawHUD()
 			}
 		}
 	}
-	{
-		FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
-	}
+	
 	if(CurrentSelection.Num() > 0)
 	{
+		
 		if(HUDStatus == EMHUDStatus::ThrowEquipment)
 		{
 			ThrowDMaterial->SetTextureParameterValue(TEXT("InputTexture"), ThrowTexture);
@@ -225,6 +224,14 @@ void AMHUD::DrawHUD()
 			                   100 * ViewportScale, 100 * ViewportScale);
 		}
 		AHeroCharacter* selectHero = CurrentSelection[0];
+		// 畫經驗條
+		{
+			FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
+			DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, skhb->Size.X *ViewportScale, skhb->Size.Y *ViewportScale);
+			DrawRect(MPBarForeColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y*ViewportScale, skhb->Size.X*ViewportScale * selectHero->GetCurrentExpPercent(), skhb->Size.Y*ViewportScale);
+			DrawText(FString::Printf(TEXT("LV%d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1), skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale);
+		}
+		// 畫技能圖
 		if(SkillMaterial)
 		{
 			for(int32 idx = 0; idx < 4; ++idx)
@@ -246,7 +253,7 @@ void AMHUD::DrawHUD()
 				}
 			}
 		}
-
+		// 畫裝備圖
 		if(EquipmentMaterial)
 		{
 			for(int32 idx = 0; idx < 6; ++idx)

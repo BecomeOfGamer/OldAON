@@ -56,7 +56,7 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	// 基礎攻速
 	BaseAttackSpeedSecond = 1.8;
 	IsAttacked = false;
-	IsDead = false;
+	IsAlive = true;
 	LastMoveTarget = FVector::ZeroVector;
 	AttackingCounting = 0;
 	FollowActorUpdateCounting = 0;
@@ -190,14 +190,6 @@ void AHeroCharacter::BeginPlay()
 
 	MinimumDontMoveDistance = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 30;
 
-	if (EXPIncreaseArray.Num() == 0)
-	{
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
-		{
-			EXPIncreaseArray = ags->GetEXPIncreaseArray();
-		}
-	}
 }
 
 // Called every frame
@@ -208,6 +200,14 @@ void AHeroCharacter::Tick(float DeltaTime)
 	if (!localPC)
 	{
 		localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
+	}
+	if (EXPIncreaseArray.Num() == 0)
+	{
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (ags)
+		{
+			EXPIncreaseArray = ags->GetEXPIncreaseArray();
+		}
 	}
 	{ // 計算各種buff
 		TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
@@ -287,21 +287,38 @@ void AHeroCharacter::Tick(float DeltaTime)
 		}
 	}
 	// 死了
-	if(CurrentHP <= 0)
+	if(CurrentHP <= 0 && IsAlive)
 	{
 		// 死了還想跑，給我停下
 		if (GetVelocity().Size() > 5)
 		{
-			//AMOBAPlayerController* acontrol =
-			//    Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-			//acontrol->CharacterStopMove(this);
+			localPC->ServerCharacterStopMove(this);
 		}
-		IsDead = true;
+		IsAlive = false;
 		CurrentHP = 0;
-	}
-	else
-	{
-		IsDead = false;
+		// TODO: event dead
+		TArray<AHeroCharacter*> EnemyGetExp;
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (ags)
+		{
+			int32 dis2 = ags->EXPGetRange;
+			dis2 = dis2*dis2;
+			for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+			{
+				// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+				AHeroCharacter* hero = *ActorItr;
+				if (hero->TeamId != this->TeamId &&
+					hero->GetSquaredDistanceTo(this) < dis2)
+				{
+					EnemyGetExp.Add(hero);
+				}
+			}
+		}
+		float exp = this->BountyEXP / EnemyGetExp.Num();
+		for (AHeroCharacter* hero : EnemyGetExp)
+		{
+			localPC->ServerHeroAddExpCompute(hero, exp);
+		}
 	}
 	AttackingCounting += DeltaTime;
 	FollowActorUpdateCounting += DeltaTime;
@@ -332,7 +349,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 		}
 	}
 	// 是否有動作？
-	if (ActionQueue.Num() > 0 && !IsDead && EHeroBodyStatus::Stunning != BodyStatus)
+	if (ActionQueue.Num() > 0 && IsAlive && EHeroBodyStatus::Stunning != BodyStatus)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Magenta, FString::Printf(L"ActionQueue %d", ActionQueue.Num()));
 		// 動作駐列最上層動作是否為當前動作
@@ -988,7 +1005,7 @@ int32 AHeroCharacter::GetCurrentSkillIndex()
 
 float AHeroCharacter::GetCurrentExpPercent()
 {
-	for (int32 i = 0; i < EXPIncreaseArray.Num()+1; ++i)
+	for (int32 i = 0; i < EXPIncreaseArray.Num() - 1; ++i)
 	{
 		if (CurrentEXP > EXPIncreaseArray[i] && CurrentEXP < EXPIncreaseArray[i+1])
 		{
@@ -997,13 +1014,13 @@ float AHeroCharacter::GetCurrentExpPercent()
 			return molecular / denominator;
 		}
 	}
-	return 1;
+	return 0;
 }
 
 void AHeroCharacter::AddExpCompute(float exp)
 {
 	CurrentEXP += exp;
-	for (int32 i = 0; i < EXPIncreaseArray.Num() + 1; ++i)
+	for (int32 i = 0; i < EXPIncreaseArray.Num() - 1; ++i)
 	{
 		if (CurrentEXP > EXPIncreaseArray[i] && CurrentEXP < EXPIncreaseArray[i + 1])
 		{
@@ -1759,5 +1776,6 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AHeroCharacter, LastUseSkill);
 	DOREPLIFETIME(AHeroCharacter, CurrentSkillPoints);
 	DOREPLIFETIME(AHeroCharacter, CurrentLevel);
+	DOREPLIFETIME(AHeroCharacter, IsAlive);
 	DOREPLIFETIME(AHeroCharacter, CurrentEXP);
 }

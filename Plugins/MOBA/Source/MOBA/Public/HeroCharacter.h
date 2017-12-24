@@ -351,11 +351,11 @@ public:
 	int32 CurrentEXP;
 
 	// 死亡給敵經驗值
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	int32 BountyEXP;
 
 	// 死亡給敵金錢
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	int32 BountyGold;
 
 	// 每級經驗值對應表
@@ -385,8 +385,8 @@ public:
 	bool IsAttacked;
 
 	// 目前是否倒下
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	bool IsDead;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	bool IsAlive;
 
 	/*
 
@@ -543,5 +543,9 @@ public:
 	FHeroAction LastUseSkill;
 
 	AMOBAPlayerController* localPC;
+
+	// 死亡後經過時間
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	float DeadTime;
 
 };

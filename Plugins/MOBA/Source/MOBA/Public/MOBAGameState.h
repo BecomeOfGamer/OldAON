@@ -68,6 +68,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	int32 MaxLevel;
 
+	// 敵人死亡後吸收經驗值的範圍
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	int32 EXPGetRange;
+
+
 	UFUNCTION(BlueprintCallable, Category = "AONGameState")
 	float ArmorConvertToInjuryPersent(float armor);
 	
