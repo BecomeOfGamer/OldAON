@@ -1026,8 +1026,11 @@ void AHeroCharacter::AddExpCompute(float exp)
 		{
 			if (CurrentLevel < i + 1)
 			{
+				int32 nextlv = i + 1;
+				// 增加技能點 Add Skill Points
+				CurrentSkillPoints += nextlv - CurrentLevel;
 				// TODO: call level up
-				CurrentLevel = i + 1;
+				CurrentLevel = nextlv;
 			}
 		}
 	}

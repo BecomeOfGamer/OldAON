@@ -294,12 +294,8 @@ void AMOBAPlayerController::ServerSetHeroAction_Implementation(AHeroCharacter* h
 {
 	if (Role == ROLE_Authority)
 	{
-		UE_LOG(MOBA_Log, Log, TEXT("%s SetHeroAction"), *GetFullName());
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
-		{
-			ags->SetHeroAction(hero, action);
-		}
+		hero->ActionQueue.Empty();
+		hero->ActionQueue.Add(action);
 	}
 }
 
@@ -313,12 +309,7 @@ void AMOBAPlayerController::ServerAppendHeroAction_Implementation(AHeroCharacter
 {
 	if (Role < ROLE_Authority)
 	{
-		UE_LOG(MOBA_Log, Log, TEXT("%s ClearHeroAction"), *GetFullName());
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
-		{
-			ags->AppendHeroAction(hero, action);
-		}
+		hero->ActionQueue.Add(action);
 	}
 }
 
@@ -332,6 +323,7 @@ void AMOBAPlayerController::ServerClearHeroAction_Implementation(AHeroCharacter*
 {
 	if (Role == ROLE_Authority)
 	{
+		hero->ActionQueue.Empty();
 	}
 }
 
@@ -344,10 +336,10 @@ void AMOBAPlayerController::ServerCharacterMove_Implementation(AHeroCharacter* h
 {
 	if (Role == ROLE_Authority)
 	{
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
+		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+		if (NavSys && hero->GetController())
 		{
-			ags->CharacterMove(hero, pos);
+			NavSys->SimpleMoveToLocation(hero->GetController(), pos);
 		}
 	}
 }
@@ -361,10 +353,10 @@ void AMOBAPlayerController::ServerCharacterStopMove_Implementation(AHeroCharacte
 {
 	if (Role == ROLE_Authority)
 	{
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
+		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+		if (NavSys && hero->GetController())
 		{
-			ags->CharacterStopMove(hero);
+			hero->GetController()->StopMovement();
 		}
 	}
 }
@@ -380,11 +372,7 @@ void AMOBAPlayerController::ServerHeroUseSkill_Implementation(AHeroCharacter* he
 {
 	if (Role == ROLE_Authority)
 	{
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
-		{
-			ags->HeroUseSkill(hero, SpellType, index, VFaceTo, Pos, victim);
-		}
+		hero->UseSkill(SpellType, index, VFaceTo, Pos, victim);
 	}
 }
 
@@ -397,10 +385,10 @@ void AMOBAPlayerController::ServerHeroSkillLevelUp_Implementation(AHeroCharacter
 {
 	if (Role == ROLE_Authority)
 	{
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
+		if (hero->Skills.Num() > idx && idx >= 0 && hero->CurrentSkillPoints > 0)
 		{
-			ags->HeroSkillLevelUp(hero, idx);
+			hero->CurrentSkillPoints--;
+			hero->Skills[idx]->LevelUp();
 		}
 	}
 }

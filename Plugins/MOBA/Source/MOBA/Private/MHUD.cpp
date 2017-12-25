@@ -216,20 +216,23 @@ void AMHUD::DrawHUD()
 	
 	if(CurrentSelection.Num() > 0)
 	{
-		
+		AHeroCharacter* selectHero = CurrentSelection[0];
 		if(HUDStatus == EMHUDStatus::ThrowEquipment)
 		{
 			ThrowDMaterial->SetTextureParameterValue(TEXT("InputTexture"), ThrowTexture);
 			DrawMaterialSimple(ThrowDMaterial, CurrentMouseXY.X, CurrentMouseXY.Y,
 			                   100 * ViewportScale, 100 * ViewportScale);
 		}
-		AHeroCharacter* selectHero = CurrentSelection[0];
+		
 		// 畫經驗條
 		{
 			FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
-			DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, skhb->Size.X *ViewportScale, skhb->Size.Y *ViewportScale);
-			DrawRect(MPBarForeColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y*ViewportScale, skhb->Size.X*ViewportScale * selectHero->GetCurrentExpPercent(), skhb->Size.Y*ViewportScale);
-			DrawText(FString::Printf(TEXT("LV%d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1), skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale);
+			DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, 
+				skhb->Size.X *ViewportScale, skhb->Size.Y *ViewportScale);
+			DrawRect(MPBarForeColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y*ViewportScale, 
+				skhb->Size.X*ViewportScale * selectHero->GetCurrentExpPercent(), skhb->Size.Y*ViewportScale);
+			DrawText(FString::Printf(TEXT("LV%d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1), 
+				skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale);
 		}
 		// 畫技能圖
 		if(SkillMaterial)
@@ -245,7 +248,8 @@ void AMHUD::DrawHUD()
 					SkillDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->Skills[idx]->GetSkillCDPercent());
 					DrawMaterialSimple(SkillDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
 					                   skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
-					if (sklvhb && SkillLevelUpMaterial && selectHero->Skills[idx]->CanLevelUp())
+					// 當技能可以升級且目前有升級點數
+					if (sklvhb && SkillLevelUpMaterial && selectHero->CurrentSkillPoints > 0 && selectHero->Skills[idx]->CanLevelUp())
 					{
 						DrawMaterialSimple(SkillLevelUpMaterial, sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale,
 							sklvhb->Size.X * ViewportScale, sklvhb->Size.Y * ViewportScale);
@@ -755,6 +759,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 	// 顯示技能提示
 	if(CurrentSelection.Num() > 0)
 	{
+		AHeroCharacter* selectHero = CurrentSelection[0];
 		for(FMHitBox& HitBox : MOBA_HitBoxMap)
 		{
 			if (HitBox.GetName().Left(5) == TEXT("Skill") && HitBox.GetName().Len() == 6)
@@ -762,9 +767,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				if (HitBox.Contains(pos, ViewportScale))
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
-					// Check NoTarget or SmartCast
-					//CurrentSelection[0]->SetOwner(LocalController);
-					bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120*ViewportScale));
+					bool res = selectHero->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120*ViewportScale));
 					CurrentSkillIndex = idx;
 					if(res)
 					{
@@ -777,9 +780,10 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				if (HitBox.Contains(pos, ViewportScale))
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
-					// Check NoTarget or SmartCast
-					//CurrentSelection[0]->SetOwner(LocalController);
-					LocalController->ServerHeroSkillLevelUp(CurrentSelection[0], idx);
+					if (selectHero->CurrentSkillPoints > 0 && selectHero->Skills[idx]->CanLevelUp())
+					{
+						LocalController->ServerHeroSkillLevelUp(selectHero, idx);
+					}
 				}
 			}
 		}

@@ -15,26 +15,11 @@ class MOBA_API AMOBAGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 public:
-
-	void SetObjectLocation(AActor* actor, const FVector& pos);
-
-	void CharacterMove(AHeroCharacter* hero, const FVector& action);
-
-	void CharacterStopMove(AHeroCharacter* hero);
-
-	void HeroUseSkill(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, 
-		FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
-
-	void HeroSkillLevelUp(AHeroCharacter* hero, int32 idx);
-
-	void SetHeroAction(AHeroCharacter* hero, const FHeroAction& action);
-
-	void AppendHeroAction(AHeroCharacter* hero, const FHeroAction& action);
-
-	void ClearHeroAction(AHeroCharacter* hero, const FHeroAction& action);
-
 	// IncreaseMap
 	TArray<int32> GetEXPIncreaseArray();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	float ArmorConvertToInjuryPersent(float armor);
 		
 	// 每1點力量增加血量
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
@@ -71,9 +56,5 @@ public:
 	// 敵人死亡後吸收經驗值的範圍
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	int32 EXPGetRange;
-
-
-	UFUNCTION(BlueprintCallable, Category = "AONGameState")
-	float ArmorConvertToInjuryPersent(float armor);
-	
+		
 };
