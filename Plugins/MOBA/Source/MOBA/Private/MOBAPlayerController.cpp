@@ -401,7 +401,10 @@ bool AMOBAPlayerController::ServerHeroForceLevelUp_Validate(AHeroCharacter* hero
 
 void AMOBAPlayerController::ServerHeroForceLevelUp_Implementation(AHeroCharacter* hero)
 {
-	hero->ForceLevelUp();
+	if (Role == ROLE_Authority)
+	{
+		hero->ForceLevelUp();
+	}
 }
 
 bool AMOBAPlayerController::ServerHeroAddExpCompute_Validate(AHeroCharacter* hero, float exp)
@@ -411,5 +414,9 @@ bool AMOBAPlayerController::ServerHeroAddExpCompute_Validate(AHeroCharacter* her
 
 void AMOBAPlayerController::ServerHeroAddExpCompute_Implementation(AHeroCharacter* hero, float exp)
 {
-	hero->AddExpCompute(exp);
+	if (Role == ROLE_Authority)
+	{
+		hero->AddExpCompute(exp);
+	}
 }
+

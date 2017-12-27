@@ -122,7 +122,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void AddBuff(AHeroBuff* buff);
+
+	// 加入Buff時取代同名的Buff
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void AddUniqueBuff(AHeroBuff* buff);
 	
+	// 移除所有同名的Buff
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void RemoveBuffByName(FString name);
+
+	UFUNCTION(NetMulticast, WithValidation, Reliable)
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -524,6 +533,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AHeroBuff*> BuffQueue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	TMap<FString, AHeroBuff*> BuffMap;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TMap<EHeroBuffState, bool> BuffStateMap;

@@ -77,6 +77,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintImplementableEvent)
+	void BP_SpellPassive();
+
+	UFUNCTION(BlueprintImplementableEvent)
 	void BP_SpellNow(FVector VFaceTo, FVector Pos);
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -87,6 +90,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_SpellToActor(FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	bool ReadySpell();
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void StartCD();
@@ -129,6 +135,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	bool FaceSkill;
 
+	// 是否啟用
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
+	bool Enable;
+
 	// 施法距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float CastRange;
@@ -166,12 +176,12 @@ public:
 	float CurrentCD;
 
 	// 當前技能CD時間
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float MaxCD;
 
-	// 當前技能原始CD時間
+	// CD減少倍率
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	float BaseCD;
+	float CDRatio;
 
 	// 當前技能等級
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)

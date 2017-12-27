@@ -79,7 +79,8 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	// 基礎施法後搖時間長度
 	BaseSpellingEndingTimeLength = 0.5;
 
-
+	// 啟始技能點
+	CurrentSkillPoints = 1;
 	// 每隔一段時間更新移動
 	FollowActorUpdateTimeGap = 0.3;
 
@@ -242,7 +243,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 	}
 	
 	{// 計算各種自然回復
-		if (CurrentHP > 0)
+		if (IsAlive)
 		{
 			CurrentHP += DeltaTime * CurrentRegenHP;
 			CurrentMP += DeltaTime * CurrentRegenMP;
@@ -254,6 +255,10 @@ void AHeroCharacter::Tick(float DeltaTime)
 			{
 				CurrentMP = CurrentMaxMP;
 			}
+		}
+		else
+		{
+			DeadTime += DeltaTime;
 		}
 	}
 	if (CurrentSkillHint)
@@ -515,9 +520,6 @@ void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHer
 		
 		float RDamage = damage * Injury; // 扣防後傷害
 		float FDamage = RDamage; // 最終傷害
-		//ags->MakeRandom();
-		//int32 ranint = ags->RandomSeed;
-		//FMath::SRandInit(ranint);
 		bool attackMiss = false;
 		// Buff Property Compute
 		if (attacker->BuffPropertyMap[HEROP::AttackMiss] > 0)
@@ -865,7 +867,7 @@ bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos, AHeroCharacter* Curr
 		CurrentSkillIndex = index;
 		AHeroSkill* hs = Skills[index];
 		// 被動技
-		if (hs->SkillBehavior[EHeroBehavior::Passive])
+		if (hs->SkillBehavior[EHeroBehavior::Passive] || !hs->ReadySpell())
 		{
 			return false;
 		}
@@ -966,7 +968,7 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 		index = CurrentSkillIndex;
 	}
 	// 設定面對施法的位置，而且沒在cd
-	if (Skills.Num() > index && !Skills[index]->CDing)
+	if (Skills.Num() > index && Skills[index]->ReadySpell())
 	{
 		if (Skills[index]->FaceSkill)
 		{
@@ -1022,7 +1024,7 @@ void AHeroCharacter::AddExpCompute(float exp)
 	CurrentEXP += exp;
 	for (int32 i = 0; i < EXPIncreaseArray.Num() - 1; ++i)
 	{
-		if (CurrentEXP > EXPIncreaseArray[i] && CurrentEXP < EXPIncreaseArray[i + 1])
+		if (CurrentEXP >= EXPIncreaseArray[i] && CurrentEXP < EXPIncreaseArray[i + 1])
 		{
 			if (CurrentLevel < i + 1)
 			{
@@ -1364,7 +1366,6 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 			else
 			{
 				// 近戰
-				
 				AttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack);
 			}
 			BodyStatus = EHeroBodyStatus::AttackEnding;
@@ -1395,7 +1396,44 @@ void AHeroCharacter::AddBuff(AHeroBuff* buff)
 	buff->BuffTarget.Add(this);
 }
 
-void AHeroCharacter::ServerShowDamageEffect(FVector pos, FVector dir, float Damage)
+void AHeroCharacter::AddUniqueBuff(AHeroBuff* buff)
+{
+	buff->BuffTarget.Add(this);
+	bool hasinsert = false;
+	for (int32 i = 0; i < BuffQueue.Num(); ++i)
+	{
+		if (BuffQueue[i]->Name == buff->Name)
+		{
+			hasinsert = true;
+			BuffQueue[i]->Destroy();
+			BuffQueue[i] = buff;
+			break;
+		}
+	}
+	if (!hasinsert)
+	{
+		BuffQueue.Add(buff);
+	}
+}
+
+void AHeroCharacter::RemoveBuffByName(FString name)
+{
+	for (int32 i = 0; i < BuffQueue.Num(); ++i)
+	{
+		if (BuffQueue[i]->Name == name)
+		{
+			BuffQueue[i]->Destroy();
+			BuffQueue.RemoveAt(i);
+			i--;
+		}
+	}
+}
+
+bool AHeroCharacter::ServerShowDamageEffect_Validate(FVector pos, FVector dir, float Damage)
+{
+	return true;
+}
+void AHeroCharacter::ServerShowDamageEffect_Implementation(FVector pos, FVector dir, float Damage)
 {
 	ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(ShowDamageEffect);
 	if (TempDamageText)
@@ -1408,6 +1446,7 @@ void AHeroCharacter::ServerShowDamageEffect(FVector pos, FVector dir, float Dama
 		TempDamageText->FlyDirection = dir;
 	}
 }
+
 void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction)
 {
 	ASceneObject* TargetActor = Cast<ASceneObject>(CurrentAction.TargetActor);

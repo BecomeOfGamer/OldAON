@@ -7,6 +7,7 @@
 AHeroSkill::AHeroSkill()
 {
 	bReplicates = true;
+	Enable = true;
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	//PrimaryActorTick.bCanEverTick = true;
 	for (int i = 0; i < (int)EHeroBehavior::EndBuffKind; ++i)
@@ -19,17 +20,19 @@ AHeroSkill::AHeroSkill()
 void AHeroSkill::BeginPlay()
 {
 	Super::BeginPlay();
-	if (LevelCD.Num() > CurrentLevel)
+	if (CurrentLevel > 0)
 	{
-		BaseCD = LevelCD[CurrentLevel];
+		if (LevelCD.Num() > CurrentLevel)
+		{
+			MaxCD = CDRatio*LevelCD[CurrentLevel - 1];
+		}
+		if (LevelManaCost.Num() > CurrentLevel - 1)
+		{
+			CurrnetManaCost = LevelManaCost[CurrentLevel];
+		}
+		CurrentCD = MaxCD;
 	}
-	if (LevelManaCost.Num() > CurrentLevel)
-	{
-		CurrnetManaCost = LevelManaCost[CurrentLevel];
-	}
-	MaxLevel = LevelCD.Num() - 1;
-	MaxCD = BaseCD;
-	CurrentCD = BaseCD;
+	MaxLevel = LevelCD.Num();
 }
 
 // Called every frame
@@ -37,6 +40,15 @@ void AHeroSkill::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+bool AHeroSkill::ReadySpell()
+{
+	if (Enable && CurrentLevel > 0 && CurrentCD >= MaxCD)
+	{
+		return true;
+	}
+	return false;
 }
 
 void AHeroSkill::StartCD()
@@ -56,6 +68,19 @@ void AHeroSkill::LevelUp()
 	if (CanLevelUp())
 	{
 		CurrentLevel++;
+		if (LevelCD.Num() >= CurrentLevel)
+		{
+			MaxCD = CDRatio = LevelCD[CurrentLevel - 1];
+		}
+		if (LevelManaCost.Num() >= CurrentLevel)
+		{
+			CurrnetManaCost = LevelManaCost[CurrentLevel - 1];
+		}
+		if (CurrentLevel == 1)
+		{
+			CurrentCD = MaxCD;
+		}
+		BP_SpellPassive();
 	}
 }
 
@@ -79,27 +104,41 @@ void AHeroSkill::CheckCD(float DeltaTime)
 
 float AHeroSkill::GetSkillCDPercent()
 {
+	if (!Enable)
+	{
+		return 0;
+	}
 	if (CDing)
 	{
 		return CurrentCD / MaxCD;
 	}
-	return 1.f;
+	// 技能學了嗎？
+	if (CurrentLevel > 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 #if WITH_EDITOR
 void AHeroSkill::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if (LevelCD.Num() > CurrentLevel)
+	if (CurrentLevel > 0)
 	{
-		BaseCD = LevelCD[CurrentLevel];
+		if (LevelCD.Num() >= CurrentLevel)
+		{
+			MaxCD = CDRatio = LevelCD[CurrentLevel - 1];
+		}
+		if (LevelManaCost.Num() >= CurrentLevel)
+		{
+			CurrnetManaCost = LevelManaCost[CurrentLevel - 1];
+		}
+		CurrentCD = MaxCD;
 	}
-	if (LevelManaCost.Num() > CurrentLevel)
-	{
-		CurrnetManaCost = LevelManaCost[CurrentLevel];
-	}
-	MaxLevel = LevelCD.Num() - 1;
-	MaxCD = BaseCD;
-	CurrentCD = BaseCD;
+	MaxLevel = LevelCD.Num();
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
@@ -112,4 +151,6 @@ void AHeroSkill::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLife
 	DOREPLIFETIME(AHeroSkill, CurrentCD);
 	DOREPLIFETIME(AHeroSkill, CurrentLevel);
 	DOREPLIFETIME(AHeroSkill, CurrnetManaCost);
+	DOREPLIFETIME(AHeroSkill, Enable);
+	DOREPLIFETIME(AHeroSkill, MaxCD);
 }
