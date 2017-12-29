@@ -664,8 +664,8 @@ void AHeroCharacter::AttackCompute_Implementation(AHeroCharacter* attacker, AHer
 			}
 		}
 
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Server FDamage %f"), FDamage));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			//FString::Printf(TEXT("Server FDamage %f"), FDamage));
 
 		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
 		{
@@ -823,11 +823,30 @@ void AHeroCharacter::UpdateHPMPAS()
 		CurrentMaxMP = BaseMP + Intelligence * ags->IntelligenceToMP;
 		CurrentRegenMP = BaseRegenMP + Intelligence * ags->IntelligenceToHealingMP;
 
-		CurrentAttackSpeed = BaseMP + Agility * ags->AgilityToAttackSpeed;
+		CurrentAttackSpeed = (BaseAttackSpeedSecond + Agility * ags->AgilityToAttackSpeed) * 
+			BuffPropertyMap[HEROP::AttackSpeedRatio];
 		CurrentAttackSpeedSecond = BaseAttackSpeedSecond / (1 + CurrentAttackSpeed * 0.01);
 		CurrentArmor = BaseArmor + Agility * ags->AgilityToDefense;
-		CurrentAttackingAnimationTimeLength = BaseAttackingAnimationTimeLength / CurrentAttackSpeedSecond;
-		CurrentAttackingAnimationRate = BaseAttackingAnimationTimeLength / CurrentAttackSpeedSecond;
+		if (CurrentAttackSpeedSecond > 0)
+		{
+			if (BaseAttackingAnimationTimeLength > 0)
+			{
+				CurrentAttackingAnimationTimeLength = BaseAttackingAnimationTimeLength / CurrentAttackSpeedSecond;
+			}
+			if (BaseAttackingAnimationTimeLength > 0)
+			{
+				CurrentAttackingAnimationRate = BaseAttackingAnimationTimeLength / CurrentAttackSpeedSecond;
+			}
+			if (BaseAttackingBeginingTimeLength > 0)
+			{
+				CurrentAttackingBeginingTimeLength = BaseAttackingBeginingTimeLength / CurrentAttackSpeed;
+			}
+			if (BaseAttackingEndingTimeLength > 0)
+			{
+				CurrentAttackingEndingTimeLength = BaseAttackingEndingTimeLength / CurrentAttackSpeed;
+			}
+		}
+		
 	}
 }
 
@@ -1820,4 +1839,6 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AHeroCharacter, CurrentLevel);
 	DOREPLIFETIME(AHeroCharacter, IsAlive);
 	DOREPLIFETIME(AHeroCharacter, CurrentEXP);
+	DOREPLIFETIME(AHeroCharacter, CurrentAttackingBeginingTimeLength);
+	DOREPLIFETIME(AHeroCharacter, CurrentAttackingEndingTimeLength);
 }

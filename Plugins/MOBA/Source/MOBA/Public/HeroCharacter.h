@@ -419,10 +419,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float CurrentAttackingAnimationRate;
 	// 目前攻擊前搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float CurrentAttackingBeginingTimeLength;
 	// 目前攻擊後搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float CurrentAttackingEndingTimeLength;
 
 	/*
@@ -534,9 +534,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AHeroBuff*> BuffQueue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	TMap<FString, AHeroBuff*> BuffMap;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TMap<EHeroBuffState, bool> BuffStateMap;
 
