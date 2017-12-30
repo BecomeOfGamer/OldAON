@@ -150,10 +150,18 @@ enum class EHeroBuffUnique : uint8
 	MoveSpeedUnique,
 	//固定移動速度 EX. 700 固定700跑速
 	MoveSpeedFixed,
-	//該Buff爆擊機率 EX. 0.25 25%的機率爆擊
-	CriticalChance,
-	//該Buff爆擊倍率 EX. 2.25 2.25爆擊傷害
-	CriticalPercentage,
+	//該Buff物理爆擊機率 EX. 0.25 25%的機率爆擊
+	PhysicalCriticalChance,
+	//該Buff物理爆擊倍率 EX. 2.25 2.25爆擊傷害
+	PhysicalCriticalPercentage,
+	//該Buff魔法爆擊機率 EX. 0.25 25%的機率爆擊
+	MagicalCriticalChance,
+	//該Buff魔法爆擊倍率 EX. 2.25 2.25爆擊傷害
+	MagicalCriticalPercentage,
+	//該Buff真傷爆擊機率 EX. 0.25 25%的機率爆擊
+	PureCriticalChance,
+	//該Buff真傷爆擊倍率 EX. 2.25 2.25爆擊傷害
+	PureCriticalPercentage,
 	//格檔物理機率 EX. 0.25 25%的機率格檔物理傷害
 	BlockingPhysicalChance,
 	//格檔魔法機率 EX. 0.25 25%的機率格檔魔法傷害
@@ -244,6 +252,9 @@ public:
 	//攻擊打出傷害後的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAttackLanded(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
+	//攻擊打出傷害後的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnAttackLandedLocal(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage);
 	//攻擊打出但被閃避
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAttackMiss(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);

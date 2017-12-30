@@ -36,6 +36,22 @@ enum class EHeroBodyStatus : uint8
 	SpellEnding,
 };
 
+
+UENUM(BlueprintType)
+enum class ETeamFlag : uint8
+{
+	// 織田軍
+	Team1 = 1,
+	// 聯合軍
+	Team2 = 2,
+	// 敵隊
+	TeamEnemy,
+	// 友軍
+	TeamFriends,
+	// 全部
+	TeamAll,
+};
+
 class AEquipment;
 class ABulletActor;
 class AHeroSkill;
@@ -53,7 +69,7 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 	virtual void PostInitializeComponents() override;
 
 	// Called to bind functionality to input
@@ -68,12 +84,12 @@ public:
 	bool ThrowEquipment(AEquipment* equ, FVector pos);
 
 	bool HasEquipment(AEquipment* equ);
-
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable)
-	void AttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage);
-
+	
 	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable)
 	void HealCompute(AHeroCharacter* attacker, AHeroCharacter* victim, float HealMount);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	TArray<AHeroCharacter*> FindRadiusActorByLocation(FVector Center, float Radius, ETeamFlag flag);
 
 	// for UI
 	UFUNCTION()
@@ -234,7 +250,7 @@ public:
 	// 攻速加乘
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float AdditionAttackSpeed;
-	// 基礎攻速
+	// 原始攻擊秒數
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAttackSpeedSecond;
 	

@@ -420,3 +420,249 @@ void AMOBAPlayerController::ServerHeroAddExpCompute_Implementation(AHeroCharacte
 	}
 }
 
+bool AMOBAPlayerController::AttackCompute_Validate(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
+{
+	return true;
+}
+
+void AMOBAPlayerController::AttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
+{
+	if (Role == ROLE_Authority && victim->IsAlive)
+	{
+		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		float Injury = 1;
+		// 爆擊跟扣防先計算
+		float max_critical = 1;
+		switch (dtype)
+		{
+		case EDamageType::DAMAGE_PHYSICAL:
+			Injury = ags->ArmorConvertToInjuryPersent(victim->CurrentArmor);
+			for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+			{
+				if (attacker->BuffQueue[i]->BuffUniqueMap.Contains(HEROU::PhysicalCriticalChance))
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PhysicalCriticalChance] >= chance &&
+						attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PhysicalCriticalPercentage] >= max_critical)
+					{
+						max_critical = attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PhysicalCriticalPercentage];
+					}
+				}
+			}
+			break;
+		case EDamageType::DAMAGE_MAGICAL:
+			for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+			{
+				if (attacker->BuffQueue[i]->BuffUniqueMap.Contains(HEROU::MagicalCriticalChance))
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (attacker->BuffQueue[i]->BuffUniqueMap[HEROU::MagicalCriticalChance] >= chance &&
+						attacker->BuffQueue[i]->BuffUniqueMap[HEROU::MagicalCriticalPercentage] >= max_critical)
+					{
+						max_critical = attacker->BuffQueue[i]->BuffUniqueMap[HEROU::MagicalCriticalPercentage];
+					}
+				}
+			}
+			break;
+		case EDamageType::DAMAGE_PURE:
+			for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+			{
+				if (attacker->BuffQueue[i]->BuffUniqueMap.Contains(HEROU::PureCriticalChance))
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PureCriticalChance] >= chance &&
+						attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PureCriticalPercentage] >= max_critical)
+					{
+						max_critical = attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PureCriticalPercentage];
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
+		damage *= max_critical;
+
+		float RDamage = damage * Injury; // 扣防後傷害
+		float FDamage = RDamage; // 最終傷害
+								 // 是不是靠普攻打出來的傷害
+		if (AttackLanded)
+		{
+			bool attackMiss = false;
+			// Buff Property Compute
+			if (attacker->BuffPropertyMap[HEROP::AttackMiss] > 0)
+			{
+				float miss = FMath::FRandRange(0, 1);
+				if (attacker->BuffPropertyMap[HEROP::AttackMiss] >= miss)
+				{
+					attackMiss = true;
+				}
+			}
+			if (victim->BuffPropertyMap[HEROP::Dodge] > 0)
+			{
+				float miss = FMath::FRandRange(0, 1);
+				if (victim->BuffPropertyMap[HEROP::Dodge] >= miss)
+				{
+					attackMiss = true;
+				}
+			}
+			if (attackMiss)
+			{
+				for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+				{
+					attacker->BuffQueue[i]->OnAttackMiss(attacker, victim, dtype, damage, RDamage);
+				}
+				return;
+			}
+		}
+
+		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+		{
+			for (auto& Elem : attacker->BuffQueue[i]->BuffUniqueMap)
+			{
+				if (Elem.Key == HEROU::BlockingPhysicalChance && dtype == EDamageType::DAMAGE_PHYSICAL)
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (Elem.Value >= max_critical)
+					{
+						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingPhysicalConstant];
+					}
+				}
+				else if (Elem.Key == HEROU::BlockingMagicalChance && dtype == EDamageType::DAMAGE_MAGICAL)
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (Elem.Value >= max_critical)
+					{
+						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingMagicalConstant];
+					}
+				}
+				else if (Elem.Key == HEROU::BlockingPureChance && dtype == EDamageType::DAMAGE_PURE)
+				{
+					float chance = FMath::FRandRange(0, 1);
+					if (Elem.Value >= max_critical)
+					{
+						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingPureConstant];
+					}
+				}
+			}
+		}
+
+		if (dtype == EDamageType::DAMAGE_PHYSICAL)
+		{
+			if (victim->BuffPropertyMap[HEROP::BlockingPhysical] > 0)
+			{
+				float block = FMath::FRandRange(0, 1);
+				if (victim->BuffPropertyMap[HEROP::BlockingPhysical] >= block)
+				{
+					FDamage = 0;
+				}
+			}
+			if (victim->BuffPropertyMap[HEROP::BlockingPhysicalConstant] != 0)
+			{
+				FDamage -= victim->BuffPropertyMap[HEROP::BlockingPhysicalConstant];
+			}
+			if (victim->BuffPropertyMap[HEROP::AbsorbPhysicalDamagePercentage] > 0)
+			{
+				victim->CurrentHP += victim->BuffPropertyMap[HEROP::AbsorbPhysicalDamagePercentage] * RDamage;
+			}
+			FDamage = FDamage * attacker->BuffPropertyMap[HEROP::PhysicalDamageOutputPercentage]
+				* victim->BuffPropertyMap[HEROP::PhysicalDamageInputPercentage];
+
+			if (victim->BuffStateMap[HEROS::PhysicalImmune])
+			{
+				FDamage = 0;
+			}
+		}
+		else if (dtype == EDamageType::DAMAGE_MAGICAL)
+		{
+			if (victim->BuffPropertyMap[HEROP::BlockingMagical] > 0)
+			{
+				float block = FMath::FRandRange(0, 1);
+				if (victim->BuffPropertyMap[HEROP::BlockingMagical] >= block)
+				{
+					FDamage = 0;
+				}
+			}
+			if (victim->BuffPropertyMap[HEROP::BlockingMagicalConstant] != 0)
+			{
+				FDamage -= victim->BuffPropertyMap[HEROP::BlockingMagicalConstant];
+			}
+			if (victim->BuffPropertyMap[HEROP::AbsorbMagicalDamagePercentage] > 0)
+			{
+				victim->CurrentHP += victim->BuffPropertyMap[HEROP::AbsorbMagicalDamagePercentage] * RDamage;
+			}
+			FDamage = FDamage * attacker->BuffPropertyMap[HEROP::MagicalDamageOutputPercentage]
+				* victim->BuffPropertyMap[HEROP::MagicalDamageInputPercentage];
+
+			if (victim->BuffStateMap[HEROS::MagicalImmune])
+			{
+				FDamage = 0;
+			}
+		}
+		else if (dtype == EDamageType::DAMAGE_PURE)
+		{
+			if (victim->BuffPropertyMap[HEROP::BlockingPure] > 0)
+			{
+				float block = FMath::FRandRange(0, 1);
+				if (victim->BuffPropertyMap[HEROP::BlockingPure] >= block)
+				{
+					FDamage = 0;
+				}
+			}
+			if (victim->BuffPropertyMap[HEROP::BlockingPureConstant] != 0)
+			{
+				FDamage -= victim->BuffPropertyMap[HEROP::BlockingPureConstant];
+			}
+			if (victim->BuffPropertyMap[HEROP::AbsorbPureDamagePercentage] > 0)
+			{
+				victim->CurrentHP += victim->BuffPropertyMap[HEROP::AbsorbPureDamagePercentage] * RDamage;
+			}
+			FDamage = FDamage * attacker->BuffPropertyMap[HEROP::PureDamageOutputPercentage]
+				* victim->BuffPropertyMap[HEROP::PureDamageInputPercentage];
+
+			if (victim->BuffStateMap[HEROS::PureImmune])
+			{
+				FDamage = 0;
+			}
+		}
+
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+		//FString::Printf(TEXT("Server FDamage %f"), FDamage));
+
+		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+		{
+			victim->BuffQueue[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
+		}
+		victim->CurrentHP -= FDamage;
+		if (attacker->BuffPropertyMap[HEROP::StealHealth] > 0)
+		{
+			attacker->CurrentHP += attacker->BuffPropertyMap[HEROP::StealHealth] * FDamage;
+		}
+
+		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+		{
+			attacker->BuffQueue[i]->CreateDamage(attacker, victim, dtype, damage, RDamage);
+			if (AttackLanded)
+			{
+				attacker->BuffQueue[i]->OnAttackLanded(attacker, victim, dtype, damage, RDamage);
+			}
+		}
+		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+		{
+			victim->BuffQueue[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
+		}
+		// 顯示傷害文字
+		attacker->ServerShowDamageEffect(victim->GetActorLocation(),
+			victim->GetActorLocation() - attacker->GetActorLocation(), FDamage);
+	}
+	/*
+	if (victim->BuffPropertyMap[HEROP::MinHealth] > 0 && victim->CurrentHP < victim->BuffPropertyMap[HEROP::MinHealth])
+	{
+	victim->CurrentHP = victim->BuffPropertyMap[HEROP::MinHealth];
+	}
+	if (victim->BuffPropertyMap[HEROP::MaxHealth] > 0 && victim->CurrentHP > victim->BuffPropertyMap[HEROP::MaxHealth])
+	{
+	victim->CurrentHP = victim->BuffPropertyMap[HEROP::MaxHealth];
+	}
+	*/
+}

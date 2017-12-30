@@ -81,6 +81,8 @@ public:
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerHeroAddExpCompute(AHeroCharacter* hero, float exp);
 
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable)
+	void AttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded);
 
 	FVector2D GetMouseScreenPosition();
 

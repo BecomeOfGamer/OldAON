@@ -56,6 +56,10 @@ void ADamageEffect::Tick( float DeltaTime )
 	{
 		float alpha = DamageAlpha->GetFloatValue(TimeCounting);
 		TextMaterial->SetScalarParameterValue(TEXT("Alpha"), alpha);
+		if (alpha < 0.01)
+		{
+			this->Destroy();
+		}
 	}
 	if (OriginPosition != FVector::ZeroVector && DamageHeight)
 	{
