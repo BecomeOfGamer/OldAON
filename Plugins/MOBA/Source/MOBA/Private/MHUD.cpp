@@ -136,17 +136,21 @@ void AMHUD::DrawHUD()
 		{
 			for(AHeroCharacter* EachHero : HeroCanSelection)
 			{
-				FVector pos = this->Project(EachHero->GetActorLocation());
-				EachHero->ScreenPosition.X = pos.X;
-				EachHero->ScreenPosition.Y = pos.Y;
-				bool res = CheckInSelectionBox(EachHero->ScreenPosition);
-				if(res && !EachHero->isSelection)
+				// 只選活人
+				if (EachHero->IsAlive)
 				{
-					EachHero->SelectionOn();
-				}
-				else if(!res && EachHero->isSelection)
-				{
-					EachHero->SelectionOff();
+					FVector pos = this->Project(EachHero->GetActorLocation());
+					EachHero->ScreenPosition.X = pos.X;
+					EachHero->ScreenPosition.Y = pos.Y;
+					bool res = CheckInSelectionBox(EachHero->ScreenPosition);
+					if (res && !EachHero->isSelection)
+					{
+						EachHero->SelectionOn();
+					}
+					else if (!res && EachHero->isSelection)
+					{
+						EachHero->SelectionOff();
+					}
 				}
 			}
 
@@ -164,8 +168,21 @@ void AMHUD::DrawHUD()
 			DrawRect(SelectionBoxFillColor, minX, minY, maxX - minX - 1, maxY - minY - 1);
 		}
 	}
+	for (int i = 0; i < HeroCanSelection.Num(); ++i)
+	{
+		if (HeroCanSelection[i] == NULL)
+		{
+			HeroCanSelection.RemoveAt(i);
+			i--;
+		}
+	}
 	for(AHeroCharacter* EachHero : HeroCanSelection)
 	{
+		// 只畫活人的血條
+		if (!EachHero->IsAlive)
+		{
+			continue;
+		}
 		FVector2D headpos = FVector2D(this->Project(EachHero->PositionOnHead->GetComponentLocation()));
 		FVector2D footpos = FVector2D(this->Project(EachHero->PositionUnderFoot->GetComponentLocation()));
 		footpos.Y += 35;
@@ -546,6 +563,8 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 					act.ActionStatus = EHeroActionStatus::MoveToPosition;
 					act.TargetVec1 = CurrentMouseHit;
 					act.SequenceNumber = SequenceNumber++;
+					// TODO move paticle
+					//GetWorld()->spawn
 					for (AHeroCharacter* EachHero : CurrentSelection)
 					{
 						if (CurrentMouseHit != FVector::ZeroVector)
@@ -787,21 +806,21 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				}
 			}
 		}
-	}
-	// 發事件給BP
-	for(FMHitBox& HitBox : MOBA_HitBoxMap)
-	{
-		if(HitBox.Contains(pos, ViewportScale))
+		// 發事件給BP
+		for (FMHitBox& HitBox : MOBA_HitBoxMap)
 		{
-			MOBA_HitBoxLButtonPressed(HitBox.GetName());
-			if (SkillMapping.Contains(HitBox.GetName()))
+			if (HitBox.Contains(pos, ViewportScale))
 			{
-				CurrentSelection[0]->ShowSkillHint(SkillMapping.FindRef(HitBox.GetName()));
-				
-			}
-			if(HitBox.ConsumesInput())
-			{
-				break;  //Early out if this box consumed the click
+				MOBA_HitBoxLButtonPressed(HitBox.GetName());
+				if (SkillMapping.Contains(HitBox.GetName()))
+				{
+					CurrentSelection[0]->ShowSkillHint(SkillMapping.FindRef(HitBox.GetName()));
+
+				}
+				if (HitBox.ConsumesInput())
+				{
+					break;  //Early out if this box consumed the click
+				}
 			}
 		}
 	}

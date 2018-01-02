@@ -28,6 +28,10 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	SelectionDecal = ObjectInitializer.CreateDefaultSubobject<UDecalComponent>(this, TEXT("SelectionDecal0"));
 	PositionOnHead = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionOnHead0"));
 	PositionUnderFoot = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionUnderFoot0"));
+	AttackStartSFX = ObjectInitializer.CreateDefaultSubobject<UAudioComponent>(this, TEXT("AttackStartSFX0"));
+	AttackLandedSFX = ObjectInitializer.CreateDefaultSubobject<UAudioComponent>(this, TEXT("AttackLandedSFX0"));
+	AttackStartSFX->bAutoActivate = false;
+	AttackLandedSFX->bAutoActivate = false;
 
 	PositionOnHead->SetupAttachment(GetCapsuleComponent());
 	PositionUnderFoot->SetupAttachment(GetCapsuleComponent());
@@ -241,7 +245,6 @@ void AHeroCharacter::Tick(float DeltaTime)
 			BodyStatus = EHeroBodyStatus::Standing;
 		}
 	}
-	
 	{// 計算各種自然回復
 		if (IsAlive)
 		{
@@ -309,6 +312,14 @@ void AHeroCharacter::Tick(float DeltaTime)
 			localPC->ServerCharacterStopMove(this);
 		}
 		IsAlive = false;
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
 		CurrentHP = 0;
 		// TODO: event dead
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
@@ -1236,11 +1247,67 @@ void AHeroCharacter::AddBuff(AHeroBuff* buff)
 {
 	BuffQueue.Add(buff);
 	buff->BuffTarget.Add(this);
+	if (buff->FollowActor)
+	{
+		
+		switch (buff->FollowPosition)
+		{
+		case EBuffPosition::Head:
+			buff->SetActorLocation(this->PositionOnHead->GetComponentLocation());
+			buff->AttachToComponent(this->PositionOnHead, FAttachmentTransformRules::KeepWorldTransform);
+			break;
+		case EBuffPosition::Foot:
+			buff->SetActorLocation(this->PositionUnderFoot->GetComponentLocation());
+			buff->AttachToComponent(this->PositionUnderFoot, FAttachmentTransformRules::KeepWorldTransform);
+			break;
+		case EBuffPosition::Root:
+			buff->SetActorLocation(this->GetActorLocation());
+			buff->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+AHeroBuff* AHeroCharacter::GetBuffByName(FString name)
+{
+	AHeroBuff* res = 0;
+	for (int32 i = 0; i < BuffQueue.Num(); ++i)
+	{
+		if (BuffQueue[i]->Name == name)
+		{
+			res = BuffQueue[i];
+			break;
+		}
+	}
+	return res;
 }
 
 void AHeroCharacter::AddUniqueBuff(AHeroBuff* buff)
 {
 	buff->BuffTarget.Add(this);
+	if (buff->FollowActor)
+	{
+		buff->SetActorLocation(this->GetActorLocation());
+		switch (buff->FollowPosition)
+		{
+		case EBuffPosition::Head:
+			buff->SetActorLocation(this->PositionOnHead->GetComponentLocation());
+			buff->AttachToComponent(this->PositionOnHead, FAttachmentTransformRules::KeepWorldTransform);
+			break;
+		case EBuffPosition::Foot:
+			buff->SetActorLocation(this->PositionUnderFoot->GetComponentLocation());
+			buff->AttachToComponent(this->PositionUnderFoot, FAttachmentTransformRules::KeepWorldTransform);
+			break;
+		case EBuffPosition::Root:
+			buff->SetActorLocation(this->GetActorLocation());
+			buff->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+			break;
+		default:
+			break;
+		}
+	}
 	bool hasinsert = false;
 	for (int32 i = 0; i < BuffQueue.Num(); ++i)
 	{
@@ -1493,6 +1560,27 @@ void AHeroCharacter::DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction)
 	}
 }
 
+bool AHeroCharacter::ServerPlayAttackStartSFX_Validate()
+{
+	return true;
+}
+void AHeroCharacter::ServerPlayAttackStartSFX_Implementation()
+{
+	AttackStartSFX->Activate(true);
+	AttackStartSFX->Play(0);
+}
+
+bool AHeroCharacter::ServerPlayAttackLandedSFX_Validate()
+{
+	return true;
+}
+
+void AHeroCharacter::ServerPlayAttackLandedSFX_Implementation()
+{
+	AttackLandedSFX->Activate(true);
+	AttackLandedSFX->Play(0);
+}
+
 void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 {
 	AHeroCharacter* TargetActor = Cast<AHeroCharacter>(CurrentAction.TargetActor);
@@ -1575,7 +1663,11 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	}
 	break;
 	default:
-		break;
+	{
+		BodyStatus = EHeroBodyStatus::Moving;
+		localPC->ServerCharacterStopMove(this);
+	}
+	break;
 	}
 }
 
@@ -1584,9 +1676,7 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 	switch (BodyStatus)
 	{
 	case EHeroBodyStatus::Moving:
-	{
 		localPC->ServerCharacterStopMove(this);
-	}
 	// no break;
 	case EHeroBodyStatus::Standing:
 	{
@@ -1595,12 +1685,6 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 	}
 	break;
 	case EHeroBodyStatus::Stunning:
-		break;
-	case EHeroBodyStatus::AttackWating:
-		break;
-	case EHeroBodyStatus::AttackBegining:
-		break;
-	case EHeroBodyStatus::AttackEnding:
 		break;
 	case EHeroBodyStatus::SpellWating:
 	{
@@ -1638,7 +1722,11 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 	}
 	break;
 	default:
-		break;
+	{
+		BodyStatus = EHeroBodyStatus::Moving;
+		localPC->ServerCharacterStopMove(this); 
+	}
+	break;
 	}
 }
 

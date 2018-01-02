@@ -515,7 +515,7 @@ void AMOBAPlayerController::AttackCompute_Implementation(AHeroCharacter* attacke
 				return;
 			}
 		}
-
+		
 		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
 		{
 			for (auto& Elem : attacker->BuffQueue[i]->BuffUniqueMap)
@@ -646,6 +646,10 @@ void AMOBAPlayerController::AttackCompute_Implementation(AHeroCharacter* attacke
 			{
 				attacker->BuffQueue[i]->OnAttackLanded(attacker, victim, dtype, damage, RDamage);
 			}
+		}
+		if (AttackLanded)
+		{
+			attacker->ServerPlayAttackLandedSFX();
 		}
 		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
 		{

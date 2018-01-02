@@ -139,6 +139,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void AddBuff(AHeroBuff* buff);
 
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	AHeroBuff* GetBuffByName(FString name);
+
 	// 加入Buff時取代同名的Buff
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void AddUniqueBuff(AHeroBuff* buff);
@@ -147,7 +150,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void RemoveBuffByName(FString name);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable)
+	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable)
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -167,6 +170,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	AHeroSkill* GetCurrentSkill();
+
+	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	void ServerPlayAttackStartSFX();
+
+	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	void ServerPlayAttackLandedSFX();
 	
 	// 確定當前動作做完了沒
 	bool CheckCurrentActionFinish();
@@ -210,7 +219,13 @@ public:
 	// 手動設定的腳底位置
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
 	UArrowComponent * PositionUnderFoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	UAudioComponent * AttackStartSFX;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	UAudioComponent * AttackLandedSFX;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	TSubclassOf<ABulletActor> HeroBullet;
 
@@ -352,11 +367,11 @@ public:
 	TArray<float> LevelProperty_Intelligence;
 	
 	// 當前技能提示
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
 	ASkillHintActor* CurrentSkillHint;
 
 	// 當前技能指向
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
 	FVector CurrentSkillDirection;
 
 	// 準備要用的技能索引

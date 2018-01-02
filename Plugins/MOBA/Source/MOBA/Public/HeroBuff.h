@@ -319,11 +319,11 @@ public:
 
 	// 是否能疊加
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
-	uint32 CanSuperposition:1;
+	uint32 CanStacks:1;
 
 	// 疊加層數
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
-	int32 Superposition;
+	int32 Stacks;
 
 	// 每一層持續時間
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)

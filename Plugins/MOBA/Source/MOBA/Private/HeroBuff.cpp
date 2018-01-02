@@ -33,8 +33,8 @@ AHeroBuff* AHeroBuff::Clone()
 	data->Name = Name;
 	data->Head = Head;
 	data->BuffState = BuffState;
-	data->CanSuperposition = CanSuperposition;
-	data->Superposition = Superposition;
+	data->CanStacks = CanStacks;
+	data->Stacks = Stacks;
 	data->Duration = Duration;
 	return data;
 }
@@ -43,6 +43,7 @@ void AHeroBuff::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	Duration -= DeltaTime;
+	/*
 	if (FollowActor)
 	{
 		if (BuffTarget.Num() > 0)
@@ -61,7 +62,7 @@ void AHeroBuff::Tick(float DeltaTime)
 			default:
 				break;
 			}
-			
 		}
 	}
+	*/
 }

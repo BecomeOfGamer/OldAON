@@ -275,7 +275,12 @@ public:
 
 	UTexture2D* ThrowTexture;
 
-	
+	// Particle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UParticleSystemComponent * MoveParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UParticleSystemComponent * AttackParticle;
 
 	float ViewportScale;
 
