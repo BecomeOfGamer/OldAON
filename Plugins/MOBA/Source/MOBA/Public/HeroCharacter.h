@@ -292,8 +292,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseSpellingEndingTimeLength;
 	
-
-	
 	// 追踨目標更新時間
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float FollowActorUpdateTimeGap;

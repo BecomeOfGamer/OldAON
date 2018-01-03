@@ -19,7 +19,8 @@
 #include "Equipment.h"
 
 
-AMHUD::AMHUD()
+AMHUD::AMHUD(const FObjectInitializer& ObjectInitializer)
+	: Super(FObjectInitializer::Get())
 {
 	LocalController = NULL;
 	SequenceNumber = 1;
@@ -434,7 +435,15 @@ void AMHUD::HeroAttackHero(AHeroCharacter* hero)
 			act.ActionStatus = EHeroActionStatus::AttackActor;
 			act.TargetActor = hero;
 			act.SequenceNumber = SequenceNumber++;
-
+			if (LastAttackParticle && LastAttackParticle->IsActive())
+			{
+				LastAttackParticle->DestroyComponent();
+			}
+			if (AttackParticle)
+			{
+				LastAttackParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AttackParticle,
+					FTransform(CurrentMouseHit), false);
+			}
 			for (AHeroCharacter* EachHero : HeroGoAttack)
 			{
 				if (bLeftShiftDown)
@@ -563,12 +572,20 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 					act.ActionStatus = EHeroActionStatus::MoveToPosition;
 					act.TargetVec1 = CurrentMouseHit;
 					act.SequenceNumber = SequenceNumber++;
-					// TODO move paticle
-					//GetWorld()->spawn
+										
 					for (AHeroCharacter* EachHero : CurrentSelection)
 					{
 						if (CurrentMouseHit != FVector::ZeroVector)
 						{
+							if (LastMoveParticle && LastMoveParticle->IsActive())
+							{
+								LastMoveParticle->DestroyComponent();
+							}
+							if (MoveParticle)
+							{
+								LastMoveParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MoveParticle,
+									FTransform(CurrentMouseHit), false);
+							}
 							if (bLeftShiftDown)
 							{
 								LocalController->ServerAppendHeroAction(EachHero, act);

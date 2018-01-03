@@ -63,7 +63,7 @@ class ASceneObject;
 UCLASS()
 class MOBA_API AMHUD : public AHUD
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 public:
 	AMHUD();
 	
@@ -277,10 +277,14 @@ public:
 
 	// Particle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-	UParticleSystemComponent * MoveParticle;
+	UParticleSystem * MoveParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-	UParticleSystemComponent * AttackParticle;
+	UParticleSystem * AttackParticle;
+	
+	UParticleSystemComponent* LastMoveParticle;
+
+	UParticleSystemComponent* LastAttackParticle;
 
 	float ViewportScale;
 

@@ -44,7 +44,7 @@ enum class EHeroBuffState : uint8
 #define HEROS EHeroBuffState
 
 // BaseAttack是原始攻擊力
-// 物理輸出 = (((BaseAttack+AttackBounsConstantWhite)*AttackBounsPercentage+AttackBounsConstantGreen)*PhysicalDamageOutputPercentage)
+// 物理輸出 = (((BaseAttack+AttackBounsConstantWhite)*(AttackBounsPercentage+1)+AttackBounsConstantGreen)*PhysicalDamageOutputPercentage)
 // BaseManaRegen是原始回魔速度
 // 回魔速度 = (BaseManaRegen*ManaRegenPercentage+ManaRegenConstant)*HealthRegenRatio
 // BaseAttackSpeed 是原始攻速，BaseAttackSpeedFixed 是變身系的基礎攻速
@@ -280,6 +280,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnStealLife(AHeroCharacter* caster, AHeroCharacter* target, EDamageType dtype, float damage, float heal_mount);
 
+	// 時間事件觸發
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnInterval(int32 count);
+
 	// Buff 優先權
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	int32 Priority;
@@ -329,5 +333,14 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Duration;
 
+	// 每幾秒自動呼叫事件
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float Interval;
+
+	// 時間事件計數
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float IntervalCount;
+
+	float IntervalCounting;
 };
 

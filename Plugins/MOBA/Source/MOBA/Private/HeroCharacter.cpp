@@ -657,6 +657,9 @@ void AHeroCharacter::UpdateHPMPAS()
 		CurrentRegenHP = BaseRegenHP + Strength * ags->StrengthToHealingHP;
 		CurrentMaxMP = BaseMP + Intelligence * ags->IntelligenceToMP;
 		CurrentRegenMP = BaseRegenMP + Intelligence * ags->IntelligenceToHealingMP;
+		CurrentAttack = (((BaseAttack + BuffPropertyMap[HEROP::AttackBounsConstantWhite])*
+			(1+BuffPropertyMap[HEROP::AttackBounsPercentage]) + BuffPropertyMap[HEROP::AttackBounsConstantGreen])*
+			BuffPropertyMap[HEROP::PhysicalDamageOutputPercentage]);
 
 		CurrentAttackSpeed = (100 + (Agility * ags->AgilityToAttackSpeed + AdditionAttackSpeed)) *
 			BuffPropertyMap[HEROP::AttackSpeedRatio] * 0.01;

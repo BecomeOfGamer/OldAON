@@ -9,6 +9,9 @@ AHeroBuff::AHeroBuff(const FObjectInitializer& ObjectInitializer)
 {
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
+	Interval = 0;
+	IntervalCounting = 0;
+	IntervalCount = 0;
 }
 
 AHeroBuff* AHeroBuff::NewHeroBuff()
@@ -43,26 +46,14 @@ void AHeroBuff::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	Duration -= DeltaTime;
-	/*
-	if (FollowActor)
+	if (Interval > 0)
 	{
-		if (BuffTarget.Num() > 0)
+		IntervalCounting += DeltaTime;
+		if (IntervalCounting >= Interval)
 		{
-			switch (FollowPosition)
-			{
-			case EBuffPosition::Head:
-				this->SetActorLocation(BuffTarget[0]->PositionOnHead->GetComponentLocation());
-				break;
-			case EBuffPosition::Foot:
-				this->SetActorLocation(BuffTarget[0]->PositionUnderFoot->GetComponentLocation());
-				break;
-			case EBuffPosition::Root:
-				this->SetActorLocation(BuffTarget[0]->GetActorLocation());
-				break;
-			default:
-				break;
-			}
+			IntervalCount++;
+			IntervalCounting = 0;
+			OnInterval(IntervalCount);
 		}
 	}
-	*/
 }

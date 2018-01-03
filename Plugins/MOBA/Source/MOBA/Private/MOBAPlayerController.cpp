@@ -33,6 +33,7 @@ void AMOBAPlayerController::BeginPlay()
 	}
 	bMouseRButton = false;
 	bMouseLButton = false;
+	bShowMouseCursor = false;
 }
 
 bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float AmountDepressed,
