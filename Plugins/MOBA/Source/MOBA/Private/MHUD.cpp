@@ -249,8 +249,8 @@ void AMHUD::DrawHUD()
 				skhb->Size.X *ViewportScale, skhb->Size.Y *ViewportScale);
 			DrawRect(MPBarForeColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y*ViewportScale, 
 				skhb->Size.X*ViewportScale * selectHero->GetCurrentExpPercent(), skhb->Size.Y*ViewportScale);
-			DrawText(FString::Printf(TEXT("LV%d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1), 
-				skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale);
+			DrawText(FString::Printf(TEXT("LV %d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1), 
+				skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, LevelFont);
 		}
 		// 畫技能圖
 		if(SkillMaterial)
@@ -272,6 +272,8 @@ void AMHUD::DrawHUD()
 						DrawMaterialSimple(SkillLevelUpMaterial, sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale,
 							sklvhb->Size.X * ViewportScale, sklvhb->Size.Y * ViewportScale);
 					}
+					DrawText(FString::Printf(TEXT("LV %d"), selectHero->Skills[idx]->CurrentLevel), FLinearColor(1, 1, 1),
+						sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale, LevelFont);
 				}
 			}
 		}

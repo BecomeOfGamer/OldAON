@@ -40,6 +40,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
         bool bGamepad)
 {
 	bool bResult = false;
+	/*
 	if(GEngine->HMDDevice.IsValid())
 	{
 		bResult = GEngine->HMDDevice->HandleInputKey(PlayerInput, Key, EventType, AmountDepressed, bGamepad);
@@ -48,6 +49,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 			return bResult;
 		}
 	}
+	*/
 	if (EventType == IE_Pressed && Hud)
 	{
 		int32 idx = SkillMapping.Find(Key);
@@ -223,7 +225,9 @@ FVector2D AMOBAPlayerController::GetMouseScreenPosition()
 	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
 	if(LocalPlayer && LocalPlayer->ViewportClient)
 	{
-		return LocalPlayer->ViewportClient->GetMousePosition();
+		FVector2D res;
+		LocalPlayer->ViewportClient->GetMousePosition(res);
+		return res;
 	}
 	return FVector2D(-1, -1);
 }

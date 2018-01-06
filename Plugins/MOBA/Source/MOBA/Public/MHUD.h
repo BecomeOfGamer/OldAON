@@ -281,6 +281,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	UParticleSystem * AttackParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UFont* LevelFont;
 	
 	UParticleSystemComponent* LastMoveParticle;
 

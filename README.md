@@ -9,8 +9,9 @@
 
 # 怎麼使用 How to use ?
 
-- install UE4.17.2 https://www.unrealengine.com/
+- install UE4.17.2 https://www.unrealengine.com/en-US/what-is-unreal-engine-4
 - install Visual Studio 2017
+- install git & git lfs
 - git clone https://github.com/RemakeAONTeam/AON.git
 - git lfs fetch
 - git lfs pull
