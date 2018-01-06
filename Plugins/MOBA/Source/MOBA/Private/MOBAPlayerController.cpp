@@ -40,16 +40,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
         bool bGamepad)
 {
 	bool bResult = false;
-	/*
-	if(GEngine->HMDDevice.IsValid())
-	{
-		bResult = GEngine->HMDDevice->HandleInputKey(PlayerInput, Key, EventType, AmountDepressed, bGamepad);
-		if(bResult)
-		{
-			return bResult;
-		}
-	}
-	*/
+
 	if (EventType == IE_Pressed && Hud)
 	{
 		int32 idx = SkillMapping.Find(Key);
@@ -234,6 +225,16 @@ FVector2D AMOBAPlayerController::GetMouseScreenPosition()
 
 void AMOBAPlayerController::OnMouseRButtonPressed1()
 {
+	/*if (Role == ROLE_Authority)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, 
+			FString::Printf(TEXT("Server OnMouseRButtonPressed1")));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("Client OnMouseRButtonPressed1")));
+	}*/	
 	bMouseRButton = true;
 	if (Hud)
 	{
@@ -243,6 +244,16 @@ void AMOBAPlayerController::OnMouseRButtonPressed1()
 
 void AMOBAPlayerController::OnMouseRButtonPressed2()
 {
+	/*if (Role == ROLE_Authority)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("Server OnMouseRButtonPressed2")));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("Client OnMouseRButtonPressed2")));
+	}*/
 	bMouseRButton = true;
 	if(Hud)
 	{
@@ -312,7 +323,7 @@ bool AMOBAPlayerController::ServerAppendHeroAction_Validate(AHeroCharacter* hero
 void AMOBAPlayerController::ServerAppendHeroAction_Implementation(AHeroCharacter* hero,
         const FHeroAction& action)
 {
-	if (Role < ROLE_Authority)
+	if (Role == ROLE_Authority)
 	{
 		hero->ActionQueue.Add(action);
 	}
