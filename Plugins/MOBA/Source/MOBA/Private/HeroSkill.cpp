@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "MOBAPrivatePCH.h"
 #include "HeroSkill.h"
-
+#include "UnrealNetwork.h"
 
 // Sets default values
 AHeroSkill::AHeroSkill()

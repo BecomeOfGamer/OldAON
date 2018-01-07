@@ -9,13 +9,21 @@
 
 # 怎麼使用 How to use ?
 
-- install UE4.17.2 https://www.unrealengine.com/en-US/what-is-unreal-engine-4
+## Install:
+- unreal 4.18  https://www.unrealengine.com/download
+- visual studio 2017 https://imagine.microsoft.com/zh-tw/Catalog/Product/530
+- git  https://git-scm.com/download/win
+- git lfs   https://git-lfs.github.com/
+- 申請github帳號  https://github.com/
+
+並把把顯卡升級到gtx 1050以上
+- install UE4.18.2 https://www.unrealengine.com/en-US/what-is-unreal-engine-4
 - install Visual Studio 2017
 - install git & git lfs
 - git clone https://github.com/RemakeAONTeam/AON.git
 - git lfs fetch
 - git lfs pull
-- 右鍵點AON.uproject=>Switch Unreal Engine Version選4.17
+- 右鍵點AON.uproject=>Switch Unreal Engine Version選4.18
 - 打開產生的AON.sln 按ctrl+F5就可以了
 
 # 怎麼更新 How to update ?

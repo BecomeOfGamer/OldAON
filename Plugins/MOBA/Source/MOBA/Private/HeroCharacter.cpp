@@ -47,8 +47,6 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	BodyStatus = EHeroBodyStatus::Standing;
 	GetMesh()->SetWorldRotation(FQuat(FRotator(0, -90, 0)));
 
-	// 基礎攻擊距離
-	BaseAttackRange = 150;
 	// 目前攻擊動畫時間長度
 	CurrentAttackingAnimationTimeLength = 0.5;
 	// 基礎血量
