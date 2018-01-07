@@ -633,7 +633,7 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 
 void AMHUD::OnRMousePressed1(FVector2D pos)
 {
-	/*if (Role == ROLE_Authority)
+	if (Role == ROLE_Authority)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 			FString::Printf(TEXT("Server OnRMousePressed1")));
@@ -642,7 +642,7 @@ void AMHUD::OnRMousePressed1(FVector2D pos)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 			FString::Printf(TEXT("Client OnRMousePressed1")));
-	}*/
+	}
 	bClickHero = false;
 	ClickStatus = ERTSClickEnum::LastRightClick;
 	if(!bMouseRButton)
@@ -654,7 +654,7 @@ void AMHUD::OnRMousePressed1(FVector2D pos)
 
 void AMHUD::OnRMousePressed2(FVector2D pos)
 {
-	/*if (Role == ROLE_Authority)
+	if (Role == ROLE_Authority)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 			FString::Printf(TEXT("Server OnRMousePressed2")));
@@ -663,7 +663,7 @@ void AMHUD::OnRMousePressed2(FVector2D pos)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 			FString::Printf(TEXT("Client OnRMousePressed2")));
-	}*/
+	}
 	if(bNeedMouseRDown)
 	{
 		bNeedMouseRDown = false;

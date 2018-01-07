@@ -40,7 +40,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
         bool bGamepad)
 {
 	bool bResult = false;
-
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Client InputKey ") + Key.ToString());
 	if (EventType == IE_Pressed && Hud)
 	{
 		int32 idx = SkillMapping.Find(Key);
