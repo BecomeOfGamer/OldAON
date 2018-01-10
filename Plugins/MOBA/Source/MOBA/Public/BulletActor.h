@@ -20,44 +20,48 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	UPROPERTY(Category = "Bullet", VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* BulletParticle;
 	
-	UPROPERTY(Category = "Bullet", VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* FlyParticle;
 
-	UFUNCTION(BlueprintCallable, Category = "Bullet")
-	void SetTartgetActor(AActor* TActor);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet")
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void SetTartgetActor(AHeroCharacter* attacker, AHeroCharacter* TActor);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
 
-	// ?∕ctor憭?撠梁???
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
+	// 距離多近時爆炸 
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float BreakDistance;
 
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float DestroyDelay;
 
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float DestoryCount;
 
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	uint32  ActiveFlyParticleDied: 1;
 
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	uint32  ActiveBulletParticleDied: 1;
 
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	uint32  DiedInHeroBody: 1;
 
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	uint32  PrepareDestory: 1;
 
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
-	AActor* TargetActor;
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	AHeroCharacter* Attacker;
 
-	UPROPERTY(Category = "Bullet", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	AHeroCharacter* TargetActor;
+
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Damage;
 
 };

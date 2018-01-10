@@ -53,7 +53,7 @@ public:
 	TArray<FKey> SkillMapping;
 
 	/** Navigate player to the given world location. */	
-	UFUNCTION(Server, WithValidation, Reliable, Category = "MOBA")
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerCharacterMove(AHeroCharacter* hero, const FVector& pos);
 	
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
@@ -81,8 +81,8 @@ public:
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerHeroAddExpCompute(AHeroCharacter* hero, float exp);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable)
-	void AttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded);
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	void ServerAttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded);
 
 	FVector2D GetMouseScreenPosition();
 

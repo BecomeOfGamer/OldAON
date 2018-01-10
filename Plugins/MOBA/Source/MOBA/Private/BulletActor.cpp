@@ -3,6 +3,8 @@
 #include "BulletActor.h"
 #include "HeroCharacter.h"
 #include "SceneObject.h"
+#include "MOBAPlayerController.h"
+#include "UnrealNetwork.h"
 
 ABulletActor::ABulletActor(const FObjectInitializer& ObjectInitializer)
     : Super(FObjectInitializer::Get())
@@ -20,6 +22,7 @@ ABulletActor::ABulletActor(const FObjectInitializer& ObjectInitializer)
 	ActiveBulletParticleDied = true;
     DestoryCount = 0;
     TargetActor = NULL;
+	bReplicates = true;
 }
 // Sets default values
 ABulletActor::ABulletActor()
@@ -58,29 +61,9 @@ void ABulletActor::Tick(float DeltaTime)
         }
         if(BreakDistance > dis)
         {
-            AHeroCharacter* Hero = Cast<AHeroCharacter>(TargetActor);
-			ASceneObject* SceneObj = Cast<ASceneObject>(TargetActor);
+			AHeroCharacter::localPC->ServerAttackCompute(
+				Attacker, TargetActor, EDamageType::DAMAGE_PHYSICAL, Damage, true);
 
-			// 顯示傷害文字
-			ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(Hero->ShowDamageEffect);
-			if (TempDamageText)
-			{
-				TempDamageText->OriginPosition = TargetActor->GetActorLocation();
-				TempDamageText->SetString(FString::FromInt((int32)Damage));
-				FVector scaleSize(TempDamageText->ScaleSize, TempDamageText->ScaleSize, TempDamageText->ScaleSize);
-				TempDamageText->SetActorScale3D(scaleSize);
-				FVector dir = TargetActor->GetActorLocation() - GetActorLocation();
-				dir.Normalize();
-				TempDamageText->FlyDirection = dir;
-			}
-			if (Hero)
-			{
-				Hero->CurrentHP -= Damage;
-			}
-			else if (SceneObj)
-			{
-				SceneObj->CurrentHP -= Damage;
-			}
             PrepareDestory = true;
 			if (!ActiveFlyParticleDied)
 			{
@@ -107,8 +90,15 @@ void ABulletActor::Tick(float DeltaTime)
     }
 }
 
-void ABulletActor::SetTartgetActor(AActor* TActor)
+void ABulletActor::SetTartgetActor(AHeroCharacter* attacker, AHeroCharacter* TActor)
 {
     TargetActor = TActor;
+	Attacker = attacker;
 }
 
+void ABulletActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABulletActor, Attacker);
+	DOREPLIFETIME(ABulletActor, TargetActor);
+}

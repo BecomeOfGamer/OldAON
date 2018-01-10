@@ -436,12 +436,12 @@ void AMOBAPlayerController::ServerHeroAddExpCompute_Implementation(AHeroCharacte
 	}
 }
 
-bool AMOBAPlayerController::AttackCompute_Validate(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
+bool AMOBAPlayerController::ServerAttackCompute_Validate(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
 {
 	return true;
 }
 
-void AMOBAPlayerController::AttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
+void AMOBAPlayerController::ServerAttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
 {
 	if (Role == ROLE_Authority && victim->IsAlive)
 	{

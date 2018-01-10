@@ -17,6 +17,7 @@
 #include "MOBAPlayerController.h"
 #include "Engine/World.h"
 
+AMOBAPlayerController* AHeroCharacter::localPC = 0;
 
 AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())
@@ -1216,13 +1217,13 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 				if (bullet)
 				{
 					bullet->SetActorLocation(pos);
-					bullet->SetTartgetActor(TargetActor);
+					bullet->SetTartgetActor(this, TargetActor);
 					bullet->Damage = this->CurrentAttack;
 				}
 			}
 			else
 			{// 近戰傷害
-				localPC->AttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack, true);
+				localPC->ServerAttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack, true);
 			}
 			BodyStatus = EHeroBodyStatus::AttackEnding;
 		}
@@ -1420,21 +1421,7 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 			IsAttacked = true;
 			float Damage = this->CurrentAttack;
 
-			if (HeroBullet)
-			{
-				FVector pos = GetActorLocation();
-				ABulletActor* bullet = GetWorld()->SpawnActor<ABulletActor>(HeroBullet);
-				if (bullet)
-				{
-					bullet->SetActorLocation(pos);
-					bullet->SetTartgetActor(TargetActor);
-					bullet->Damage = Damage;
-				}
-			}
-			else
-			{
-				TargetActor->CurrentHP -= Damage;
-			}
+			TargetActor->CurrentHP -= Damage;
 			BodyStatus = EHeroBodyStatus::AttackEnding;
 		}
 	}

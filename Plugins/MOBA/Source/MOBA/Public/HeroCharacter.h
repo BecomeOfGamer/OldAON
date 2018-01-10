@@ -253,7 +253,7 @@ public:
 	FVector2D	ScreenPosition;
 	
 	// 英雄技能
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AHeroSkill*> Skills;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
@@ -580,7 +580,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	FHeroAction LastUseSkill;
 
-	AMOBAPlayerController* localPC;
+	static AMOBAPlayerController* localPC;
 
 	// 死亡後經過時間
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
