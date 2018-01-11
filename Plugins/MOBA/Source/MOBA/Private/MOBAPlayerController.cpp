@@ -6,7 +6,8 @@
 #include "HeroCharacter.h"
 #include "Engine/LocalPlayer.h"
 // for GEngine
-#include "IHeadMountedDisplay.h"
+#include "IXRTrackingSystem.h"
+//#include "IHeadMountedDisplay.h"
 #include "Engine.h"
 #include "Equipment.h"
 #include "MOBAGameState.h"
@@ -36,10 +37,17 @@ void AMOBAPlayerController::BeginPlay()
 	bShowMouseCursor = false;
 }
 
-bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float AmountDepressed,
-        bool bGamepad)
+bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad)
 {
-	bool bResult = false;
+	if (GEngine->XRSystem.IsValid())
+	{
+		auto XRInput = GEngine->XRSystem->GetXRInput();
+		if (XRInput && XRInput->HandleInputKey(PlayerInput, Key, EventType, AmountDepressed, bGamepad))
+		{
+			return true;
+		}
+	}
+	
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Client InputKey ") + Key.ToString());
 	if (EventType == IE_Pressed && Hud)
 	{
@@ -74,12 +82,11 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 			}
 		}
 	}
+	bool bResult = false;
 	if(PlayerInput)
 	{
 		bResult = PlayerInput->InputKey(Key, EventType, AmountDepressed, bGamepad);
-
-		// TODO: Allow click keys to be defined
-		if(bEnableClickEvents && (Key == EKeys::LeftMouseButton || Key == EKeys::RightMouseButton))
+		if (bEnableClickEvents && (ClickEventKeys.Contains(Key) || ClickEventKeys.Contains(EKeys::AnyKey)))
 		{
 			if (Key == EKeys::LeftMouseButton)
 			{
@@ -90,9 +97,10 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 				AMOBAPlayerController::OnMouseRButtonPressed1();
 			}
 			FVector2D MousePosition;
-			if(CastChecked<ULocalPlayer>(Player)->ViewportClient->GetMousePosition(MousePosition))
+			UGameViewportClient* ViewportClient = CastChecked<ULocalPlayer>(Player)->ViewportClient;
+			if (ViewportClient && ViewportClient->GetMousePosition(MousePosition))
 			{
-				ClickedPrimitive = NULL;
+				UPrimitiveComponent* ClickedPrimitive = NULL;
 				if(bEnableMouseOverEvents)
 				{
 					ClickedPrimitive = CurrentClickablePrimitive.Get();
@@ -225,16 +233,17 @@ FVector2D AMOBAPlayerController::GetMouseScreenPosition()
 
 void AMOBAPlayerController::OnMouseRButtonPressed1()
 {
-	/*if (Role == ROLE_Authority)
+	/*FVector2D mpos = GetMouseScreenPosition();
+	if (Role == ROLE_Authority)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, 
-			FString::Printf(TEXT("Server OnMouseRButtonPressed1")));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("Server OnMouseRButtonPressed1 %f %f"), mpos.X, mpos.Y));
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Client OnMouseRButtonPressed1")));
-	}*/	
+			FString::Printf(TEXT("Client OnMouseRButtonPressed1 %f %f"), mpos.X, mpos.Y));
+	}*/
 	bMouseRButton = true;
 	if (Hud)
 	{
@@ -244,15 +253,16 @@ void AMOBAPlayerController::OnMouseRButtonPressed1()
 
 void AMOBAPlayerController::OnMouseRButtonPressed2()
 {
-	/*if (Role == ROLE_Authority)
+	/*FVector2D mpos = GetMouseScreenPosition();
+	if (Role == ROLE_Authority)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Server OnMouseRButtonPressed2")));
+			FString::Printf(TEXT("Server OnMouseRButtonPressed2 %f %f"), mpos.X, mpos.Y));
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Client OnMouseRButtonPressed2")));
+			FString::Printf(TEXT("Client OnMouseRButtonPressed2 %f %f"), mpos.X, mpos.Y));
 	}*/
 	bMouseRButton = true;
 	if(Hud)

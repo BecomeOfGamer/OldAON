@@ -2,7 +2,7 @@
 
 #include "MOBAPrivatePCH.h"
 #include "HeroBuff.h"
-
+#include "UnrealNetwork.h"
 
 AHeroBuff::AHeroBuff(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())
@@ -56,4 +56,11 @@ void AHeroBuff::Tick(float DeltaTime)
 			OnInterval(IntervalCount);
 		}
 	}
+}
+
+
+void AHeroBuff::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AHeroBuff, BuffTarget);
 }

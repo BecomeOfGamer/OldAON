@@ -318,12 +318,12 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	TMap<EHeroBuffUnique, float> BuffUniqueMap;
 
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<AHeroCharacter*> BuffTarget;
 
 	// 是否能疊加
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
-	uint32 CanStacks:1;
+	bool CanStacks = false;
 
 	// 疊加層數
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
