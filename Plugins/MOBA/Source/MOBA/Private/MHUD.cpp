@@ -644,6 +644,9 @@ void AMHUD::OnRMousePressed1(FVector2D pos)
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 			FString::Printf(TEXT("Client OnRMousePressed1 %f %f"), pos.X, pos.Y));
 	}*/
+	// 如果沒有下面這行在 editor 會不能移動
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+		FString::Printf(TEXT(" "), pos.X, pos.Y));
 	bClickHero = false;
 	ClickStatus = ERTSClickEnum::LastRightClick;
 	if(!bMouseRButton)

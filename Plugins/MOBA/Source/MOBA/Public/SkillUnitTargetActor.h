@@ -1,24 +1,27 @@
-Ôªø// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
+#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BulletActor.generated.h"
+#include "SkillUnitTargetActor.generated.h"
 
 UCLASS()
-class MOBA_API ABulletActor : public AActor
+class MOBA_API ASkillUnitTargetActor : public AActor
 {
-	GENERATED_UCLASS_BODY()	
+	GENERATED_UCLASS_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	ASkillUnitTargetActor();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 public:	
-	// Sets default values for this actor's properties
-	ABulletActor();
-		
 	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* BulletParticle;
@@ -26,16 +29,33 @@ public:
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* FlyParticle;
 
+	// §@ØÎ™∫ßÎÆg™´≥]©w•ÿº–•Œ
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SetTargetActor(AHeroCharacter* attacker, AHeroCharacter* TActor);
+
+	// ∑|≥s¬Í™∫ßÎÆg™´≥]©w•ÿº–•Œ
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void SetTargetActors(AHeroCharacter* attacker, TArray<AHeroCharacter*> TActors);
+
+	// ≠Ë≥Q≤£•Õ•X®” ©Œ¨O≠n∑«≥∆ºu®Ï§U§@≠”•ÿº–Æ…∑|ƒ≤µo
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnStart(AHeroCharacter* caster, AHeroCharacter* target);
+	// ¿ª§§•ÿº–
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnHit(AHeroCharacter* caster, AHeroCharacter* target);
+
+	// ≥Q∞{¡◊
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void BeDodge(AHeroCharacter* caster, AHeroCharacter* target);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
 
-	// Ë∑ùÈõ¢Â§öËøëÊôÇÁàÜÁÇ∏ 
+	// ∂Z¬˜¶h™ÒÆ…√z¨µ 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float BreakDistance;
 
+	// √z¨µ´·¥X¨Ì´·Æ¯•¢
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float DestroyDelay;
 
@@ -56,11 +76,22 @@ public:
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
 	AHeroCharacter* Attacker;
+	
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	TArray<AHeroCharacter*> TargetActors;
+
+	AHeroCharacter* LastTarget = nullptr;
+
+	AHeroCharacter* CheckLastTarget = nullptr;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
-	AHeroCharacter* TargetActor;
+	int32 CurrentTargetIndex = 0;
+
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	EDamageType DamageType = EDamageType::DAMAGE_MAGICAL;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Damage;
-
+	
+	
 };

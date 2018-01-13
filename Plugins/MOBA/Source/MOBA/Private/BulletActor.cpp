@@ -2,7 +2,6 @@
 #include "MOBAPrivatePCH.h"
 #include "BulletActor.h"
 #include "HeroCharacter.h"
-#include "SceneObject.h"
 #include "MOBAPlayerController.h"
 #include "UnrealNetwork.h"
 
@@ -23,13 +22,6 @@ ABulletActor::ABulletActor(const FObjectInitializer& ObjectInitializer)
     DestoryCount = 0;
     TargetActor = NULL;
 	bReplicates = true;
-}
-// Sets default values
-ABulletActor::ABulletActor()
-{
-    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
-    MoveSpeed = 100;
 }
 
 // Called when the game starts or when spawned
@@ -90,7 +82,7 @@ void ABulletActor::Tick(float DeltaTime)
     }
 }
 
-void ABulletActor::SetTartgetActor(AHeroCharacter* attacker, AHeroCharacter* TActor)
+void ABulletActor::SetTargetActor(AHeroCharacter* attacker, AHeroCharacter* TActor)
 {
     TargetActor = TActor;
 	Attacker = attacker;

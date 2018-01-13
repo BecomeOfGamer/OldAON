@@ -1217,7 +1217,7 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 				if (bullet)
 				{
 					bullet->SetActorLocation(pos);
-					bullet->SetTartgetActor(this, TargetActor);
+					bullet->SetTargetActor(this, TargetActor);
 					bullet->Damage = this->CurrentAttack;
 				}
 			}
@@ -1290,6 +1290,12 @@ AHeroBuff* AHeroCharacter::GetBuffByName(FString name)
 
 void AHeroCharacter::AddUniqueBuff(AHeroBuff* buff)
 {
+	if (!IsValid(buff))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("AHeroCharacter::AddUniqueBuff Error")));
+		return;
+	}
 	buff->BuffTarget.Add(this);
 	if (buff->FollowActor)
 	{

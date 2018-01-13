@@ -9,9 +9,12 @@
 UENUM(BlueprintType)
 enum class EDamageType : uint8
 {
-	DAMAGE_PHYSICAL,	//物理
-	DAMAGE_MAGICAL,	//魔法
-	DAMAGE_PURE		//真實
+	//物理傷害
+	DAMAGE_PHYSICAL,
+	//魔法傷害
+	DAMAGE_MAGICAL,
+	//真實傷害
+	DAMAGE_PURE
 };
 
 UCLASS()
