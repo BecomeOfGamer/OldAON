@@ -145,7 +145,7 @@ void AHeroCharacter::PostInitializeComponents()
 // Called when the game starts or when spawned
 void AHeroCharacter::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
 	GetCapsuleComponent()->OnClicked.AddDynamic(this, &AHeroCharacter::OnMouseClicked);
 
 	localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
@@ -828,12 +828,12 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 	// 設定面對施法的位置，而且沒在cd
 	if (Skills.Num() > index && Skills[index]->ReadySpell())
 	{
+		VFaceTo.Z = 0;
+		VFaceTo.Normalize();
 		if (Skills[index]->FaceSkill)
 		{
 			SetActorRotation(VFaceTo.Rotation());
 		}
-		VFaceTo.Z = 0;
-		VFaceTo.Normalize();
 		switch (SpellType)
 		{
 		case EHeroActionStatus::SpellNow:

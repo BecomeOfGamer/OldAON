@@ -12,3 +12,9 @@
 #include "SkillHintActor.h"
 #include "HeroSkill.h"
 #include "ParticleActor.h"
+#include "SkillDirectionActor.h"
+#include "SkillSplineActor.h"
+#include "SkillUnitTargetActor.h"
+#include "SkillAoeActor.h"
+#include "MHitBox.h"
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -29,33 +29,33 @@ public:
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* FlyParticle;
 
-	// ¤@¯ëªº§ë®gª«³]©w¥Ø¼Ğ¥Î
+	// ä¸€èˆ¬çš„æŠ•å°„ç‰©è¨­å®šç›®æ¨™ç”¨
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SetTargetActor(AHeroCharacter* attacker, AHeroCharacter* TActor);
 
-	// ·|³sÂêªº§ë®gª«³]©w¥Ø¼Ğ¥Î
+	// æœƒé€£é–çš„æŠ•å°„ç‰©è¨­å®šç›®æ¨™ç”¨
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SetTargetActors(AHeroCharacter* attacker, TArray<AHeroCharacter*> TActors);
 
-	// ­è³Q²£¥Í¥X¨Ó ©Î¬O­n·Ç³Æ¼u¨ì¤U¤@­Ó¥Ø¼Ğ®É·|Ä²µo
+	// å‰›è¢«ç”¢ç”Ÿå‡ºä¾† æˆ–æ˜¯è¦æº–å‚™å½ˆåˆ°ä¸‹ä¸€å€‹ç›®æ¨™æ™‚æœƒè§¸ç™¼
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnStart(AHeroCharacter* caster, AHeroCharacter* target);
-	// À»¤¤¥Ø¼Ğ
+	// æ“Šä¸­ç›®æ¨™
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnHit(AHeroCharacter* caster, AHeroCharacter* target);
 
-	// ³Q°{Á×
+	// è¢«é–ƒé¿
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void BeDodge(AHeroCharacter* caster, AHeroCharacter* target);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
 
-	// ¶ZÂ÷¦hªñ®ÉÃz¬µ 
+	// è·é›¢å¤šè¿‘æ™‚çˆ†ç‚¸ 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float BreakDistance;
 
-	// Ãz¬µ«á´X¬í«á®ø¥¢
+	// çˆ†ç‚¸å¾Œå¹¾ç§’å¾Œæ¶ˆå¤±
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float DestroyDelay;
 

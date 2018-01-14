@@ -37,7 +37,7 @@ void ASkillAoeActor::Tick(float DeltaTime)
 	if (!IsValid(Attacker))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("ASkillUnitTargetActor attacker Error")));
+			FString::Printf(TEXT("ASkillAoeActor attacker Error")));
 		Destroy();
 		return;
 	}
@@ -54,7 +54,7 @@ void ASkillAoeActor::Tick(float DeltaTime)
 			AHeroCharacter* hero = *ActorItr;
 			if (hero->TeamId != Attacker->TeamId && !TargetActors.Contains(hero))
 			{
-				if (FVector::DistSquared(this->GetActorLocation(), hero->GetActorLocation()) < dis2)
+				if (FVector::DistSquaredXY(this->GetActorLocation(), hero->GetActorLocation()) < dis2)
 				{
 					AHeroCharacter::localPC->ServerAttackCompute(
 						Attacker, hero, DamageType, Damage, false);
@@ -86,5 +86,6 @@ void ASkillAoeActor::SetAttacker(AHeroCharacter* attacker)
 void ASkillAoeActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	DOREPLIFETIME(ASkillAoeActor, Attacker);
+	DOREPLIFETIME(ASkillAoeActor, TargetActors);
 }

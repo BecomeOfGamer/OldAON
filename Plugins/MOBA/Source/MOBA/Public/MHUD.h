@@ -141,7 +141,7 @@ public:
 	void OnLMouseDown(FVector2D pos);
 	void OnLMousePressed1(FVector2D pos);
 	void OnLMousePressed2(FVector2D pos);
-	void OnLMouseReleased(FVector2D pos);	
+	void OnLMouseReleased(FVector2D pos);
 	void OnSelectedHero(AHeroCharacter* hero);
 
 	UFUNCTION(BlueprintImplementableEvent)

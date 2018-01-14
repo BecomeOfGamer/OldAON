@@ -1,19 +1,20 @@
-ï»¿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SkillDirectionActor.generated.h"
+#include "Components/SplineComponent.h"
+#include "SkillSplineActor.generated.h"
 
 UCLASS()
-class MOBA_API ASkillDirectionActor : public AActor
+class MOBA_API ASkillSplineActor : public AActor
 {
 	GENERATED_UCLASS_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ASkillDirectionActor();
+	ASkillSplineActor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,28 +30,28 @@ public:
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* FlyParticle;
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UCapsuleComponent* CapsuleComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "MOBA")
-	UCurveVector* MoveCurve;
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
+	USplineComponent* MoveSpline;
 
-	// å‰›è¢«ç”¢ç”Ÿå‡ºä¾†
+	// ­è³Q²£¥Í¥X¨Ó
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnCreate(AHeroCharacter* caster, AHeroCharacter* target);
-	// æ“Šä¸­ç›®æ¨™
+	// À»¤¤¥Ø¼Ğ
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnHit(AHeroCharacter* caster, AHeroCharacter* target);
 
-	// ä¸€èˆ¬çš„æŠ•å°„ç‰©è¨­å®šç›®æ¨™ç”¨
+	// ¤@¯ëªº§ë®gª«³]©w¥Ø¼Ğ¥Î
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void SetDirection(AHeroCharacter* attacker, FVector dir);
+	void SetAttacker(AHeroCharacter* attacker);
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
-	// è¦ä¸è¦ç”¨ue4å…§å»ºçš„ç‰©ç†ä¾†åšç¢°æ’
+	// ­n¤£­n¥Îue4¤º«Øªºª«²z¨Ó°µ¸I¼²
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MOBA")
 	bool CollisionByCapsule;
 
@@ -59,23 +60,19 @@ public:
 
 	FVector StartPos;
 
-	// æœ€é è·é›¢
+	// ³Ì»·¶ZÂ÷
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float FlyDistance;
 
-	// å·²é£›è¡Œè·é›¢
+	// ¤w­¸¦æ¶ZÂ÷
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float ElapsedFlyDistance = 0;
-
-	// é£›è¡Œæ–¹å‘
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
-	FVector Direction;
-
-	// åŠå¾‘ 
+	
+	// ¥b®| 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Radius = 100;
 
-	// çˆ†ç‚¸å¾Œå¹¾ç§’å¾Œæ¶ˆå¤±
+	// Ãz¬µ«á´X¬í«á®ø¥¢
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float DestroyDelay;
 
@@ -97,7 +94,7 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
 	AHeroCharacter* Attacker;
 
-	// è¢«æ“Šä¸­çš„äººå€‘
+	// ³QÀ»¤¤ªº¤H­Ì
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<AHeroCharacter*> TargetActors;
 

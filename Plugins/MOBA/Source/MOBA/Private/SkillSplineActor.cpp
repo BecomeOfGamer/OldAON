@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+
 #include "MOBAPrivatePCH.h"
-#include "SkillDirectionActor.h"
+#include "SkillSplineActor.h"
 #include "HeroCharacter.h"
 #include "MOBAPlayerController.h"
 #include "UnrealNetwork.h"
 
-
 // Sets default values
-ASkillDirectionActor::ASkillDirectionActor(const FObjectInitializer& ObjectInitializer)
+ASkillSplineActor::ASkillSplineActor(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -36,7 +36,9 @@ ASkillDirectionActor::ASkillDirectionActor(const FObjectInitializer& ObjectIniti
 	BulletParticle->SetupAttachment(CapsuleComponent);
 	FlyParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FlyParticle0"));
 	FlyParticle->SetupAttachment(CapsuleComponent);
-	
+	MoveSpline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline0"));
+	MoveSpline->SetupAttachment(CapsuleComponent);
+
 	FlyDistance = 1000;
 	MoveSpeed = 500;
 	DestroyDelay = 2;
@@ -48,13 +50,12 @@ ASkillDirectionActor::ASkillDirectionActor(const FObjectInitializer& ObjectIniti
 }
 
 // Called when the game starts or when spawned
-void ASkillDirectionActor::BeginPlay()
+void ASkillSplineActor::BeginPlay()
 {
 	Super::BeginPlay();
-	Direction.Normalize();
 	if (CollisionByCapsule)
 	{
-		CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ASkillDirectionActor::OnBeginOverlap);
+		CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ASkillSplineActor::OnBeginOverlap);
 	}
 	else
 	{
@@ -64,24 +65,22 @@ void ASkillDirectionActor::BeginPlay()
 }
 
 // Called every frame
-void ASkillDirectionActor::Tick(float DeltaTime)
+void ASkillSplineActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (!IsValid(Attacker))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("ASkillDirectionActor attacker Error")));
+			FString::Printf(TEXT("ASkillSplineActor attacker Error")));
 		Destroy();
 		return;
 	}
 	float move = DeltaTime * MoveSpeed;
 	ElapsedFlyDistance += move;
-	FVector fpos = StartPos + Direction * ElapsedFlyDistance;
-	if (IsValid(MoveCurve))
-	{
-		fpos += GetActorRotation().RotateVector(MoveCurve->GetVectorValue(ElapsedFlyDistance));
-	}
-	SetActorLocation(fpos);
+	SetActorLocation(StartPos + 
+		GetActorRotation().RotateVector(
+			MoveSpline->GetLocationAtDistanceAlongSpline(ElapsedFlyDistance, ESplineCoordinateSpace::Type::Local)));
+	//SetActorRelativeRotation(MoveSpline->GetRotationAtSplineInputKey(ElapsedFlyDistance, ESplineCoordinateSpace::Type::Local));
 
 	if (ElapsedFlyDistance < FlyDistance && !PrepareDestory)
 	{
@@ -128,14 +127,13 @@ void ASkillDirectionActor::Tick(float DeltaTime)
 }
 
 
-void ASkillDirectionActor::SetDirection(AHeroCharacter* attacker, FVector dir)
+void ASkillSplineActor::SetAttacker(AHeroCharacter* attacker)
 {
-	Direction = dir;
 	Attacker = attacker;
 	SetActorTransform(attacker->GetTransform());
 }
 
-void ASkillDirectionActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+void ASkillSplineActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AHeroCharacter* hero = Cast<AHeroCharacter>(OtherActor);
@@ -147,9 +145,9 @@ void ASkillDirectionActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 	}
 }
 
-void ASkillDirectionActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+void ASkillSplineActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ASkillDirectionActor, Attacker);
-	DOREPLIFETIME(ASkillDirectionActor, TargetActors);
+	DOREPLIFETIME(ASkillSplineActor, Attacker);
+	DOREPLIFETIME(ASkillSplineActor, TargetActors);
 }
