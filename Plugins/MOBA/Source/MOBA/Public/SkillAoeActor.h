@@ -40,6 +40,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SetAttacker(AHeroCharacter* attacker);
 	
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadWrite)
+	bool debugflag = true;
+
 	// 飛行方向
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	FVector Position;

@@ -47,7 +47,7 @@ public:
 	// 被閃避
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void BeDodge(AHeroCharacter* caster, AHeroCharacter* target);
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
 

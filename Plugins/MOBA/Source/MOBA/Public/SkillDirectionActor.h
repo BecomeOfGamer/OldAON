@@ -29,11 +29,14 @@ public:
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* FlyParticle;
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UCapsuleComponent* CapsuleComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "MOBA")
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UCurveVector* MoveCurve;
+
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadWrite)
+	bool debugflag = true;
 
 	// 剛被產生出來
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")

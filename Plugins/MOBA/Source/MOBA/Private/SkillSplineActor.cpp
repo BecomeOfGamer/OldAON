@@ -75,6 +75,11 @@ void ASkillSplineActor::Tick(float DeltaTime)
 		Destroy();
 		return;
 	}
+	if (debugflag)
+	{
+		DrawDebugSphere(GetWorld(), this->GetActorLocation(), Radius, 8, FColor::Cyan);
+	}
+
 	float move = DeltaTime * MoveSpeed;
 	ElapsedFlyDistance += move;
 	SetActorLocation(StartPos + 

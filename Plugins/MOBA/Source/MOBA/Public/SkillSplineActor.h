@@ -51,6 +51,9 @@ public:
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
+	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadWrite)
+	bool debugflag = true;
+
 	// 要不要用ue4內建的物理來做碰撞
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MOBA")
 	bool CollisionByCapsule;

@@ -41,6 +41,10 @@ void ASkillAoeActor::Tick(float DeltaTime)
 		Destroy();
 		return;
 	}
+	if (debugflag)
+	{
+		DrawDebugSphere(GetWorld(), this->GetActorLocation(), Radius, 8, FColor::Cyan);
+	}
 	if (BreakCount < BreakDelay)
 	{
 		BreakCount += DeltaTime;
