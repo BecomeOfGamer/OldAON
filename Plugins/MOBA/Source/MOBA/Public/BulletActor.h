@@ -31,7 +31,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
-
+	
 	// 距離多近時爆炸 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float BreakDistance;

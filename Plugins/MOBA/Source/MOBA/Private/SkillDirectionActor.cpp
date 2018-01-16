@@ -74,18 +74,25 @@ void ASkillDirectionActor::Tick(float DeltaTime)
 		Destroy();
 		return;
 	}
-	if (debugflag)
-	{
-		DrawDebugSphere(GetWorld(), this->GetActorLocation(), Radius, 8, FColor::Cyan);
-	}
 	float move = DeltaTime * MoveSpeed;
 	ElapsedFlyDistance += move;
+	ElapsedTime += DeltaTime;
 	FVector fpos = StartPos + Direction * ElapsedFlyDistance;
 	if (IsValid(MoveCurve))
 	{
 		fpos += GetActorRotation().RotateVector(MoveCurve->GetVectorValue(ElapsedFlyDistance));
 	}
 	SetActorLocation(fpos);
+	float scale = 1;
+	if (IsValid(ScaleSize))
+	{
+		scale = ScaleSize->GetFloatValue(ElapsedTime);
+		SetActorScale3D(FVector(1,1,1) * scale);
+	}
+	if (debugflag)
+	{
+		DrawDebugSphere(GetWorld(), this->GetActorLocation(), Radius*scale, 8, FColor::Cyan);
+	}
 
 	if (ElapsedFlyDistance < FlyDistance && !PrepareDestory)
 	{

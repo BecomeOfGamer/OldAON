@@ -36,6 +36,9 @@ public:
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	USplineComponent* MoveSpline;
 
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	UCurveFloat* ScaleSize;
+
 	// 剛被產生出來
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnCreate(AHeroCharacter* caster, AHeroCharacter* target);
@@ -60,7 +63,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FVector StartPos;
 
 	// 最遠距離
@@ -70,6 +74,10 @@ public:
 	// 已飛行距離
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float ElapsedFlyDistance = 0;
+
+	// 已飛行時間
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float ElapsedTime = 0;
 	
 	// 半徑 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)

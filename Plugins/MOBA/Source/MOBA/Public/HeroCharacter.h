@@ -150,7 +150,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void RemoveBuffByName(FString name);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable)
+	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable)
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
 
 	UFUNCTION(BlueprintImplementableEvent)

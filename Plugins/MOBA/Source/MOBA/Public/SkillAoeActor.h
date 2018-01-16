@@ -26,6 +26,9 @@ public:
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* FlyParticle;
 
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	UCurveFloat* ScaleSize;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -46,6 +49,10 @@ public:
 	// 飛行方向
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	FVector Position;
+
+	// 已飛行時間
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float ElapsedTime = 0;
 
 	// 幾秒後傷害出來 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)

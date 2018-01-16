@@ -1354,15 +1354,18 @@ bool AHeroCharacter::ServerShowDamageEffect_Validate(FVector pos, FVector dir, f
 }
 void AHeroCharacter::ServerShowDamageEffect_Implementation(FVector pos, FVector dir, float Damage)
 {
-	ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(ShowDamageEffect);
-	if (TempDamageText)
+	if (Role < ROLE_Authority)
 	{
-		TempDamageText->OriginPosition = pos;
-		TempDamageText->SetString(FString::FromInt((int32)Damage));
-		FVector scaleSize(TempDamageText->ScaleSize, TempDamageText->ScaleSize, TempDamageText->ScaleSize);
-		TempDamageText->SetActorScale3D(scaleSize);
-		dir.Normalize();
-		TempDamageText->FlyDirection = dir;
+		ADamageEffect* TempDamageText = GetWorld()->SpawnActor<ADamageEffect>(ShowDamageEffect);
+		if (TempDamageText)
+		{
+			TempDamageText->OriginPosition = pos;
+			TempDamageText->SetString(FString::FromInt((int32)Damage));
+			FVector scaleSize(TempDamageText->ScaleSize, TempDamageText->ScaleSize, TempDamageText->ScaleSize);
+			TempDamageText->SetActorScale3D(scaleSize);
+			dir.Normalize();
+			TempDamageText->FlyDirection = dir;
+		}
 	}
 }
 

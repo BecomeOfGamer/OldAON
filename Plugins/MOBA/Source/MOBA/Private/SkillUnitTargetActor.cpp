@@ -29,7 +29,7 @@ ASkillUnitTargetActor::ASkillUnitTargetActor(const FObjectInitializer& ObjectIni
 void ASkillUnitTargetActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	StartPos = GetActorLocation();
 }
 
 // Called every frame
@@ -62,6 +62,8 @@ void ASkillUnitTargetActor::Tick(float DeltaTime)
 			OnStart(Attacker, LastTarget);
 		}
 		float move = DeltaTime * MoveSpeed;
+		ElapsedFlyDistance += move;
+		ElapsedTime += DeltaTime;
 		FVector ourpos = GetActorLocation();
 		FVector dstpos = TargetActor->GetActorLocation();
 		float dis = FVector::Dist(ourpos, dstpos);
@@ -75,6 +77,10 @@ void ASkillUnitTargetActor::Tick(float DeltaTime)
 			dir.Normalize();
 			dir *= move;
 			SetActorLocation(ourpos + dir);
+		}
+		if (IsValid(ScaleSize))
+		{
+			SetActorScale3D(FVector(1,1,1) * ScaleSize->GetFloatValue(ElapsedTime));
 		}
 		if (BreakDistance > dis)
 		{

@@ -29,6 +29,9 @@ public:
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* FlyParticle;
 
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	UCurveFloat* ScaleSize;
+
 	// 一般的投射物設定目標用
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SetTargetActor(AHeroCharacter* attacker, AHeroCharacter* TActor);
@@ -50,6 +53,17 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
+
+	// 已飛行距離
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float ElapsedFlyDistance = 0;
+
+	// 已飛行時間
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float ElapsedTime = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FVector StartPos;
 
 	// 距離多近時爆炸 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)

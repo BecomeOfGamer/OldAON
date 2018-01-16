@@ -53,9 +53,12 @@ void ABulletActor::Tick(float DeltaTime)
         }
         if(BreakDistance > dis)
         {
-			AHeroCharacter::localPC->ServerAttackCompute(
-				Attacker, TargetActor, EDamageType::DAMAGE_PHYSICAL, Damage, true);
-
+			// 在client不要呼叫不然會產生2個子彈
+			if (Role == ROLE_Authority)
+			{
+				AHeroCharacter::localPC->ServerAttackCompute(
+					Attacker, TargetActor, EDamageType::DAMAGE_PHYSICAL, Damage, true);
+			}
             PrepareDestory = true;
 			if (!ActiveFlyParticleDied)
 			{

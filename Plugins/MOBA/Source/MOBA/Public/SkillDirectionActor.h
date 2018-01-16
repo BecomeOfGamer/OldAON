@@ -35,6 +35,9 @@ public:
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadOnly)
 	UCurveVector* MoveCurve;
 
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	UCurveFloat* ScaleSize;
+
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadWrite)
 	bool debugflag = true;
 
@@ -59,7 +62,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FVector StartPos;
 
 	// 最遠距離
@@ -69,6 +73,10 @@ public:
 	// 已飛行距離
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float ElapsedFlyDistance = 0;
+
+	// 已飛行時間
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float ElapsedTime = 0;
 
 	// 飛行方向
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)

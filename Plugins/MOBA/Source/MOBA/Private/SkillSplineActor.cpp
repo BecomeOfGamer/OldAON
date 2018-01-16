@@ -75,18 +75,23 @@ void ASkillSplineActor::Tick(float DeltaTime)
 		Destroy();
 		return;
 	}
-	if (debugflag)
-	{
-		DrawDebugSphere(GetWorld(), this->GetActorLocation(), Radius, 8, FColor::Cyan);
-	}
-
 	float move = DeltaTime * MoveSpeed;
 	ElapsedFlyDistance += move;
+	ElapsedTime += DeltaTime;
 	SetActorLocation(StartPos + 
 		GetActorRotation().RotateVector(
 			MoveSpline->GetLocationAtDistanceAlongSpline(ElapsedFlyDistance, ESplineCoordinateSpace::Type::Local)));
 	//SetActorRelativeRotation(MoveSpline->GetRotationAtSplineInputKey(ElapsedFlyDistance, ESplineCoordinateSpace::Type::Local));
-
+	float scale = 1;
+	if (IsValid(ScaleSize))
+	{
+		scale = ScaleSize->GetFloatValue(ElapsedTime);
+		SetActorScale3D(FVector(1, 1, 1) * scale);
+	}
+	if (debugflag)
+	{
+		DrawDebugSphere(GetWorld(), this->GetActorLocation(), Radius*scale, 8, FColor::Cyan);
+	}
 	if (ElapsedFlyDistance < FlyDistance && !PrepareDestory)
 	{
 		// TODO: 使用內建碰撞優化

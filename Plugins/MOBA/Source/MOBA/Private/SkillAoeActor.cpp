@@ -41,9 +41,16 @@ void ASkillAoeActor::Tick(float DeltaTime)
 		Destroy();
 		return;
 	}
+	ElapsedTime += DeltaTime;
+	float scale = 1;
+	if (IsValid(ScaleSize))
+	{
+		scale = ScaleSize->GetFloatValue(ElapsedTime);
+		SetActorScale3D(FVector(1, 1, 1) * scale);
+	}
 	if (debugflag)
 	{
-		DrawDebugSphere(GetWorld(), this->GetActorLocation(), Radius, 8, FColor::Cyan);
+		DrawDebugSphere(GetWorld(), this->GetActorLocation(), Radius*scale, 8, FColor::Cyan);
 	}
 	if (BreakCount < BreakDelay)
 	{
