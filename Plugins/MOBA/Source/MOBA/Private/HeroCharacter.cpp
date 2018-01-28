@@ -326,7 +326,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 		if (ags)
 		{
-			TArray<AHeroCharacter*> EnemyGetExp = FindRadiusActorByLocation(this->GetActorLocation(), ags->EXPGetRange, ETeamFlag::TeamEnemy);
+			TArray<AHeroCharacter*> EnemyGetExp = FindRadiusActorByLocation(this->GetActorLocation(), ags->EXPGetRange, ETeamFlag::TeamEnemy, true);
 			float exp = this->BountyEXP / EnemyGetExp.Num();
 			for (AHeroCharacter* hero : EnemyGetExp)
 			{
@@ -404,7 +404,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 	}
 }
 
-TArray<AHeroCharacter*> AHeroCharacter::FindRadiusActorByLocation(FVector Center, float Radius, ETeamFlag flag)
+TArray<AHeroCharacter*> AHeroCharacter::FindRadiusActorByLocation(FVector Center, float Radius, ETeamFlag flag, bool CheckAlive)
 {
 	TArray<AHeroCharacter *> res;
 	float dis2 = Radius*Radius;
@@ -412,7 +412,11 @@ TArray<AHeroCharacter*> AHeroCharacter::FindRadiusActorByLocation(FVector Center
 	{
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		AHeroCharacter* hero = *ActorItr;
-		if (FVector::DistSquared(Center, hero->GetActorLocation()) < dis2)
+		if (CheckAlive && !hero->IsAlive)
+		{
+			continue;
+		}
+		if (FVector::DistSquaredXY(Center, hero->GetActorLocation()) < dis2)
 		{
 			if (flag == ETeamFlag::TeamEnemy && hero->TeamId != this->TeamId)
 			{
@@ -922,6 +926,8 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 			break;
 		case EHeroActionStatus::AttackActor:
 			break;
+		case EHeroActionStatus::MovingAttackToPosition:
+			break;
 		case EHeroActionStatus::MovingAttackActor:
 			break;
 		case EHeroActionStatus::MoveAndAttack:
@@ -967,6 +973,7 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 		float Distance = FVector::Dist(CurrentAction.TargetVec1, this->GetActorLocation());
 		if (Distance < MinimumDontMoveDistance/* && this->GetVelocity().Size() < 5*/)
 		{
+			StartFollowPosition = FVector::ZeroVector;
 			return true;
 		}
 		else
@@ -1015,6 +1022,9 @@ void AHeroCharacter::DoAction_Implementation(const FHeroAction& CurrentAction)
 		break;
 	case EHeroActionStatus::MoveToPosition:
 		DoAction_MoveToPosition(CurrentAction);
+		break;
+	case EHeroActionStatus::MovingAttackToPosition:
+		DoAction_MovingAttackToPosition(CurrentAction);
 		break;
 	case EHeroActionStatus::MoveToActor:
 		break;
@@ -1066,18 +1076,198 @@ void AHeroCharacter::DoNothing()
 	break;
 	case EHeroBodyStatus::Stunning:
 		break;
-	case EHeroBodyStatus::AttackWating:
-		break;
-	case EHeroBodyStatus::AttackBegining:
-		break;
-	case EHeroBodyStatus::AttackEnding:
-		break;
-	case EHeroBodyStatus::SpellBegining:
-		break;
-	case EHeroBodyStatus::SpellEnding:
-		break;
 	default:
+		BodyStatus = EHeroBodyStatus::Standing;
 		break;
+	}
+}
+
+void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentAction)
+{
+	AHeroCharacter* TargetActor = nullptr;
+	if (StartFollowPosition == FVector::ZeroVector)
+	{
+		StartFollowPosition = GetActorLocation();
+	}
+	TArray<AHeroCharacter*> Enemys = FindRadiusActorByLocation(StartFollowPosition, MovingAttackRange, ETeamFlag::TeamEnemy, true);
+	if (Enemys.Num() == 0)
+	{
+		MovingAttackTarget = nullptr;
+	}
+	else if (IsValid(MovingAttackTarget))
+	{
+		if (Enemys.Contains(MovingAttackTarget))
+		{
+			TargetActor = MovingAttackTarget;
+		}
+		else
+		{
+			int i = 0;
+			for (; Enemys.Num() > i; i++)
+			{
+				TargetActor = Enemys[i];
+			}
+		}
+	}
+	else if (MovingAttackTarget == nullptr)
+	{
+		int i = 0;
+		for (; Enemys.Num() > i;i++)
+		{
+			TargetActor = Enemys[i];
+		}
+	}
+	MovingAttackTarget = TargetActor;
+	
+	// 有敵人時
+	if (TargetActor != nullptr)
+	{
+		FVector dir = TargetActor->GetActorLocation() - GetActorLocation();
+		dir.Z = 0;
+		dir.Normalize();
+		SetActorRotation(dir.Rotation());
+		switch (BodyStatus)
+		{
+		case EHeroBodyStatus::Standing:
+		{
+			float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
+			if (CurrentAttackRange > DistanceToTargetActor)
+			{
+				BodyStatus = EHeroBodyStatus::AttackWating;
+				IsAttacked = false;
+			}
+			else
+			{
+				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+				BodyStatus = EHeroBodyStatus::Moving;
+			}
+		}
+		break;
+		case EHeroBodyStatus::Moving:
+		{
+			float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
+			if (CurrentAttackRange > DistanceToTargetActor)
+			{
+				localPC->ServerCharacterStopMove(this);
+				BodyStatus = EHeroBodyStatus::AttackWating;
+				IsAttacked = false;
+			}
+			else if (FollowActorUpdateCounting > FollowActorUpdateTimeGap)
+			{
+				FollowActorUpdateCounting = 0;
+				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			}
+		}
+		break;
+		case EHeroBodyStatus::Stunning:
+			break;
+		case EHeroBodyStatus::AttackWating:
+		{
+			if (AttackingCounting > CurrentAttackSpeedSecond)
+			{
+				AttackingCounting = 0;
+				BodyStatus = EHeroBodyStatus::AttackBegining;
+				ServerPlayAttack(CurrentSpellingAnimationTimeLength, CurrentAttackingAnimationRate);
+				PlayAttack = true;
+			}
+			// 播放攻擊動畫
+			// ...
+		}
+		break;
+		case EHeroBodyStatus::AttackBegining:
+		{
+			if (!IsAttacked && AttackingCounting > CurrentAttackingBeginingTimeLength)
+			{
+				IsAttacked = true;
+
+				// 遠攻傷害
+				if (HeroBullet)
+				{
+					FVector pos = GetActorLocation();
+					ABulletActor* bullet = GetWorld()->SpawnActor<ABulletActor>(HeroBullet);
+					if (bullet)
+					{
+						bullet->SetActorLocation(pos);
+						bullet->SetTargetActor(this, TargetActor);
+						bullet->Damage = this->CurrentAttack;
+					}
+				}
+				else
+				{// 近戰傷害
+					localPC->ServerAttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack, true);
+				}
+				BodyStatus = EHeroBodyStatus::AttackEnding;
+			}
+		}
+		break;
+		case EHeroBodyStatus::AttackEnding:
+		{
+			if (AttackingCounting > CurrentAttackingBeginingTimeLength + CurrentAttackingEndingTimeLength)
+			{
+				BodyStatus = EHeroBodyStatus::Standing;
+			}
+		}
+		break;
+		case EHeroBodyStatus::SpellWating:
+		case EHeroBodyStatus::SpellBegining:
+		case EHeroBodyStatus::SpellEnding:
+
+		default:
+			BodyStatus = EHeroBodyStatus::Standing;
+			break;
+		}
+	}
+	else
+	{
+		FVector MovePos = CurrentAction.TargetVec1;
+		float len = FVector::DistSquaredXY(GetActorLocation(), StartFollowPosition);
+		if (len > 200)
+		{
+			MovePos = StartFollowPosition;
+		}
+		else
+		{
+			StartFollowPosition = GetActorLocation();
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
+			FString::Printf(TEXT("len %f StartFollowPosition %.1f %.1f %.1f"), len, 
+				StartFollowPosition.X, StartFollowPosition.Y, StartFollowPosition.Z));
+		switch (BodyStatus)
+		{
+		case EHeroBodyStatus::AttackWating:
+		case EHeroBodyStatus::AttackBegining:
+		case EHeroBodyStatus::AttackEnding:
+		case EHeroBodyStatus::Standing:
+		{
+			BodyStatus = EHeroBodyStatus::Moving;
+			UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+			if (NavSys && this->GetController())
+			{
+				NavSys->SimpleMoveToLocation(this->GetController(), MovePos);
+			}
+		}
+		break;
+		case EHeroBodyStatus::Moving:
+		{
+			if (GetVelocity().Size() < 5)
+			{
+				UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+				if (NavSys && this->GetController())
+				{
+					NavSys->SimpleMoveToLocation(this->GetController(), MovePos);
+				}
+			}
+		}
+		break;
+		case EHeroBodyStatus::Stunning:
+			break;
+		case EHeroBodyStatus::SpellWating:
+		case EHeroBodyStatus::SpellBegining:
+		case EHeroBodyStatus::SpellEnding:
+		default:
+			BodyStatus = EHeroBodyStatus::Standing;
+			break;
+		}
 	}
 }
 
@@ -1095,7 +1285,6 @@ void AHeroCharacter::DoAction_MoveToPosition(const FHeroAction& CurrentAction)
 
 void AHeroCharacter::DoAction_MoveToPositionImpl(const FHeroAction& CurrentAction)
 {
-
 	switch (BodyStatus)
 	{
 	case EHeroBodyStatus::AttackWating:
@@ -1113,10 +1302,13 @@ void AHeroCharacter::DoAction_MoveToPositionImpl(const FHeroAction& CurrentActio
 	break;
 	case EHeroBodyStatus::Moving:
 	{
-		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
-		if (NavSys && this->GetController())
+		if (GetVelocity().Size() < 5) 
 		{
-			NavSys->SimpleMoveToLocation(this->GetController(), CurrentAction.TargetVec1);
+			UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+			if (NavSys && this->GetController())
+			{
+				NavSys->SimpleMoveToLocation(this->GetController(), CurrentAction.TargetVec1);
+			}
 		}
 	}
 		break;
@@ -1125,7 +1317,6 @@ void AHeroCharacter::DoAction_MoveToPositionImpl(const FHeroAction& CurrentActio
 	case EHeroBodyStatus::SpellWating:
 	case EHeroBodyStatus::SpellBegining:
 	case EHeroBodyStatus::SpellEnding:
-
 	default:
 		BodyStatus = EHeroBodyStatus::Standing;
 		break;

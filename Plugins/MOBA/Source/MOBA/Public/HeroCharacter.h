@@ -85,11 +85,11 @@ public:
 
 	bool HasEquipment(AEquipment* equ);
 	
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable)
+	UFUNCTION(NetMulticast, Unreliable, WithValidation, BlueprintCallable)
 	void HealCompute(AHeroCharacter* attacker, AHeroCharacter* victim, float HealMount);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	TArray<AHeroCharacter*> FindRadiusActorByLocation(FVector Center, float Radius, ETeamFlag flag);
+	TArray<AHeroCharacter*> FindRadiusActorByLocation(FVector Center, float Radius, ETeamFlag flag, bool CheckAlive);
 
 	// for UI
 	UFUNCTION()
@@ -133,7 +133,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void ForceLevelUp();
 	
-	UFUNCTION(NetMulticast, WithValidation, Reliable)
+	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void ServerPlayAttack(float duraction, float rate);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
@@ -150,7 +150,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void RemoveBuffByName(FString name);
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable)
+	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable)
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -171,10 +171,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	AHeroSkill* GetCurrentSkill();
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable, Category = "MOBA")
 	void ServerPlayAttackStartSFX();
 
-	UFUNCTION(NetMulticast, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable, Category = "MOBA")
 	void ServerPlayAttackLandedSFX();
 	
 	// 確定當前動作做完了沒
@@ -187,6 +187,8 @@ public:
 	// 停止目前所有動作
 	void DoNothing();
 
+	// 做移動攻擊到指定位置
+	void DoAction_MovingAttackToPosition(const FHeroAction& CurrentAction);
 	// 做移動到指定位置
 	void DoAction_MoveToPosition(const FHeroAction& CurrentAction);
 	void DoAction_MoveToPositionImpl(const FHeroAction& CurrentAction);
@@ -251,6 +253,18 @@ public:
 	// set by HUD
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FVector2D	ScreenPosition;
+
+	// 移動攻擊時，遇到敵人開始追敵人時的位置
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FVector	StartFollowPosition;
+
+	// 移動攻擊時，遇到敵人開始移動的位置
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	float	MovingAttackRange = 1000;
+
+	// 移動攻擊時，遇到想攻擊的敵人
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	AHeroCharacter* MovingAttackTarget = nullptr;
 	
 	// 英雄技能
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)

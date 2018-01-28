@@ -14,7 +14,9 @@ enum class EHeroActionStatus : uint8
 {
 	//站著休息
 	Default,
-	//移動到指定目標
+	//移動攻擊到指定位置
+	MovingAttackToPosition,
+	//移動到指定位置
 	MoveToPosition,
 	//移動到指定的人身邊
 	MoveToActor,
