@@ -11,7 +11,7 @@
 #include "Engine.h"
 #include "Equipment.h"
 #include "MOBAGameState.h"
-
+#include <flann/flann.hpp> 
 
 AMOBAPlayerController::AMOBAPlayerController()
 {
@@ -26,11 +26,17 @@ void AMOBAPlayerController::BeginPlay()
 	if (Hud)
 	{
 		Hud->LocalController = this;
-		SkillMapping.Add(EKeys::W);
-		SkillMapping.Add(EKeys::E);
-		SkillMapping.Add(EKeys::R);
-		SkillMapping.Add(EKeys::T);
-		SkillMapping.Add(EKeys::D);
+		KeyMapping.Add(EKeys::W);
+		KeyMapping.Add(EKeys::E);
+		KeyMapping.Add(EKeys::R);
+		KeyMapping.Add(EKeys::T);
+		KeyMapping.Add(EKeys::D);
+	}
+	FlannActor = GetWorld()->SpawnActor<AFlannActor>();
+	if (FlannActor == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
+			FString::Printf(TEXT("FlannActor is Null")));
 	}
 	bMouseRButton = false;
 	bMouseLButton = false;
@@ -51,7 +57,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Client InputKey ") + Key.ToString());
 	if (EventType == IE_Pressed && Hud)
 	{
-		int32 idx = SkillMapping.Find(Key);
+		int32 idx = KeyMapping.Find(Key);
 		if (idx != INDEX_NONE)
 		{
 			Hud->KeyboardCallUseSkill(idx);
@@ -695,4 +701,15 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(AHeroCharacter* a
 	victim->CurrentHP = victim->BuffPropertyMap[HEROP::MaxHealth];
 	}
 	*/
+}
+
+TArray<AHeroCharacter*> AMOBAPlayerController::FindRadiusActorByLocation(AHeroCharacter* hero, FVector Center,
+	float Radius, ETeamFlag flag, bool CheckAlive)
+{
+	if (FlannActor)
+	{
+		std::vector<std::vector<float>> dists;
+		return FlannActor->FindRadiusActorByLocation(hero, Center, Radius, flag, CheckAlive, dists);
+	}
+	return TArray<AHeroCharacter*>();
 }

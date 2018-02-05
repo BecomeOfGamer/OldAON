@@ -27,6 +27,7 @@ public class MOBA : ModuleRules
 			new string[]
 			{
 				"Core",
+                "flann",
 				// ... add      other public dependencies that you statically link with here ...
 			}
 			);
@@ -52,5 +53,5 @@ public class MOBA : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
-	}
+    }
 }

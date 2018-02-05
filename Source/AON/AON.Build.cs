@@ -11,7 +11,7 @@ public class AON : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay",
             "Paper2D", "UMG", "RHI", "Networking", "AIModule",
             "MOBA"});
-        if (UEBuildConfiguration.bBuildEditor)
+        if (Target.bBuildEditor)
         {
             PublicDependencyModuleNames.AddRange(new string[] { "UnrealEd", "MOBA_Editor" });
         }
