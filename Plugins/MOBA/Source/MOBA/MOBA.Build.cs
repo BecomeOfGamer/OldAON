@@ -28,6 +28,7 @@ public class MOBA : ModuleRules
 			{
 				"Core",
                 "flann",
+                "mqtt",
 				// ... add      other public dependencies that you statically link with here ...
 			}
 			);
