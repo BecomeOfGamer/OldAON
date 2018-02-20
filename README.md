@@ -23,7 +23,7 @@
 - git clone https://github.com/RemakeAONTeam/AON.git
 - git lfs fetch
 - git lfs pull
-- download 3rd party Decompress to "C:\Program Files\Epic Games\UE_4.18\Engine\Source\ThirdParty"
+- download 3rd party from https://github.com/RemakeAONTeam/AON/releases Decompress to "C:\Program Files\Epic Games\UE_4.18\Engine\Source\ThirdParty"
 - mouse right click AON.uproject=>Switch Unreal Engine Version choose "4.18"
 - Open "AON.sln" and enter "Ctrl+F5" in VS2017
 
