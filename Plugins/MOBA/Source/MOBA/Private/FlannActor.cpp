@@ -95,3 +95,31 @@ void AFlannActor::Resize(int32 maxActor, int32 maxQuery)
 	MaxQuery = maxQuery;
 	rdata.SetNumZeroed(MaxActor * 2);
 }
+
+
+FLZ4 AFlannActor::Compress(FString str)
+{
+	FLZ4 flz4;
+	
+	int size = str.GetCharArray().GetTypeSize() * str.GetCharArray().Num();
+	flz4.Data.SetNum(size);
+	int compress_size = LZ4_compress_default((char*)str.GetCharArray().GetData(), 
+		(char*)flz4.Data.GetData(), size, size);
+	flz4.Data.SetNum(compress_size);
+	flz4.OriginSize = size;
+	flz4.OriginStringSize = str.Len();
+	return flz4;
+}
+
+
+
+FString AFlannActor::Decompress(FLZ4 flz4)
+{
+	TArray<TCHAR> res;
+	res.SetNum(flz4.OriginSize);
+	int decompress_size = LZ4_decompress_safe((char*)flz4.Data.GetData(),
+		(char*)res.GetData(), flz4.Data.Num(), flz4.OriginSize);
+	//int LZ4_compress_default(const char* source, char* dest, int sourceSize, int maxDestSize);
+	//int LZ4_decompress_safe(const char* source, char* dest, int compressedSize, int maxDecompressedSize);
+	return FString(res.Num(), res.GetData());
+}
