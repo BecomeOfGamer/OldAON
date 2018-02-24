@@ -9,6 +9,25 @@
 #include <memory>
 #include "FlannActor.generated.h"
 
+
+
+USTRUCT(BlueprintType)
+struct FLZ4
+{
+	GENERATED_USTRUCT_BODY()
+
+	FLZ4() {}
+
+	UPROPERTY()
+	TArray<uint8> Data;
+
+	UPROPERTY()
+	int32 OriginSize;
+
+	UPROPERTY()
+	int32 OriginStringSize;
+};
+
 UCLASS()
 class MOBA_API AFlannActor : public AActor
 {
@@ -30,6 +49,9 @@ public:
 		float Radius, ETeamFlag flag, bool CheckAlive, std::vector<std::vector<float>>& dists);
 
 	void Resize(int32 maxActor, int32 maxQuery);
+
+	static FLZ4 Compress(FString data);
+	FString Decompress(FLZ4 flz4);
 
 private:
 	TArray<AHeroCharacter*> FindArray;
