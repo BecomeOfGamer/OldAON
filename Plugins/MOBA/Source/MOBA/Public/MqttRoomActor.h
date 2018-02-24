@@ -5,11 +5,9 @@
 #include "CoreMinimal.h"
 #include "MqttActor.h"
 #include <list>
+#include <set>
 #include "MqttRoomActor.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class MOBA_API AMqttRoomActor : public AMqttActor
 {
@@ -36,6 +34,12 @@ public:
 	void JoinRoom(FString In_RoomID);
 
 private:
+
 	using CmdPair = std::pair<eRoomCMD, FString>;
 	std::list<CmdPair> m_listCMD;
+	FString m_sRoomID;
+
+	//記錄上一次Tick中獲得的HeroActor的Name
+	std::set<FString> m_setHeroActor;
+
 };
