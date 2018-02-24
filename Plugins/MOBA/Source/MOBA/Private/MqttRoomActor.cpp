@@ -20,22 +20,23 @@ void AMqttRoomActor::Tick(float DeltaTime)
 	if (!m_listCMD.empty())
 	{
 		std::stringstream ss;
-		std::string sTemp;
 		std::string sAction;
 		
 		for (auto &iter : m_listCMD)
 		{
 			if (iter.first == eRoomCMD::Create)
 				sAction = "create";
+			else if (iter.first == eRoomCMD::NewPlayer)
+				sAction = "newplayer";
 			else
 				sAction = "join";
 
 			//Subscribe
 			ss.clear();
-			sTemp.clear();
 			ss << sAction<< "/" << TCHAR_TO_UTF8(*iter.second);
-			ss >> sTemp;
-			Subscribe(sTemp.c_str());
+			Subscribe(ss.str().c_str());
+
+			ss.clear();
 
 			//Publish - JSON
 			TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
@@ -81,7 +82,7 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		{
 			TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
 			
-			RootObject->SetStringField("Team", "0");
+			RootObject->SetNumberField("team", 0);
 
 			RootObject->SetStringField("id", iter->GetName());
 			RootObject->SetNumberField("hp", iter->CurrentHP);
@@ -94,7 +95,9 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		}
 
 		TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
-		RootObject->SetArrayField("data", ObjArray);
+		RootObject->SetArrayField("hero", ObjArray);
+		ObjArray.Empty();
+		RootObject->SetArrayField("creep", ObjArray);
 		FString OutputString;
 		TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 		FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
@@ -124,7 +127,9 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		}
 
 		TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
-		RootObject->SetArrayField("data", ObjArray);
+		RootObject->SetArrayField("hero", ObjArray);
+		ObjArray.Empty();
+		RootObject->SetArrayField("creep", ObjArray);
 		FString OutputString;
 		TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 		FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
@@ -143,6 +148,7 @@ void AMqttRoomActor::CreateRoom(FString In_RoomID)
 
 void AMqttRoomActor::JoinRoom(FString In_RoomID)
 {
+	m_listCMD.emplace_back(std::make_pair(eRoomCMD::NewPlayer, In_RoomID));
 	m_listCMD.emplace_back(std::make_pair(eRoomCMD::Join, In_RoomID));
 	m_sRoomID = In_RoomID;
 }

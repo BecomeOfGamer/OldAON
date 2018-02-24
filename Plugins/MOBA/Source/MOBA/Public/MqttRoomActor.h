@@ -19,7 +19,8 @@ public:
 	enum eRoomCMD
 	{
 		Create,
-		Join
+		Join,
+		NewPlayer
 	};
 
 public:
