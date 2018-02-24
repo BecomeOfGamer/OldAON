@@ -44,6 +44,7 @@ public class MOBA : ModuleRules
                 "InputCore",
                 "UMG",
                 "HeadMountedDisplay",
+                "Json",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

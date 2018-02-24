@@ -6,11 +6,13 @@
 
 // Sets default values
 AMqttActor::AMqttActor()
+	:m_bInit(false), m_bDoReconnect(false),
+	m_iConnectTimeout(20),
+	m_bCleanSession(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.1;
-	m_bInit = false;
 	Mqtt_async_Win32_Init();//假定Actor的Create是單執行緒, 一定要呼叫此函數 mqtt static lib才會正常
 }
 
@@ -25,9 +27,24 @@ void AMqttActor::BeginPlay()
 void AMqttActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!m_bInit && IsConnected() == err_success)
+
+	//自動重連....
+	if (m_bInit && IsConnected() != err_success)
+	{
+		//防止頻繁重連與誤判, 取跟timeout一樣的時間差值
+		auto &&tpDiffSecs = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - m_tpConnect);
+		if (tpDiffSecs > std::chrono::seconds(m_iConnectTimeout))
+		{
+			Stop_Consuming();
+			Connect(m_iConnectTimeout, m_bCleanSession);
+			m_bDoReconnect = true;
+		}
+	}
+
+	if ( (!m_bInit || m_bDoReconnect) && IsConnected() == err_success)
 	{
 		m_bInit = true;
+		m_bDoReconnect = false;
 		Start_Consuming();
 	}
 
@@ -39,15 +56,20 @@ void AMqttActor::Tick(float DeltaTime)
 	}
 }
 
-int32 AMqttActor::CreateClient(FString In_sUrl, FString In_sClientID)
+int32 AMqttActor::CreateClient(FString In_sClientID, FString In_sTcpAddress, int32 In_iPort)
 {
 	err_code err(err_success);
 
 	if (m_async_client_ptr)
 		err = err_fail;
 	else
-		m_async_client_ptr = std::make_shared<mqtt::async_client>(TCHAR_TO_UTF8(*In_sUrl), TCHAR_TO_UTF8(*In_sClientID));
-
+	{
+		std::stringstream ss;
+		std::string sTemp;
+		ss << "tcp://" << TCHAR_TO_UTF8(*In_sTcpAddress) << ":" << In_iPort;
+		ss >> sTemp;
+		m_async_client_ptr = std::make_shared<mqtt::async_client>(sTemp, TCHAR_TO_UTF8(*In_sClientID));
+	}
 	return err;
 }
 
@@ -70,6 +92,7 @@ int32 AMqttActor::Connect(int32 In_iTimeoutSec, bool In_bClean)
 		connOpts.set_keep_alive_interval(In_iTimeoutSec);
 		connOpts.set_clean_session(In_bClean);
 		m_async_client_ptr->connect(connOpts);
+		m_tpConnect = std::chrono::system_clock::now();
 	}
 	return err;
 }
