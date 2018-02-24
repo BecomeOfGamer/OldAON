@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include <mqtt/async_client.h>
 #include <string>
+#include <sstream>
+#include <chrono>
 #include "MqttActor.generated.h"
 
 UCLASS()
@@ -35,14 +37,14 @@ public:
 
 	//配置MqttClient
 	UFUNCTION(BlueprintCallable, Category = "Initial")
-	int32 CreateClient(FString In_sUrl, FString In_sClientID);
+	int32 CreateClient(FString In_sClientID, FString In_sTcpAddress, int32 In_iPort = 1883);
 
 	UFUNCTION(BlueprintCallable, Category = "Initial")
 	int32 DestroyClient();
 
 	//連線函式
 	UFUNCTION(BlueprintCallable, Category = "Connection")
-	int32 Connect(int32 In_iTimeoutSec, bool In_bClean);
+	int32 Connect(int32 In_iTimeoutSec = 20, bool In_bClean = true);
 
 	UFUNCTION(BlueprintCallable, Category = "Connection")
 	int32 DisConnect();
@@ -74,5 +76,8 @@ private:
 
 private:
 	mqtt::async_client_ptr m_async_client_ptr;
-	bool m_bInit;
+	bool m_bInit, m_bDoReconnect;
+	int32 m_iConnectTimeout;
+	bool m_bCleanSession;
+	std::chrono::system_clock::time_point m_tpConnect;
 };
