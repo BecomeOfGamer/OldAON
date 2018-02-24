@@ -29,7 +29,6 @@ void AMqttActor::Tick(float DeltaTime)
 	{
 		m_bInit = true;
 		Start_Consuming();
-		Subscribe("test", 0);
 	}
 
 	if (m_bInit)
