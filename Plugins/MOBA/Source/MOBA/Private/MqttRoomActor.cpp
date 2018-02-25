@@ -176,9 +176,17 @@ void AMqttRoomActor::NewHero(const FString &In_sPayload)
 	loc.Z = 0;
 
 	AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor);
-	pAHeroCharacter->SetActorLocation(loc);
-	pAHeroCharacter->ClientID = RootObject->GetStringField("id");
-	pAHeroCharacter->CustomName = RootObject->GetStringField("name");
+	if (IsValid(pAHeroCharacter))
+	{
+		pAHeroCharacter->SetActorLocation(loc);
+		pAHeroCharacter->ClientID = RootObject->GetStringField("id");
+		pAHeroCharacter->CustomName = RootObject->GetStringField("name");
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+			FString::Printf(TEXT("pAHeroCharacter is null")));
+	}
 }
 
 void AMqttRoomActor::HeroMove(const FString &In_sPayload)
@@ -187,7 +195,7 @@ void AMqttRoomActor::HeroMove(const FString &In_sPayload)
 	auto ppiter = m_mapHeroActor.Find(RootObject->GetStringField("id"));
 	if (ppiter && IsValid(LocalController) && IsValid(*ppiter))
 	{
-		auto pHero = *ppiter;
+		AHeroCharacter* pHero = *ppiter;
 
 		FHeroAction act;
 		act.ActionStatus = EHeroActionStatus::MoveToPosition;

@@ -332,7 +332,7 @@ bool AMOBAPlayerController::ServerSetHeroAction_Validate(AHeroCharacter* hero, c
 void AMOBAPlayerController::ServerSetHeroAction_Implementation(AHeroCharacter* hero,
         const FHeroAction& action)
 {
-	if (Role == ROLE_Authority)
+	if (Role == ROLE_Authority && IsValid(hero))
 	{
 		hero->ActionQueue.Empty();
 		hero->ActionQueue.Add(action);
