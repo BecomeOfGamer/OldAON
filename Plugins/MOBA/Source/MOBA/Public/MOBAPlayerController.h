@@ -81,7 +81,7 @@ public:
 	TArray<FKey> KeyMapping;
 
 	AFlannActor* FlannActor = nullptr;
-
+	AMqttRoomActor *RoomActor = nullptr;
 
 	/** Navigate player to the given world location. */	
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
@@ -130,5 +130,7 @@ public:
 	void OnMouseLButtonPressed2();
 	void OnMouseLButtonReleased();
 
-	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SubClass")
+	TSubclassOf<AMqttRoomActor> SubAMqttRoomActor;
 };

@@ -600,4 +600,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float DeadTime;
 
+public: //MQTT Server Function
+
+	//Unique ID
+	FString ClientID;
+
+	//自定義名字
+	FString CustomName;
 };
