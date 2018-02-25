@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 #include "MOBAPrivatePCH.h"
 #include "MOBA.h"
 #include "MqttRoomActor.h"
@@ -53,9 +53,9 @@ void AMqttRoomActor::Tick(float DeltaTime)
 	}
 
 
-	//¶}©l§PÂ_ new/delete HeroActor....
+	//é–‹å§‹åˆ¤æ–· new/delete HeroActor....
 	std::list<AHeroCharacter*> list_newHero;
-	std::set<FString> set_deleteHero(m_setHeroActor);//¥ı±N©Ò¦³ActorName ÂĞ»s¤@¥÷
+	std::set<FString> set_deleteHero(m_setHeroActor);//å…ˆå°‡æ‰€æœ‰ActorName è¦†è£½ä¸€ä»½
 	
 	for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
@@ -64,16 +64,17 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		if (m_setHeroActor.find(HeroActorName) == m_setHeroActor.end())//New Hero...
 		{
 			m_setHeroActor.emplace(HeroActorName);
-			list_newHero.push_back(hero);
+			
 		}
 		else //Exist....
 		{
-			//­ì¥»¦s¦bªºHeroActor´N±q§R°£¦W³æ¤¤²¾°£
+			//åŸæœ¬å­˜åœ¨çš„HeroActorå°±å¾åˆªé™¤åå–®ä¸­ç§»é™¤
 			set_deleteHero.erase(HeroActorName);
 		}
+		list_newHero.push_back(hero);
 	}
 
-	//°e¥X·s¼WªºHeroList
+	//é€å‡ºæ–°å¢çš„HeroList
 	if (!list_newHero.empty())
 	{
 		TArray< TSharedPtr<FJsonValue> > ObjArray;
@@ -108,7 +109,7 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		Publish(ss.str().c_str(), OutputString);
 	}//end if (!list_newHero.empty())
 	
-	//³B²z¤w¸g²¾°£ªºHero
+	//è™•ç†å·²ç¶“ç§»é™¤çš„Hero
 	if (!set_deleteHero.empty())
 	{
 		TArray< TSharedPtr<FJsonValue> > ObjArray;

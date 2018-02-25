@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 #include "MOBAPrivatePCH.h"
 #include "MOBA.h"
 #include "MqttActor.h"
@@ -13,7 +13,7 @@ AMqttActor::AMqttActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.1;
-	Mqtt_async_Win32_Init();//°²©wActorªºCreate¬O³æ°õ¦æºü, ¤@©w­n©I¥s¦¹¨ç¼Æ mqtt static lib¤~·|¥¿±`
+	Mqtt_async_Win32_Init();//å‡å®šActorçš„Createæ˜¯å–®åŸ·è¡Œç·’, ä¸€å®šè¦å‘¼å«æ­¤å‡½æ•¸ mqtt static libæ‰æœƒæ­£å¸¸
 }
 
 // Called when the game starts or when spawned
@@ -28,10 +28,10 @@ void AMqttActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//¦Û°Ê­«³s....
+	//è‡ªå‹•é‡é€£....
 	if (m_bInit && IsConnected() != err_success)
 	{
-		//¨¾¤îÀWÁc­«³s»P»~§P, ¨ú¸òtimeout¤@¼Ëªº®É¶¡®t­È
+		//é˜²æ­¢é »ç¹é‡é€£èˆ‡èª¤åˆ¤, å–è·Ÿtimeoutä¸€æ¨£çš„æ™‚é–“å·®å€¼
 		auto &&tpDiffSecs = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - m_tpConnect);
 		if (tpDiffSecs > std::chrono::seconds(m_iConnectTimeout))
 		{
