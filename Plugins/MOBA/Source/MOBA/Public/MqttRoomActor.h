@@ -22,7 +22,8 @@ public:
 		Create,
 		Join,
 		NewPlayer,
-		Game
+		Game,
+		Delete
 	};
 
 public:
@@ -50,6 +51,8 @@ private:
 	void NewHero(const FString &In_sPayload);
 
 	void HeroMove(const FString &In_sPayload);
+
+	void DeleteHero(const FString &In_sPayload);
 
 	TSharedPtr<FJsonObject> ParseJSON(const FString &In_sPayload);
 private:
