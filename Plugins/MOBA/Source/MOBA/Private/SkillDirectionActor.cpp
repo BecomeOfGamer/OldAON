@@ -66,6 +66,7 @@ void ASkillDirectionActor::BeginPlay()
 // Called every frame
 void ASkillDirectionActor::Tick(float DeltaTime)
 {
+
 	Super::Tick(DeltaTime);
 	if (!IsValid(Attacker))
 	{
@@ -99,6 +100,7 @@ void ASkillDirectionActor::Tick(float DeltaTime)
 		// TODO: 使用內建碰撞優化
 		if (!CollisionByCapsule)
 		{
+			
 			float dis2 = Radius*Radius;
 			for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 			{
@@ -143,15 +145,17 @@ void ASkillDirectionActor::SetDirection(AHeroCharacter* attacker, FVector dir)
 {
 	Direction = dir;
 	Attacker = attacker;
+	Direction.Normalize();
+	Direction.Z = 0;
 	SetActorTransform(attacker->GetTransform());
 }
-
 void ASkillDirectionActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AHeroCharacter* hero = Cast<AHeroCharacter>(OtherActor);
 	if (IsValid(hero) && IsValid(Attacker) && hero->TeamId != Attacker->TeamId && !TargetActors.Contains(hero))
 	{
+		
 		AHeroCharacter::localPC->ServerAttackCompute(
 			Attacker, hero, DamageType, Damage, false);
 		TargetActors.Add(hero);
