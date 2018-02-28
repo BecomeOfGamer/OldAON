@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MqttActor.h"
-#include <list>
+#include <functional>
 #include "GameFramework/HUD.h"
 #include "MHitBox.h"
 #include "MqttRoomActor.generated.h"
@@ -20,10 +20,7 @@ public:
 	enum eRoomCMD
 	{
 		Create,
-		Join,
-		NewPlayer,
-		Game,
-		Delete
+		Join
 	};
 
 public:
@@ -48,18 +45,20 @@ public:
 	AMOBAPlayerController * LocalController;
 
 private:
-	void NewHero(const FString &In_sPayload);
+	void NewHero(TSharedPtr<FJsonObject> In_JsonObj);
 
-	void HeroMove(const FString &In_sPayload);
+	void HeroMove(TSharedPtr<FJsonObject> In_sPayload);
 
-	void DeleteHero(const FString &In_sPayload);
+	void DeleteHero(TSharedPtr<FJsonObject> In_sPayload);
 
 	TSharedPtr<FJsonObject> ParseJSON(const FString &In_sPayload);
-private:
 
+private:
 	using CmdPair = std::pair<eRoomCMD, FString>;
-	std::list<CmdPair> m_listCMD;
+	TSharedPtr<CmdPair> m_spRoomCmdPair;
 	FString m_sRoomID;
+
+	TMap<FString, std::function<void(TSharedPtr<FJsonObject>)>> m_mapCmdFunc;
 
 	//記錄上一次Tick中獲得的HeroActor的Name
 	TMap<FString, AHeroCharacter*> m_mapHeroActor;
