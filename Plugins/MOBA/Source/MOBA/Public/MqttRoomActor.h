@@ -6,6 +6,7 @@
 #include "MqttActor.h"
 #include <functional>
 #include "GameFramework/HUD.h"
+#include "MHUD.h"
 #include "MHitBox.h"
 #include "MqttRoomActor.generated.h"
 
@@ -43,6 +44,7 @@ public:
 
 public:
 	AMOBAPlayerController * LocalController;
+	AMHUD *m_pAMHUD;
 
 private:
 	void NewHero(TSharedPtr<FJsonObject> In_JsonObj);
@@ -50,6 +52,8 @@ private:
 	void HeroMove(TSharedPtr<FJsonObject> In_sPayload);
 
 	void DeleteHero(TSharedPtr<FJsonObject> In_sPayload);
+
+	void Reset(TSharedPtr<FJsonObject> In_sPayload);
 
 	TSharedPtr<FJsonObject> ParseJSON(const FString &In_sPayload);
 
@@ -63,4 +67,5 @@ private:
 	//記錄上一次Tick中獲得的HeroActor的Name
 	TMap<FString, AHeroCharacter*> m_mapHeroActor;
 	int32 m_SequenceNumber;
+	bool m_bCreated;
 };

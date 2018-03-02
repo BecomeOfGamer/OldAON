@@ -45,7 +45,10 @@ void AMOBAPlayerController::BeginPlay()
 			FString::Printf(TEXT("RoomActor is Null")));
 	}
 	else
+	{
 		RoomActor->LocalController = this;
+		RoomActor->m_pAMHUD = Hud;
+	}
 	bMouseRButton = false;
 	bMouseLButton = false;
 	bShowMouseCursor = false;

@@ -6,15 +6,17 @@
 #include <Json.h>
 
 AMqttRoomActor::AMqttRoomActor()
-	:m_SequenceNumber(0)
+	:m_SequenceNumber(0), m_bCreated(false)
 {
 	LocalController = nullptr;
+	m_pAMHUD = nullptr;
 	PrimaryActorTick.TickInterval = 1.0;
 
 	//Being Command Function Map.....
 	m_mapCmdFunc.Emplace("newplayer", std::bind(&AMqttRoomActor::NewHero, this, std::placeholders::_1));
 	m_mapCmdFunc.Emplace("movecmd", std::bind(&AMqttRoomActor::HeroMove, this, std::placeholders::_1));
 	m_mapCmdFunc.Emplace("delete", std::bind(&AMqttRoomActor::DeleteHero, this, std::placeholders::_1));
+	//m_mapCmdFunc.Emplace("test", std::bind(&AMqttRoomActor::Reset, this, std::placeholders::_1));
 	//End Command Function Map.....
 }
 
@@ -24,9 +26,12 @@ void AMqttRoomActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	if (IsConnected() != err_success)
+	{
+		//Reset(nullptr);
 		return;
+	}
 
-	if (m_spRoomCmdPair.Get())
+	if (m_spRoomCmdPair.Get() && !m_bCreated)
 	{
 		FString sAction;
 		m_sRoomID = (*m_spRoomCmdPair).second;
@@ -38,7 +43,14 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		
 		//Subscribe
 		for (auto &iter : m_mapCmdFunc)
-			Subscribe(iter.Key + "/" + m_sRoomID);
+		{
+			if(iter.Key == "delete")
+				Subscribe(iter.Key + "/" + m_sRoomID, 1);
+			else
+				Subscribe(iter.Key + "/" + m_sRoomID);
+		}
+
+		Subscribe("test");
 		Subscribe(sAction + "/" + m_sRoomID);
 
 		//Publish - JSON
@@ -51,22 +63,15 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
 		Publish("room", OutputString);
 
-		m_spRoomCmdPair.Reset();
+		m_bCreated = true;
 	}
 
 
-	//開始判斷 new/delete HeroActor....
-	TMap<FString, AHeroCharacter*> set_deleteHero(m_mapHeroActor);//先將所有ActorName 覆製一份
+	//Update Hero Position....
 	TArray< TSharedPtr<FJsonValue> > ObjArray;
-
 	for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		AHeroCharacter* hero = *ActorItr;
-		if (m_mapHeroActor.Contains(hero->ClientID))//原本存在的HeroActor就從刪除名單中移除
-			set_deleteHero.Remove(hero->ClientID);
-		else //New Hero...
-			m_mapHeroActor.Emplace(hero->ClientID, hero);
-
 		TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
 
 		RootObject->SetNumberField("team", 0);
@@ -80,7 +85,6 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		ObjArray.Add(MakeShareable(new FJsonValueObject(RootObject)));
 	}
 
-	//送出目前的HeroList
 	if (ObjArray.Num() > 0)
 	{
 		TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
@@ -92,53 +96,28 @@ void AMqttRoomActor::Tick(float DeltaTime)
 		FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
 		Publish("gamedata/" + m_sRoomID, OutputString);
 	}
-	
-
-	////處理已經移除的Hero
-	//if (set_deleteHero.Num() > 0)
-	//{
-	//	ObjArray.Empty();
-	//
-	//	//Sync MemberSet and Build JSON...
-	//	for (auto &iter : set_deleteHero)
-	//	{
-	//		//Sync...
-	//		m_mapHeroActor.Remove(iter.Key);
-	//
-	//		//Build...
-	//		TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
-	//
-	//		RootObject->SetStringField("id", iter.Key);
-	//		ObjArray.Add(MakeShareable(new FJsonValueObject(RootObject)));
-	//	}
-	//
-	//	TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
-	//	RootObject->SetArrayField("hero", ObjArray);
-	//	FString OutputString;
-	//	TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-	//	FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
-	//
-	//	std::stringstream ss;
-	//	ss << "delete/" << TCHAR_TO_UTF8(*m_sRoomID);;
-	//	Publish(ss.str().c_str(), OutputString);
-	//}//end if (!set_deleteHero.empty())
 }
 
 
 void AMqttRoomActor::CreateRoom(FString In_RoomID)
 {
 	m_spRoomCmdPair = MakeShareable(new CmdPair(eRoomCMD::Create, In_RoomID));
+	m_bCreated = false;
 }
 
 void AMqttRoomActor::JoinRoom(FString In_RoomID)
 {
 	m_spRoomCmdPair = MakeShareable(new CmdPair(eRoomCMD::Join, In_RoomID));
+	m_bCreated = false;
 }
 
 void AMqttRoomActor::HandleMQTTMsg(const FString &In_sTopic, const FString &In_sPayload)
 {
 	FString cmd, roomid;
-	if (In_sTopic.Split("/", &cmd, &roomid))
+
+	if (In_sTopic == "test")
+		Reset(nullptr);
+	else if (In_sTopic.Split("/", &cmd, &roomid))
 	{
 		auto &&pFunc = m_mapCmdFunc.Find(cmd);
 		if (pFunc)
@@ -171,6 +150,11 @@ void AMqttRoomActor::NewHero(TSharedPtr<FJsonObject> In_JsonObj)
 		pAHeroCharacter->SetActorLocation(loc);
 		pAHeroCharacter->ClientID = In_JsonObj->GetStringField("id");
 		pAHeroCharacter->CustomName = In_JsonObj->GetStringField("name");
+		pAHeroCharacter->HeroName = In_JsonObj->GetStringField("id");
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "NewHero:" + In_JsonObj->GetStringField("id"));
+		if (IsValid(m_pAMHUD))
+			m_pAMHUD->HeroCanSelection.Add(pAHeroCharacter);
+		m_mapHeroActor.Emplace(pAHeroCharacter->ClientID, pAHeroCharacter);
 	}
 	else
 	{
@@ -210,9 +194,29 @@ void AMqttRoomActor::HeroMove(TSharedPtr<FJsonObject> In_JsonObj)
 void AMqttRoomActor::DeleteHero(TSharedPtr<FJsonObject> In_JsonObj)
 {
 	auto ppiter = m_mapHeroActor.Find(In_JsonObj->GetStringField("id"));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "DeleteHero:" + In_JsonObj->GetStringField("id"));
 	if (ppiter && IsValid(*ppiter))
 	{
+		if (IsValid(m_pAMHUD))
+			m_pAMHUD->HeroCanSelection.Remove((*ppiter));
 		(*ppiter)->Destroy();
 		m_mapHeroActor.Remove(In_JsonObj->GetStringField("id"));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Delete Found");
 	}
+	else
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Delete Fail");
+}
+
+void AMqttRoomActor::Reset(TSharedPtr<FJsonObject> In_JsonObj)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Reset");
+
+	for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		(*ActorItr)->Destroy();
+	m_bCreated = false;
+
+	m_mapHeroActor.Empty();
+
+	if (IsValid(m_pAMHUD))
+		m_pAMHUD->HeroCanSelection.Empty();
 }
