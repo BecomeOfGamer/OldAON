@@ -57,11 +57,12 @@ private:
 	TArray<AHeroCharacter*> FindArray;
 	int32 MaxActor = 10000;
 	int32 MaxQuery = 1000;
+	int32 CurrnetRow = 0;
 
 	flann::Matrix<float> dataset;
 	flann::Matrix<float> query1;
 	std::vector<std::vector<int>> indices;
-	flann::Index<flann::L2<float>> *index = nullptr;
+	std::shared_ptr<flann::Index<flann::L2<float>>> index;
 
 	TArray<float>	rdata;
 	TArray<float>	qdata1;

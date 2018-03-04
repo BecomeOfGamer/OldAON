@@ -10,35 +10,6 @@ class AMHUD;
 class AHeroCharacter;
 class AEquipment;
 
-UENUM(BlueprintType)
-enum class EKeyBehavior : uint8
-{
-	// 技能1
-	KEY_SKILL_1,
-	// 技能2
-	KEY_SKILL_2,
-	// 技能3
-	KEY_SKILL_3,
-	// 技能4
-	KEY_SKILL_4,
-	// 技能5
-	KEY_SKILL_5,
-	// 技能6
-	KEY_SKILL_6,
-	// 技能7
-	KEY_SKILL_7,
-	// 技能8
-	KEY_SKILL_8,
-	// 技能9
-	KEY_SKILL_9,
-	// 技能10
-	KEY_SKILL_10,
-	// 攻擊
-	KEY_ATTACK,
-	// 移動
-	KEY_MOVE,
-
-};
 
 UCLASS()
 class AMOBAPlayerController : public APlayerController
@@ -79,6 +50,7 @@ public:
 
 	// 有註冊的鍵盤事件
 	TArray<FKey> KeyMapping;
+	TMap<FKey, EKeyBehavior> KeyMapping2;
 
 	AFlannActor* FlannActor = nullptr;
 	AMqttRoomActor *RoomActor = nullptr;

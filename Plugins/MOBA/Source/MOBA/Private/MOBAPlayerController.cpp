@@ -31,6 +31,17 @@ void AMOBAPlayerController::BeginPlay()
 		KeyMapping.Add(EKeys::R);
 		KeyMapping.Add(EKeys::T);
 		KeyMapping.Add(EKeys::D);
+
+		KeyMapping2.Add(EKeys::W, EKeyBehavior::KEY_SKILL_1);
+		KeyMapping2.Add(EKeys::E, EKeyBehavior::KEY_SKILL_2);
+		KeyMapping2.Add(EKeys::R, EKeyBehavior::KEY_SKILL_3);
+		KeyMapping2.Add(EKeys::T, EKeyBehavior::KEY_SKILL_4);
+		KeyMapping2.Add(EKeys::D, EKeyBehavior::KEY_SKILL_5);
+		KeyMapping2.Add(EKeys::F, EKeyBehavior::KEY_SKILL_6);
+
+		KeyMapping2.Add(EKeys::A, EKeyBehavior::KEY_ATTACK);
+		KeyMapping2.Add(EKeys::G, EKeyBehavior::KEY_MOVE);
+		KeyMapping2.Add(EKeys::S, EKeyBehavior::KEY_STOP);
 	}
 	FlannActor = GetWorld()->SpawnActor<AFlannActor>();
 	if (FlannActor == nullptr)
@@ -68,10 +79,14 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Client InputKey ") + Key.ToString());
 	if (EventType == IE_Pressed && Hud)
 	{
+		if (KeyMapping2.Contains(Key))
+		{
+			Hud->KeyboardCallUseSkill2(KeyMapping2[Key]);
+		}
 		int32 idx = KeyMapping.Find(Key);
 		if (idx != INDEX_NONE)
 		{
-			Hud->KeyboardCallUseSkill(idx);
+			//Hud->KeyboardCallUseSkill(idx);
 		}
 	}
 	if (Key == EKeys::LeftShift && Hud)

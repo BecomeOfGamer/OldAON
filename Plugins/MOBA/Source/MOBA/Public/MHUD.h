@@ -4,6 +4,7 @@
 
 #include "GameFramework/HUD.h"
 #include "MHitBox.h"
+#include "HeroActionx.h"
 #include "MHUD.generated.h"
 
 
@@ -122,6 +123,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	AHeroCharacter* GetMouseTarget(float MinDistance);
 	
+
+	void KeyboardCallUseSkill2(EKeyBehavior idx);
+
 	// use skill callback by localcontroller
 	void KeyboardCallUseSkill(int32 idx);
 	

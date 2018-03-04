@@ -930,8 +930,6 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 			break;
 		case EHeroActionStatus::MovingAttackActor:
 			break;
-		case EHeroActionStatus::MoveAndAttack:
-			break;
 		case EHeroActionStatus::SpellNow:
 			return CurrentAction == LastUseSkill;
 			break;
@@ -1035,8 +1033,6 @@ void AHeroCharacter::DoAction_Implementation(const FHeroAction& CurrentAction)
 		break;
 	case EHeroActionStatus::MovingAttackActor:
 		break;
-	case EHeroActionStatus::MoveAndAttack:
-		break;
 	case EHeroActionStatus::SpellToPosition:
 		DoAction_SpellToDirection(CurrentAction);
 		break;
@@ -1089,7 +1085,9 @@ void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentA
 	{
 		StartFollowPosition = GetActorLocation();
 	}
-	TArray<AHeroCharacter*> Enemys = FindRadiusActorByLocation(StartFollowPosition, MovingAttackRange, ETeamFlag::TeamEnemy, true);
+	
+	TArray<AHeroCharacter*> Enemys = localPC->FindRadiusActorByLocation(
+		this, StartFollowPosition, MovingAttackRange, ETeamFlag::TeamEnemy, true);
 	if (Enemys.Num() == 0)
 	{
 		MovingAttackTarget = nullptr;

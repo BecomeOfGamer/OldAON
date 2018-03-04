@@ -10,11 +10,42 @@ class AHeroCharacter;
 class AEquipment;
 
 UENUM(BlueprintType)
+enum class EKeyBehavior : uint8
+{
+	// 技能1
+	KEY_SKILL_1,
+	// 技能2
+	KEY_SKILL_2,
+	// 技能3
+	KEY_SKILL_3,
+	// 技能4
+	KEY_SKILL_4,
+	// 技能5
+	KEY_SKILL_5,
+	// 技能6
+	KEY_SKILL_6,
+	// 技能7
+	KEY_SKILL_7,
+	// 技能8
+	KEY_SKILL_8,
+	// 技能9
+	KEY_SKILL_9,
+	// 技能10
+	KEY_SKILL_10,
+	// 攻擊
+	KEY_ATTACK,
+	// 移動
+	KEY_MOVE,
+	// 停止所有動作
+	KEY_STOP,
+};
+
+UENUM(BlueprintType)
 enum class EHeroActionStatus : uint8
 {
 	//站著休息
 	Default,
-	//移動攻擊到指定位置
+	//A點地板 移動中遇到敵人停下來攻擊
 	MovingAttackToPosition,
 	//移動到指定位置
 	MoveToPosition,
@@ -26,8 +57,6 @@ enum class EHeroActionStatus : uint8
 	AttackActor,
 	//邊移動邊攻擊指定敵人
 	MovingAttackActor,
-	//A點地板 移動中遇到敵人停下來攻擊
-	MoveAndAttack,
 	//直接施放技能
 	SpellNow,
 	//指定地點的技能
@@ -69,7 +98,7 @@ struct FHeroAction
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AEquipment* TargetEquipment;
 
-	// for MoveToPosition, MoveAndAttack, SpellToPosition, SpellToDirection, MoveToThrowEqu
+	// for MoveToPosition, MovingAttackToPosition, SpellToPosition, SpellToDirection, MoveToThrowEqu
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector		TargetVec1;
 

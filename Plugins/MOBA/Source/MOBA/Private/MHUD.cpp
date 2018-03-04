@@ -85,7 +85,6 @@ void AMHUD::BeginPlay()
 	bClickHero = false;
 	bNeedMouseRDown = false;
 	bNeedMouseLDown = false;
-
 }
 
 void AMHUD::Tick(float DeltaSeconds)
@@ -491,6 +490,26 @@ void AMHUD::HeroAttackSceneObject(ASceneObject* SceneObj)
 	}
 }
 
+void AMHUD::KeyboardCallUseSkill2(EKeyBehavior kb)
+{
+	if (CurrentSelection.Num() > 0)
+	{
+		if (kb <= EKeyBehavior::KEY_SKILL_6)
+		{
+			int32 idx = (int)kb;
+			bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120 * ViewportScale));
+			CurrentSkillIndex = idx;
+			if (res)
+			{
+				HUDStatus = EMHUDStatus::SkillHint;
+			}
+		}
+		else if (kb == EKeyBehavior::KEY_ATTACK)
+		{
+			HUDStatus = EMHUDStatus::Attack;
+		}
+	}
+}
 
 void AMHUD::KeyboardCallUseSkill(int32 idx)
 {
@@ -595,6 +614,8 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 							}
 							else
 							{
+								GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+									FString::Printf(TEXT("Server MOVE")));
 								LocalController->ServerSetHeroAction(EachHero, act);
 							}
 						}
@@ -607,9 +628,7 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 		case EMHUDStatus::Move:
 			break;
 		case EMHUDStatus::Attack:
-		{
-
-		}
+			break;
 		break;
 		case EMHUDStatus::ThrowEquipment:
 			break;
@@ -769,21 +788,45 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 	{
 		bNeedMouseLDown = false;
 		OnLMouseDown(pos);
-		// 設定SelectionBox初始位置
-		if(HUDStatus == EMHUDStatus::Normal)
+		
+		switch (HUDStatus)
 		{
-			if(IsGameRegion(CurrentMouseXY)) // 取消選英雄
+			// 設定SelectionBox初始位置
+		case EMHUDStatus::Normal:
+			if (IsGameRegion(CurrentMouseXY)) // 取消選英雄
 			{
 				InitialMouseXY = pos;
-				if(!ClickedSelected)
+				if (!ClickedSelected)
 				{
 					ClearAllSelection();
 				}
 				ClickedSelected = false;
 				UnSelectHero();
 			}
+			break;
+		case EMHUDStatus::Move:
+			break;
+		case EMHUDStatus::Attack:
+		{
+			FHeroAction act;
+			act.ActionStatus = EHeroActionStatus::MovingAttackToPosition;
+			act.TargetVec1 = GetCurrentDirection();
+			act.TargetVec2 = CurrentMouseHit;
+			act.SequenceNumber = SequenceNumber++;
+			if (bLeftShiftDown)
+			{
+				LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
+			}
+			else
+			{
+				LocalController->ServerSetHeroAction(CurrentSelection[0], act);
+			}
+			HUDStatus = EMHUDStatus::ToNormal;
 		}
-		else if(HUDStatus == EMHUDStatus::SkillHint) // 放技能
+			break;
+		case EMHUDStatus::ThrowEquipment:
+			break;
+		case EMHUDStatus::SkillHint:
 		{
 			CurrentSelection[0]->HideSkillHint();
 			FHeroAction act;
@@ -810,7 +853,6 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 			act.TargetVec1 = GetCurrentDirection();
 			act.TargetVec2 = CurrentMouseHit;
 			act.SequenceNumber = SequenceNumber++;
-			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 			if (bLeftShiftDown)
 			{
 				LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
@@ -820,6 +862,14 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				LocalController->ServerSetHeroAction(CurrentSelection[0], act);
 			}
 			HUDStatus = EMHUDStatus::ToNormal;
+		}
+			break;
+		case EMHUDStatus::ToNormal:
+			break;
+		case EMHUDStatus::EndBuffKind:
+			break;
+		default:
+			break;
 		}
 		return;
 	}
