@@ -8,123 +8,137 @@
 AMqttRoomActor::AMqttRoomActor()
 	:m_SequenceNumber(0), m_bCreated(false)
 {
-	LocalController = nullptr;
-	m_pAMHUD = nullptr;
-	PrimaryActorTick.TickInterval = 1.0;
+	if (Role == ROLE_Authority)
+	{
+		LocalController = nullptr;
+		m_pAMHUD = nullptr;
+		PrimaryActorTick.TickInterval = 1.0;
 
-	//Being Command Function Map.....
-	m_mapCmdFunc.Emplace("newplayer", std::bind(&AMqttRoomActor::NewHero, this, std::placeholders::_1));
-	m_mapCmdFunc.Emplace("movecmd", std::bind(&AMqttRoomActor::HeroMove, this, std::placeholders::_1));
-	m_mapCmdFunc.Emplace("delete", std::bind(&AMqttRoomActor::DeleteHero, this, std::placeholders::_1));
-	//m_mapCmdFunc.Emplace("test", std::bind(&AMqttRoomActor::Reset, this, std::placeholders::_1));
-	//End Command Function Map.....
+		//Being Command Function Map.....
+		m_mapCmdFunc.Emplace("newplayer", std::bind(&AMqttRoomActor::NewHero, this, std::placeholders::_1));
+		m_mapCmdFunc.Emplace("movecmd", std::bind(&AMqttRoomActor::HeroMove, this, std::placeholders::_1));
+		m_mapCmdFunc.Emplace("delete", std::bind(&AMqttRoomActor::DeleteHero, this, std::placeholders::_1));
+		//m_mapCmdFunc.Emplace("test", std::bind(&AMqttRoomActor::Reset, this, std::placeholders::_1));
+		//End Command Function Map.....
+	}
 }
 
 // Called every frame
 void AMqttRoomActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (IsConnected() != err_success)
+	if (Role == ROLE_Authority)
 	{
-		//Reset(nullptr);
-		return;
-	}
-
-	if (m_spRoomCmdPair.Get() && !m_bCreated)
-	{
-		FString sAction;
-		m_sRoomID = (*m_spRoomCmdPair).second;
-
-		if ((*m_spRoomCmdPair).first == eRoomCMD::Create)
-			sAction = "create";
-		else
-			sAction = "join";
-		
-		//Subscribe
-		for (auto &iter : m_mapCmdFunc)
+		if (IsConnected() != err_success)
 		{
-			if(iter.Key == "delete")
-				Subscribe(iter.Key + "/" + m_sRoomID, 1);
-			else
-				Subscribe(iter.Key + "/" + m_sRoomID);
+			//Reset(nullptr);
+			return;
 		}
 
-		Subscribe("test");
-		Subscribe(sAction + "/" + m_sRoomID);
+		if (m_spRoomCmdPair.Get() && !m_bCreated)
+		{
+			FString sAction;
+			m_sRoomID = (*m_spRoomCmdPair).second;
 
-		//Publish - JSON
-		TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
-		RootObject->SetStringField("action", sAction);
-		RootObject->SetStringField("key", m_sRoomID);
+			if ((*m_spRoomCmdPair).first == eRoomCMD::Create)
+				sAction = "create";
+			else
+				sAction = "join";
 
-		FString OutputString;
-		TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-		FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
-		Publish("room", OutputString);
+			//Subscribe
+			for (auto &iter : m_mapCmdFunc)
+			{
+				if (iter.Key == "delete")
+					Subscribe(iter.Key + "/" + m_sRoomID, 1);
+				else
+					Subscribe(iter.Key + "/" + m_sRoomID);
+			}
 
-		m_bCreated = true;
-	}
+			Subscribe("test");
+			Subscribe(sAction + "/" + m_sRoomID);
+
+			//Publish - JSON
+			TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
+			RootObject->SetStringField("action", sAction);
+			RootObject->SetStringField("key", m_sRoomID);
+
+			FString OutputString;
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
+			Publish("room", OutputString);
+
+			m_bCreated = true;
+		}
 
 
-	//Update Hero Position....
-	TArray< TSharedPtr<FJsonValue> > ObjArray;
-	for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		AHeroCharacter* hero = *ActorItr;
-		TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
+		//Update Hero Position....
+		TArray< TSharedPtr<FJsonValue> > ObjArray;
+		for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		{
+			AHeroCharacter* hero = *ActorItr;
+			TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
 
-		RootObject->SetNumberField("team", 0);
-		RootObject->SetStringField("id", hero->ClientID);
-		RootObject->SetNumberField("hp", hero->CurrentHP);
+			RootObject->SetNumberField("team", 0);
+			RootObject->SetStringField("id", hero->ClientID);
+			RootObject->SetNumberField("hp", hero->CurrentHP);
 
-		FVector &&pos = hero->GetActorLocation();
-		RootObject->SetNumberField("x", pos.X);
-		RootObject->SetNumberField("y", pos.Y);
+			FVector &&pos = hero->GetActorLocation();
+			RootObject->SetNumberField("x", pos.X);
+			RootObject->SetNumberField("y", pos.Y);
 
-		ObjArray.Add(MakeShareable(new FJsonValueObject(RootObject)));
-	}
+			ObjArray.Add(MakeShareable(new FJsonValueObject(RootObject)));
+		}
 
-	if (ObjArray.Num() > 0)
-	{
-		TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
-		RootObject->SetArrayField("hero", ObjArray);
-		ObjArray.Empty();
-		RootObject->SetArrayField("creep", ObjArray);
-		FString OutputString;
-		TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-		FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
-		Publish("gamedata/" + m_sRoomID, OutputString);
+		if (ObjArray.Num() > 0)
+		{
+			TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
+			RootObject->SetArrayField("hero", ObjArray);
+			ObjArray.Empty();
+			RootObject->SetArrayField("creep", ObjArray);
+			FString OutputString;
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
+			Publish("gamedata/" + m_sRoomID, OutputString);
+		}
 	}
 }
 
 
 void AMqttRoomActor::CreateRoom(FString In_RoomID)
 {
-	m_spRoomCmdPair = MakeShareable(new CmdPair(eRoomCMD::Create, In_RoomID));
-	m_bCreated = false;
+	if (Role == ROLE_Authority)
+	{
+		m_spRoomCmdPair = MakeShareable(new CmdPair(eRoomCMD::Create, In_RoomID));
+		m_bCreated = false;
+	}
 }
 
 void AMqttRoomActor::JoinRoom(FString In_RoomID)
 {
-	m_spRoomCmdPair = MakeShareable(new CmdPair(eRoomCMD::Join, In_RoomID));
-	m_bCreated = false;
+	if (Role == ROLE_Authority)
+	{
+		m_spRoomCmdPair = MakeShareable(new CmdPair(eRoomCMD::Join, In_RoomID));
+		m_bCreated = false;
+	}
 }
 
 void AMqttRoomActor::HandleMQTTMsg(const FString &In_sTopic, const FString &In_sPayload)
 {
-	FString cmd, roomid;
-
-	if (In_sTopic == "test")
-		Reset(nullptr);
-	else if (In_sTopic.Split("/", &cmd, &roomid))
+	if (Role == ROLE_Authority)
 	{
-		auto &&pFunc = m_mapCmdFunc.Find(cmd);
-		if (pFunc)
+		FString cmd, roomid;
+
+		if (In_sTopic == "test")
+			Reset(nullptr);
+		else if (In_sTopic.Split("/", &cmd, &roomid))
 		{
-			auto &&pJsonObj = ParseJSON(In_sPayload);
-			auto &&DoFunc = (*pFunc);
-			DoFunc(pJsonObj);
+			auto &&pFunc = m_mapCmdFunc.Find(cmd);
+			if (pFunc)
+			{
+				auto &&pJsonObj = ParseJSON(In_sPayload);
+				auto &&DoFunc = (*pFunc);
+				DoFunc(pJsonObj);
+			}
 		}
 	}
 }
@@ -139,53 +153,59 @@ TSharedPtr<FJsonObject> AMqttRoomActor::ParseJSON(const FString &In_sPayload)
 
 void AMqttRoomActor::NewHero(TSharedPtr<FJsonObject> In_JsonObj)
 {
-	FVector loc;
-	loc.X = In_JsonObj->GetNumberField("x");
-	loc.Y = In_JsonObj->GetNumberField("y");
-	loc.Z = 0;
+	if (Role == ROLE_Authority)
+	{
+		FVector loc;
+		loc.X = In_JsonObj->GetNumberField("x");
+		loc.Y = In_JsonObj->GetNumberField("y");
+		loc.Z = 0;
 
-	AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor);
-	if (IsValid(pAHeroCharacter))
-	{
-		pAHeroCharacter->SetActorLocation(loc);
-		pAHeroCharacter->ClientID = In_JsonObj->GetStringField("id");
-		pAHeroCharacter->CustomName = In_JsonObj->GetStringField("name");
-		pAHeroCharacter->HeroName = In_JsonObj->GetStringField("id");
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "NewHero:" + In_JsonObj->GetStringField("id"));
-		if (IsValid(m_pAMHUD))
-			m_pAMHUD->HeroCanSelection.Add(pAHeroCharacter);
-		m_mapHeroActor.Emplace(pAHeroCharacter->ClientID, pAHeroCharacter);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("pAHeroCharacter is null")));
+		AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor);
+		if (IsValid(pAHeroCharacter))
+		{
+			pAHeroCharacter->SetActorLocation(loc);
+			pAHeroCharacter->ClientID = In_JsonObj->GetStringField("id");
+			pAHeroCharacter->CustomName = In_JsonObj->GetStringField("name");
+			pAHeroCharacter->HeroName = In_JsonObj->GetStringField("id");
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "NewHero:" + In_JsonObj->GetStringField("id"));
+			if (IsValid(m_pAMHUD))
+				m_pAMHUD->HeroCanSelection.Add(pAHeroCharacter);
+			m_mapHeroActor.Emplace(pAHeroCharacter->ClientID, pAHeroCharacter);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+				FString::Printf(TEXT("pAHeroCharacter is null")));
+		}
 	}
 }
 
 void AMqttRoomActor::HeroMove(TSharedPtr<FJsonObject> In_JsonObj)
 {
-	auto HeroArray = In_JsonObj->GetArrayField("hero");
-	
-	for (auto &iter : HeroArray)
+	if (Role == ROLE_Authority)
 	{
-		const TSharedPtr<FJsonObject> *cpJsonObject;
-		if (iter->TryGetObject(cpJsonObject))
+		auto HeroArray = In_JsonObj->GetArrayField("hero");
+
+		for (auto &iter : HeroArray)
 		{
-			auto RealObject = *cpJsonObject;
-			auto ppiter = m_mapHeroActor.Find(RealObject->GetStringField("id"));
-			if (ppiter && IsValid(LocalController) && IsValid(*ppiter))
+			const TSharedPtr<FJsonObject> *cpJsonObject;
+			if (iter->TryGetObject(cpJsonObject))
 			{
-				AHeroCharacter* pHero = *ppiter;
+				auto RealObject = *cpJsonObject;
+				auto ppiter = m_mapHeroActor.Find(RealObject->GetStringField("id"));
+				if (ppiter && IsValid(LocalController) && IsValid(*ppiter))
+				{
+					AHeroCharacter* pHero = *ppiter;
 
-				FHeroAction act;
-				act.ActionStatus = EHeroActionStatus::MoveToPosition;
-				act.TargetVec1.X = RealObject->GetNumberField("x");
-				act.TargetVec1.Y = RealObject->GetNumberField("y");
-				act.TargetVec1.Z = 0;
-				act.SequenceNumber = m_SequenceNumber++;
+					FHeroAction act;
+					act.ActionStatus = EHeroActionStatus::MoveToPosition;
+					act.TargetVec1.X = RealObject->GetNumberField("x");
+					act.TargetVec1.Y = RealObject->GetNumberField("y");
+					act.TargetVec1.Z = 0;
+					act.SequenceNumber = m_SequenceNumber++;
 
-				LocalController->ServerSetHeroAction(pHero, act);
+					LocalController->ServerSetHeroAction(pHero, act);
+				}
 			}
 		}
 	}

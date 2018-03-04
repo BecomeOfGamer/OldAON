@@ -26,28 +26,28 @@ void AFlannActor::BeginPlay()
 void AFlannActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//int32 row = 0;
-	//FindArray.Empty();
-	//for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	//{
-	//	AHeroCharacter* hero = *ActorItr;
-	//	FindArray.Add(hero);
-	//	FVector pos = hero->GetActorLocation();
-	//	rdata[row * 2 + 0] = pos.X;
-	//	rdata[row * 2 + 1] = pos.Y;
-	//	row++;
-	//	if (row > MaxActor)
-	//	{
-	//		break;
-	//	}
-	//}
-	//dataset = flann::Matrix<float>(rdata.GetData(), row, 2);
-	//if (index != nullptr)
-	//{
-	//	delete index;
-	//}
-	//index = new flann::Index<flann::L2<float>>(dataset, flann::KDTreeIndexParams(1));
-	//index->buildIndex();
+	int32 row = 0;
+	FindArray.Empty();
+	for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		AHeroCharacter* hero = *ActorItr;
+		FindArray.Add(hero);
+		FVector pos = hero->GetActorLocation();
+		rdata[row * 2 + 0] = pos.X;
+		rdata[row * 2 + 1] = pos.Y;
+		row++;
+		if (row > MaxActor)
+		{
+			break;
+		}
+	}
+	dataset = flann::Matrix<float>(rdata.GetData(), row, 2);
+	if (index != nullptr)
+	{
+		delete index;
+	}
+	index = new flann::Index<flann::L2<float>>(dataset, flann::KDTreeIndexParams(1));
+	index->buildIndex();
 }
 
 TArray<AHeroCharacter*> AFlannActor::FindRadiusActorByLocation(AHeroCharacter* hero, FVector Center, 
