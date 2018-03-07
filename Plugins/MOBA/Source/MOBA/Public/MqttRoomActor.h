@@ -8,6 +8,7 @@
 #include "GameFramework/HUD.h"
 #include "MHUD.h"
 #include "MHitBox.h"
+#include "DataPacket.h"
 #include "MqttRoomActor.generated.h"
 
 UCLASS()

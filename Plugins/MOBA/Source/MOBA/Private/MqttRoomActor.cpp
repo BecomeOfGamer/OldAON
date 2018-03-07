@@ -66,7 +66,6 @@ void AMqttRoomActor::Tick(float DeltaTime)
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
 			Publish("room", OutputString);
-
 			m_bCreated = true;
 		}
 
@@ -99,6 +98,16 @@ void AMqttRoomActor::Tick(float DeltaTime)
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
 			Publish("gamedata/" + m_sRoomID, OutputString);
+
+			/*
+				Packet::CompressPacket CompressPacket;
+				std::shared_ptr<char> shared_buf, shared_buf2;
+				CompressPacket.u32_DecompressSize = OutputString.GetCharArray().GetTypeSize() * OutputString.GetCharArray().Num();
+				Packet::CreateCompressPacket(CompressPacket, (char *)(OutputString.GetCharArray().GetData()), shared_buf);
+
+				Packet::DeCompressFromPacket(CompressPacket, &(*shared_buf), shared_buf2);
+				FString OutputString2((wchar_t *)&(*shared_buf2));
+			*/
 		}
 	}
 }
