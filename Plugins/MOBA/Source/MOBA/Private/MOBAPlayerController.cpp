@@ -265,17 +265,6 @@ FVector2D AMOBAPlayerController::GetMouseScreenPosition()
 
 void AMOBAPlayerController::OnMouseRButtonPressed1()
 {
-	/*FVector2D mpos = GetMouseScreenPosition();
-	if (Role == ROLE_Authority)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Server OnMouseRButtonPressed1 %f %f"), mpos.X, mpos.Y));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Client OnMouseRButtonPressed1 %f %f"), mpos.X, mpos.Y));
-	}*/
 	bMouseRButton = true;
 	if (Hud)
 	{
@@ -285,17 +274,6 @@ void AMOBAPlayerController::OnMouseRButtonPressed1()
 
 void AMOBAPlayerController::OnMouseRButtonPressed2()
 {
-	/*FVector2D mpos = GetMouseScreenPosition();
-	if (Role == ROLE_Authority)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Server OnMouseRButtonPressed2 %f %f"), mpos.X, mpos.Y));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Client OnMouseRButtonPressed2 %f %f"), mpos.X, mpos.Y));
-	}*/
 	bMouseRButton = true;
 	if(Hud)
 	{

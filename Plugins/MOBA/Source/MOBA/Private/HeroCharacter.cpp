@@ -1275,7 +1275,7 @@ void AHeroCharacter::DoAction_MoveToPosition(const FHeroAction& CurrentAction)
 	{
 		localPC->ServerCharacterStopMove(this);
 	}
-	else if (LastMoveTarget != CurrentAction.TargetVec1)
+	else
 	{
 		DoAction_MoveToPositionImpl(CurrentAction);
 	}
@@ -1295,17 +1295,19 @@ void AHeroCharacter::DoAction_MoveToPositionImpl(const FHeroAction& CurrentActio
 		if (NavSys && this->GetController())
 		{
 			NavSys->SimpleMoveToLocation(this->GetController(), CurrentAction.TargetVec1);
+			LastMoveTarget = CurrentAction.TargetVec1;
 		}
 	}
 	break;
 	case EHeroBodyStatus::Moving:
 	{
-		if (GetVelocity().Size() < 5) 
+		if (GetVelocity().Size() < 5 || LastMoveTarget != CurrentAction.TargetVec1)
 		{
 			UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
 			if (NavSys && this->GetController())
 			{
 				NavSys->SimpleMoveToLocation(this->GetController(), CurrentAction.TargetVec1);
+				LastMoveTarget = CurrentAction.TargetVec1;
 			}
 		}
 	}

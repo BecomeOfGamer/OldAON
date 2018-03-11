@@ -630,8 +630,6 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 								}
 								else
 								{
-									GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-										FString::Printf(TEXT("Server MOVE")));
 									LocalController->ServerSetHeroAction(EachHero, act);
 								}
 							}
@@ -669,19 +667,7 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 
 void AMHUD::OnRMousePressed1(FVector2D pos)
 {
-	/*if (Role == ROLE_Authority)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Server OnRMousePressed1 %f %f"), pos.X, pos.Y));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Client OnRMousePressed1 %f %f"), pos.X, pos.Y));
-	}*/
 	// 如果沒有下面這行在 editor 會不能移動
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		FString::Printf(TEXT(" "), pos.X, pos.Y));
 	bClickHero = false;
 	ClickStatus = ERTSClickEnum::LastRightClick;
 	if(!bMouseRButton)
@@ -693,18 +679,6 @@ void AMHUD::OnRMousePressed1(FVector2D pos)
 
 void AMHUD::OnRMousePressed2(FVector2D pos)
 {
-	/*if (Role == ROLE_Authority)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Server OnRMousePressed2 %f %f"), pos.X, pos.Y));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-			FString::Printf(TEXT("Client OnRMousePressed2 %f %f"), pos.X, pos.Y));
-	}*/
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		FString::Printf(TEXT(" "), pos.X, pos.Y));
 	if(bNeedMouseRDown)
 	{
 		bNeedMouseRDown = false;
@@ -784,8 +758,8 @@ void AMHUD::OnLMouseDown(FVector2D pos)
 
 void AMHUD::OnLMousePressed1(FVector2D pos)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		FString::Printf(TEXT("OnLMousePressed1"), pos.X, pos.Y));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+		//FString::Printf(TEXT("OnLMousePressed1"), pos.X, pos.Y));
 	bClickHero = false;
 	ClickStatus = ERTSClickEnum::LastLeftClick;
 	if(!bMouseLButton)
@@ -797,8 +771,8 @@ void AMHUD::OnLMousePressed1(FVector2D pos)
 
 void AMHUD::OnLMousePressed2(FVector2D pos)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		FString::Printf(TEXT("OnLMousePressed2"), pos.X, pos.Y));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+		//FString::Printf(TEXT("OnLMousePressed2"), pos.X, pos.Y));
 	// Role == ROLE_Authority but Client Side
 	if(bNeedMouseLDown)
 	{

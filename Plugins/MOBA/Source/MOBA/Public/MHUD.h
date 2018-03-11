@@ -226,7 +226,7 @@ public:
 	bool bMouseLButton = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	bool bNeedMouseRDown = false;
+	uint32 bNeedMouseRDown:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	bool bNeedMouseLDown = false;
