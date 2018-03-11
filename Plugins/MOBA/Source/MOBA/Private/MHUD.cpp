@@ -234,69 +234,72 @@ void AMHUD::DrawHUD()
 	if(CurrentSelection.Num() > 0)
 	{
 		AHeroCharacter* selectHero = CurrentSelection[0];
-		if(HUDStatus == EMHUDStatus::ThrowEquipment)
+		if (IsValid(selectHero))
 		{
-			ThrowDMaterial->SetTextureParameterValue(TEXT("InputTexture"), ThrowTexture);
-			DrawMaterialSimple(ThrowDMaterial, CurrentMouseXY.X, CurrentMouseXY.Y,
-			                   100 * ViewportScale, 100 * ViewportScale);
-		}
-		
-		// 畫經驗條
-		{
-			FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
-			DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, 
-				skhb->Size.X *ViewportScale, skhb->Size.Y *ViewportScale);
-			DrawRect(MPBarForeColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y*ViewportScale, 
-				skhb->Size.X*ViewportScale * selectHero->GetCurrentExpPercent(), skhb->Size.Y*ViewportScale);
-			DrawText(FString::Printf(TEXT("LV %d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1), 
-				skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, LevelFont);
-		}
-		// 畫技能圖
-		if(SkillMaterial)
-		{
-			for(int32 idx = 0; idx < 4; ++idx)
+			if (HUDStatus == EMHUDStatus::ThrowEquipment)
 			{
-				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("Skill%d"), idx + 1));
-				FMHitBox* sklvhb = FindHitBoxByName(FString::Printf(TEXT("SkillLvUp%d"), idx + 1));
+				ThrowDMaterial->SetTextureParameterValue(TEXT("InputTexture"), ThrowTexture);
+				DrawMaterialSimple(ThrowDMaterial, CurrentMouseXY.X, CurrentMouseXY.Y,
+					100 * ViewportScale, 100 * ViewportScale);
+			}
 
-				if(skhb && SkillDMaterials.Num() > idx && selectHero->Skills.Num() > idx && selectHero->Skills[idx])
+			// 畫經驗條
+			{
+				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
+				DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale,
+					skhb->Size.X *ViewportScale, skhb->Size.Y *ViewportScale);
+				DrawRect(MPBarForeColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y*ViewportScale,
+					skhb->Size.X*ViewportScale * selectHero->GetCurrentExpPercent(), skhb->Size.Y*ViewportScale);
+				DrawText(FString::Printf(TEXT("LV %d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1),
+					skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, LevelFont);
+			}
+			// 畫技能圖
+			if (SkillMaterial)
+			{
+				for (int32 idx = 0; idx < 4; ++idx)
 				{
-					// need check
-					SkillDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Skills[idx]->Texture);
-					SkillDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->Skills[idx]->GetSkillCDPercent());
-					DrawMaterialSimple(SkillDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
-					                   skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
-					// 當技能可以升級且目前有升級點數
-					if (sklvhb && SkillLevelUpMaterial && selectHero->CurrentSkillPoints > 0 && selectHero->Skills[idx]->CanLevelUp())
+					FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("Skill%d"), idx + 1));
+					FMHitBox* sklvhb = FindHitBoxByName(FString::Printf(TEXT("SkillLvUp%d"), idx + 1));
+
+					if (skhb && SkillDMaterials.Num() > idx && selectHero->Skills.Num() > idx && selectHero->Skills[idx])
 					{
-						DrawMaterialSimple(SkillLevelUpMaterial, sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale,
-							sklvhb->Size.X * ViewportScale, sklvhb->Size.Y * ViewportScale);
+						// need check
+						SkillDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Skills[idx]->Texture);
+						SkillDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->Skills[idx]->GetSkillCDPercent());
+						DrawMaterialSimple(SkillDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
+							skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
+						// 當技能可以升級且目前有升級點數
+						if (sklvhb && SkillLevelUpMaterial && selectHero->CurrentSkillPoints > 0 && selectHero->Skills[idx]->CanLevelUp())
+						{
+							DrawMaterialSimple(SkillLevelUpMaterial, sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale,
+								sklvhb->Size.X * ViewportScale, sklvhb->Size.Y * ViewportScale);
+						}
+						DrawText(FString::Printf(TEXT("LV %d"), selectHero->Skills[idx]->CurrentLevel), FLinearColor(1, 1, 1),
+							sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale, LevelFont);
 					}
-					DrawText(FString::Printf(TEXT("LV %d"), selectHero->Skills[idx]->CurrentLevel), FLinearColor(1, 1, 1),
-						sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale, LevelFont);
 				}
 			}
-		}
-		// 畫裝備圖
-		if(EquipmentMaterial)
-		{
-			for(int32 idx = 0; idx < 6; ++idx)
+			// 畫裝備圖
+			if (EquipmentMaterial)
 			{
-				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("Equipment%d"), idx + 1));
-
-				if(skhb)
+				for (int32 idx = 0; idx < 6; ++idx)
 				{
-					if(EquipmentDMaterials.Num() > idx && selectHero->Equipments.Num() > idx && selectHero->Equipments[idx])
+					FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("Equipment%d"), idx + 1));
+
+					if (skhb)
 					{
-						EquipmentDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Equipments[idx]->Head);
-						//EquipmentDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->GetSkillCDPercent(idx));
-						DrawMaterialSimple(EquipmentDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
-						                   skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
-					}
-					else
-					{
-						DrawRect(SelectionBoxFillColor, skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
-						         skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
+						if (EquipmentDMaterials.Num() > idx && selectHero->Equipments.Num() > idx && selectHero->Equipments[idx])
+						{
+							EquipmentDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Equipments[idx]->Head);
+							//EquipmentDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->GetSkillCDPercent(idx));
+							DrawMaterialSimple(EquipmentDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
+								skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
+						}
+						else
+						{
+							DrawRect(SelectionBoxFillColor, skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
+								skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
+						}
 					}
 				}
 			}
@@ -342,7 +345,10 @@ void AMHUD::ClearAllSelection()
 {
 	for(AHeroCharacter* EachHero : CurrentSelection)
 	{
-		EachHero->SelectionOff();
+		if (IsValid(EachHero))
+		{
+			EachHero->SelectionOff();
+		}
 	}
 	CurrentSelection.Empty();
 }
@@ -405,13 +411,16 @@ void AMHUD::AssignSelectionHeroPickup(AEquipment* equ)
 		act.SequenceNumber = SequenceNumber++;
 		for (AHeroCharacter* EachHero : CurrentSelection)
 		{
-			if (bLeftShiftDown)
+			if (IsValid(EachHero))
 			{
-				LocalController->ServerAppendHeroAction(EachHero, act);
-			}
-			else
-			{
-				LocalController->ServerSetHeroAction(EachHero, act);
+				if (bLeftShiftDown)
+				{
+					LocalController->ServerAppendHeroAction(EachHero, act);
+				}
+				else
+				{
+					LocalController->ServerSetHeroAction(EachHero, act);
+				}
 			}
 		}
 	}
@@ -425,9 +434,12 @@ void AMHUD::HeroAttackHero(AHeroCharacter* hero)
 		TArray<AHeroCharacter*> HeroGoAttack;
 		for(AHeroCharacter* EachHero : CurrentSelection)
 		{
-			if(EachHero->TeamId != hero->TeamId)
+			if (IsValid(EachHero))
 			{
-				HeroGoAttack.Add(EachHero);
+				if (EachHero->TeamId != hero->TeamId)
+				{
+					HeroGoAttack.Add(EachHero);
+				}
 			}
 		}
 		if(HeroGoAttack.Num() > 0)
@@ -476,15 +488,17 @@ void AMHUD::HeroAttackSceneObject(ASceneObject* SceneObj)
 
 			for (AHeroCharacter* EachHero : CurrentSelection)
 			{
-				if (bLeftShiftDown)
+				if (IsValid(EachHero))
 				{
-					LocalController->ServerAppendHeroAction(EachHero, act);
+					if (bLeftShiftDown)
+					{
+						LocalController->ServerAppendHeroAction(EachHero, act);
+					}
+					else
+					{
+						LocalController->ServerSetHeroAction(EachHero, act);
+					}
 				}
-				else
-				{
-					LocalController->ServerSetHeroAction(EachHero, act);
-				}
-
 			}
 		}
 	}
@@ -492,7 +506,7 @@ void AMHUD::HeroAttackSceneObject(ASceneObject* SceneObj)
 
 void AMHUD::KeyboardCallUseSkill2(EKeyBehavior kb)
 {
-	if (CurrentSelection.Num() > 0)
+	if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
 		if (kb <= EKeyBehavior::KEY_SKILL_6)
 		{
@@ -513,7 +527,7 @@ void AMHUD::KeyboardCallUseSkill2(EKeyBehavior kb)
 
 void AMHUD::KeyboardCallUseSkill(int32 idx)
 {
-	if (CurrentSelection.Num() > 0)
+	if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
 		bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120 * ViewportScale));
 		CurrentSkillIndex = idx;
@@ -526,7 +540,7 @@ void AMHUD::KeyboardCallUseSkill(int32 idx)
 
 FVector AMHUD::GetCurrentDirection()
 {
-	if (CurrentSelection.Num() > 0)
+	if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
 		return CurrentSelection[0]->CurrentSkillDirection;
 	}
@@ -535,7 +549,7 @@ FVector AMHUD::GetCurrentDirection()
 
 FRotator AMHUD::GetCurrentRotator()
 {
-	if(CurrentSelection.Num() > 0)
+	if(CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
 		return CurrentSelection[0]->CurrentSkillDirection.Rotation();
 	}
@@ -597,30 +611,32 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 										
 					for (AHeroCharacter* EachHero : CurrentSelection)
 					{
-						if (CurrentMouseHit != FVector::ZeroVector)
+						if (IsValid(EachHero))
 						{
-							if (LastMoveParticle && LastMoveParticle->IsActive())
+							if (CurrentMouseHit != FVector::ZeroVector)
 							{
-								LastMoveParticle->DestroyComponent();
-							}
-							if (MoveParticle)
-							{
-								LastMoveParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MoveParticle,
-									FTransform(CurrentMouseHit), false);
-							}
-							if (bLeftShiftDown)
-							{
-								LocalController->ServerAppendHeroAction(EachHero, act);
-							}
-							else
-							{
-								GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-									FString::Printf(TEXT("Server MOVE")));
-								LocalController->ServerSetHeroAction(EachHero, act);
+								if (LastMoveParticle && LastMoveParticle->IsActive())
+								{
+									LastMoveParticle->DestroyComponent();
+								}
+								if (MoveParticle)
+								{
+									LastMoveParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MoveParticle,
+										FTransform(CurrentMouseHit), false);
+								}
+								if (bLeftShiftDown)
+								{
+									LocalController->ServerAppendHeroAction(EachHero, act);
+								}
+								else
+								{
+									GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+										FString::Printf(TEXT("Server MOVE")));
+									LocalController->ServerSetHeroAction(EachHero, act);
+								}
 							}
 						}
 					}
-					
 				}
 			}
 		}
@@ -637,7 +653,7 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 			// 取消技能
 			if(IsGameRegion(CurrentMouseXY))
 			{
-				if (CurrentSelection.Num() > 0)
+				if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 				{
 					CurrentSelection[0]->HideSkillHint();
 					HUDStatus = EMHUDStatus::ToNormal;
@@ -736,7 +752,7 @@ void AMHUD::OnRMouseReleased(FVector2D pos)
 		}
 	}
 	// 如果有點到物品
-	if(CurrentSelection.Num() > 0)
+	if(CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
 		AHeroCharacter* Selection = CurrentSelection[0];
 		if(RButtonUpHitBox.Len() > 1 && RButtonUpHitBox == RButtonDownHitBox)
@@ -769,7 +785,7 @@ void AMHUD::OnLMouseDown(FVector2D pos)
 void AMHUD::OnLMousePressed1(FVector2D pos)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		FString::Printf(TEXT(" "), pos.X, pos.Y));
+		FString::Printf(TEXT("OnLMousePressed1"), pos.X, pos.Y));
 	bClickHero = false;
 	ClickStatus = ERTSClickEnum::LastLeftClick;
 	if(!bMouseLButton)
@@ -782,7 +798,7 @@ void AMHUD::OnLMousePressed1(FVector2D pos)
 void AMHUD::OnLMousePressed2(FVector2D pos)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		FString::Printf(TEXT(" "), pos.X, pos.Y));
+		FString::Printf(TEXT("OnLMousePressed2"), pos.X, pos.Y));
 	// Role == ROLE_Authority but Client Side
 	if(bNeedMouseLDown)
 	{
@@ -813,14 +829,18 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 			act.TargetVec1 = GetCurrentDirection();
 			act.TargetVec2 = CurrentMouseHit;
 			act.SequenceNumber = SequenceNumber++;
-			if (bLeftShiftDown)
+			if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 			{
-				LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
+				if (bLeftShiftDown)
+				{
+					LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
+				}
+				else
+				{
+					LocalController->ServerSetHeroAction(CurrentSelection[0], act);
+				}
 			}
-			else
-			{
-				LocalController->ServerSetHeroAction(CurrentSelection[0], act);
-			}
+			
 			HUDStatus = EMHUDStatus::ToNormal;
 		}
 			break;
@@ -828,38 +848,41 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 			break;
 		case EMHUDStatus::SkillHint:
 		{
-			CurrentSelection[0]->HideSkillHint();
-			FHeroAction act;
-			AHeroSkill* hs = CurrentSelection[0]->GetCurrentSkill();
-			if (hs->SkillBehavior[HEROB::Directional])
+			if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 			{
-				act.ActionStatus = EHeroActionStatus::SpellToDirection;
-			}
-			else if (hs->SkillBehavior[HEROB::UnitTarget])
-			{
-				act.ActionStatus = EHeroActionStatus::SpellToActor;
-				act.TargetActor = CurrentSelectTarget;
-			}
-			else if (hs->SkillBehavior[HEROB::Aoe])
-			{
-				act.ActionStatus = EHeroActionStatus::SpellToPosition;
-			}
-			else if (hs->SkillBehavior[HEROB::NoTarget])
-			{
-				act.ActionStatus = EHeroActionStatus::SpellNow;
-			}
-			act.TargetIndex1 = CurrentSelection[0]->GetCurrentSkillIndex();
+				CurrentSelection[0]->HideSkillHint();
+				FHeroAction act;
+				AHeroSkill* hs = CurrentSelection[0]->GetCurrentSkill();
+				if (hs->SkillBehavior[HEROB::Directional])
+				{
+					act.ActionStatus = EHeroActionStatus::SpellToDirection;
+				}
+				else if (hs->SkillBehavior[HEROB::UnitTarget])
+				{
+					act.ActionStatus = EHeroActionStatus::SpellToActor;
+					act.TargetActor = CurrentSelectTarget;
+				}
+				else if (hs->SkillBehavior[HEROB::Aoe])
+				{
+					act.ActionStatus = EHeroActionStatus::SpellToPosition;
+				}
+				else if (hs->SkillBehavior[HEROB::NoTarget])
+				{
+					act.ActionStatus = EHeroActionStatus::SpellNow;
+				}
+				act.TargetIndex1 = CurrentSelection[0]->GetCurrentSkillIndex();
 
-			act.TargetVec1 = GetCurrentDirection();
-			act.TargetVec2 = CurrentMouseHit;
-			act.SequenceNumber = SequenceNumber++;
-			if (bLeftShiftDown)
-			{
-				LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
-			}
-			else
-			{
-				LocalController->ServerSetHeroAction(CurrentSelection[0], act);
+				act.TargetVec1 = GetCurrentDirection();
+				act.TargetVec2 = CurrentMouseHit;
+				act.SequenceNumber = SequenceNumber++;
+				if (bLeftShiftDown)
+				{
+					LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
+				}
+				else
+				{
+					LocalController->ServerSetHeroAction(CurrentSelection[0], act);
+				}
 			}
 			HUDStatus = EMHUDStatus::ToNormal;
 		}
@@ -875,7 +898,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 	}
 	
 	// 顯示技能提示
-	if(CurrentSelection.Num() > 0)
+	if(CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
 		AHeroCharacter* selectHero = CurrentSelection[0];
 		for(FMHitBox& HitBox : MOBA_HitBoxMap)
@@ -943,7 +966,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 	{
 		if(IsGameRegion(CurrentMouseXY))
 		{
-			if(CurrentSelection.Num() > 0)
+			if(CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 			{
 				SelectedHero(CurrentSelection[0]);
 				// 網路連線設定 owner
@@ -956,7 +979,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("CurrentSelection.Num %d"),
 		                                 CurrentSelection.Num()));
-		if (CurrentSelection.Num() > 0)
+		if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 		{
 			FHeroAction act;
 			act.ActionStatus = EHeroActionStatus::MoveToThrowEqu;
@@ -999,7 +1022,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 
 void AMHUD::OnSelectedHero(AHeroCharacter* hero)
 {
-	if (CurrentSelection.Num() > 0 && CurrentSelection[0] == hero)
+	if (CurrentSelection.Num() > 0 && CurrentSelection[0] == hero && IsValid(hero))
 	{
 
 	}
@@ -1007,7 +1030,7 @@ void AMHUD::OnSelectedHero(AHeroCharacter* hero)
 	{
 		for (AHeroCharacter* EachHero : CurrentSelection)
 		{
-			if (hero != EachHero)
+			if (hero != EachHero || !IsValid(EachHero))
 			{
 				RemoveSelection.Add(EachHero);
 			}
