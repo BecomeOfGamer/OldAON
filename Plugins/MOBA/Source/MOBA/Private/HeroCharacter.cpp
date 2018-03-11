@@ -1081,11 +1081,9 @@ void AHeroCharacter::DoNothing()
 void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentAction)
 {
 	AHeroCharacter* TargetActor = nullptr;
-	if (StartFollowPosition == FVector::ZeroVector)
-	{
-		StartFollowPosition = GetActorLocation();
-	}
+	MovingAttackTarget = nullptr;
 	
+	StartFollowPosition = GetActorLocation();
 	TArray<AHeroCharacter*> Enemys = localPC->FindRadiusActorByLocation(
 		this, StartFollowPosition, MovingAttackRange, ETeamFlag::TeamEnemy, true);
 	if (Enemys.Num() == 0)
@@ -1100,20 +1098,12 @@ void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentA
 		}
 		else
 		{
-			int i = 0;
-			for (; Enemys.Num() > i; i++)
-			{
-				TargetActor = Enemys[i];
-			}
+			TargetActor = Enemys[Enemys.Num()-1];
 		}
 	}
 	else if (MovingAttackTarget == nullptr)
 	{
-		int i = 0;
-		for (; Enemys.Num() > i;i++)
-		{
-			TargetActor = Enemys[i];
-		}
+		TargetActor = Enemys[Enemys.Num() - 1];
 	}
 	MovingAttackTarget = TargetActor;
 	

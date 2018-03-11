@@ -9,7 +9,7 @@ AFlannActor::AFlannActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickInterval = 0.1;
+	PrimaryActorTick.TickInterval = 0.05;
 	rdata.SetNumZeroed(MaxActor * 2);
 	qdata1.SetNumZeroed(2);
 	query1 = flann::Matrix<float>(qdata1.GetData(), 1, 2);
@@ -28,6 +28,7 @@ void AFlannActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	int32 row = 0;
 	FindArray.Empty();
+	rdata.SetNumZeroed(MaxActor * 2);
 	for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		AHeroCharacter* hero = *ActorItr;
@@ -48,6 +49,7 @@ void AFlannActor::Tick(float DeltaTime)
 			new flann::Index<flann::L2<float>>(dataset, flann::KDTreeIndexParams(1)));
 		index->buildIndex();
 	}
+	
 	CurrnetRow = row;
 }
 
@@ -56,6 +58,9 @@ TArray<AHeroCharacter*> AFlannActor::FindRadiusActorByLocation(AHeroCharacter* h
 {
 	Radius = Radius * Radius;
 	TArray<AHeroCharacter*> res;
+	qdata1.SetNumZeroed(2);
+	query1 = flann::Matrix<float>(qdata1.GetData(), 1, 2);
+
 	if (CurrnetRow > 1)
 	{
 		qdata1[0] = Center.X;
@@ -89,6 +94,7 @@ TArray<AHeroCharacter*> AFlannActor::FindRadiusActorByLocation(AHeroCharacter* h
 				res.Add(target);
 			}
 		}
+		indices.clear();
 	}
 	else if (CurrnetRow == 1)
 	{
