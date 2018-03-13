@@ -229,7 +229,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-	//受到傷害的瞬間
+	//升級的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnUpgrade(AHeroCharacter* caster, int32 Level);
 

@@ -214,28 +214,28 @@ public:
 	FVector2D	HPBarOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	bool ClickedSelected = false;
+	uint32 ClickedSelected:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	bool bClickHero = false;
+	uint32 bClickHero:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	bool bMouseRButton = false;
+	uint32 bMouseRButton:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	bool bMouseLButton = false;
+	uint32 bMouseLButton:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	uint32 bNeedMouseRDown:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	bool bNeedMouseLDown = false;
+	uint32 bNeedMouseLDown:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	bool bLeftShiftDown = false;
+	uint32 bLeftShiftDown:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	bool bRightShiftDown = false;
+	uint32 bRightShiftDown:1;
 
 	// 不同狀態的滑鼠遊標圖
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")

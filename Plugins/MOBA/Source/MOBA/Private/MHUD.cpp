@@ -667,7 +667,6 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 
 void AMHUD::OnRMousePressed1(FVector2D pos)
 {
-	// 如果沒有下面這行在 editor 會不能移動
 	bClickHero = false;
 	ClickStatus = ERTSClickEnum::LastRightClick;
 	if(!bMouseRButton)

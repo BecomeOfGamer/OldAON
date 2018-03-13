@@ -22,27 +22,6 @@ AMOBAPlayerController::AMOBAPlayerController()
 
 void AMOBAPlayerController::BeginPlay()
 {
-	Hud = Cast<AMHUD>(this->GetHUD());
-	if (Hud)
-	{
-		Hud->LocalController = this;
-		KeyMapping.Add(EKeys::W);
-		KeyMapping.Add(EKeys::E);
-		KeyMapping.Add(EKeys::R);
-		KeyMapping.Add(EKeys::T);
-		KeyMapping.Add(EKeys::D);
-
-		KeyMapping2.Add(EKeys::W, EKeyBehavior::KEY_SKILL_1);
-		KeyMapping2.Add(EKeys::E, EKeyBehavior::KEY_SKILL_2);
-		KeyMapping2.Add(EKeys::R, EKeyBehavior::KEY_SKILL_3);
-		KeyMapping2.Add(EKeys::T, EKeyBehavior::KEY_SKILL_4);
-		KeyMapping2.Add(EKeys::D, EKeyBehavior::KEY_SKILL_5);
-		KeyMapping2.Add(EKeys::F, EKeyBehavior::KEY_SKILL_6);
-
-		KeyMapping2.Add(EKeys::A, EKeyBehavior::KEY_ATTACK);
-		KeyMapping2.Add(EKeys::G, EKeyBehavior::KEY_MOVE);
-		KeyMapping2.Add(EKeys::S, EKeyBehavior::KEY_STOP);
-	}
 	FlannActor = GetWorld()->SpawnActor<AFlannActor>();
 	if (FlannActor == nullptr)
 	{
@@ -58,7 +37,6 @@ void AMOBAPlayerController::BeginPlay()
 	else
 	{
 		RoomActor->LocalController = this;
-		RoomActor->m_pAMHUD = Hud;
 	}
 	bMouseRButton = false;
 	bMouseLButton = false;
@@ -231,6 +209,34 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 			}
 		}
 		Hud->OnMouseMove(CurrentMouseXY, HitPoint);
+	}
+	else
+	{
+		Hud = Cast<AMHUD>(this->GetHUD());
+		if (Hud)
+		{
+			Hud->LocalController = this;
+			KeyMapping.Add(EKeys::W);
+			KeyMapping.Add(EKeys::E);
+			KeyMapping.Add(EKeys::R);
+			KeyMapping.Add(EKeys::T);
+			KeyMapping.Add(EKeys::D);
+
+			KeyMapping2.Add(EKeys::W, EKeyBehavior::KEY_SKILL_1);
+			KeyMapping2.Add(EKeys::E, EKeyBehavior::KEY_SKILL_2);
+			KeyMapping2.Add(EKeys::R, EKeyBehavior::KEY_SKILL_3);
+			KeyMapping2.Add(EKeys::T, EKeyBehavior::KEY_SKILL_4);
+			KeyMapping2.Add(EKeys::D, EKeyBehavior::KEY_SKILL_5);
+			KeyMapping2.Add(EKeys::F, EKeyBehavior::KEY_SKILL_6);
+
+			KeyMapping2.Add(EKeys::A, EKeyBehavior::KEY_ATTACK);
+			KeyMapping2.Add(EKeys::G, EKeyBehavior::KEY_MOVE);
+			KeyMapping2.Add(EKeys::S, EKeyBehavior::KEY_STOP);
+			if (RoomActor)
+			{
+				RoomActor->m_pAMHUD = Hud;
+			}
+		}
 	}
 }
 
