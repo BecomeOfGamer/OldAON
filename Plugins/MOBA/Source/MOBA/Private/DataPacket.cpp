@@ -2,7 +2,7 @@
 #include "MOBAPrivatePCH.h"
 #include "MOBA.h"
 #include "DataPacket.h"
-
+#include <Windows.h>
 namespace Packet
 {
 	bool CreateCompressPacket(CompressPacket &InOut_CompressPacket, const char *pSrcBuf, std::shared_ptr<char> &Out_Buf)
@@ -26,11 +26,20 @@ namespace Packet
 				{
 					try
 					{
-						char *pCompressBuffer = new char[worst_compress_size];
+						uint8 *pCompressBuffer = new uint8[worst_compress_size];
 						InOut_CompressPacket.u32_StartCode = PACKET_START_CODE;
 						InOut_CompressPacket.u16_CompressType = LZ4;
-						InOut_CompressPacket.u32_CompressSize = LZ4_compress_default(pSrcBuf, pCompressBuffer, InOut_CompressPacket.u32_DecompressSize, worst_compress_size);
-						Out_Buf.reset(pCompressBuffer);
+						InOut_CompressPacket.u32_CompressSize = LZ4_compress_default(pSrcBuf, (char *)pCompressBuffer, InOut_CompressPacket.u32_DecompressSize, worst_compress_size);
+						char chartemp[32] = { 0 };
+						sprintf_s(chartemp, 32, "cpsize=%d data=", InOut_CompressPacket.u32_CompressSize);
+						OutputDebugStringA(chartemp);
+						for (unsigned int i = 0; i < InOut_CompressPacket.u32_CompressSize; ++i)
+						{
+							sprintf_s(chartemp, 32, "%d,", pCompressBuffer[i]);
+							OutputDebugStringA(chartemp);
+						}
+						OutputDebugStringA("\n");
+						Out_Buf.reset((char *)pCompressBuffer);
 					}
 					catch (...)
 					{
@@ -58,7 +67,7 @@ namespace Packet
 			{
 				char *pDeCompressBuffer = new char[In_CompressPacket.u32_DecompressSize];
 				auto DeSize = LZ4_decompress_safe(pSrcBuf, pDeCompressBuffer, In_CompressPacket.u32_CompressSize, In_CompressPacket.u32_DecompressSize);
-				if (DeSize)
+				if (DeSize > 0)
 					Out_Buf.reset(pDeCompressBuffer);
 				else
 				{

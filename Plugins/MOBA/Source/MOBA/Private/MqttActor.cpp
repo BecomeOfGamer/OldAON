@@ -153,6 +153,20 @@ int32 AMqttActor::Try_consume_message(FString &Out_sTopic, FString &Out_sMsg)
 		if (m_async_client_ptr->try_consume_message(&msgptr))
 		{
 			Out_sTopic = msgptr->get_topic().c_str();
+			auto bufref = msgptr->get_payload_ref();
+			if (bufref.length() >= Packet::CompressPacketSize)
+			{
+				auto pPacket = *(Packet::CompressPacket *)bufref.data();
+				if (pPacket.u32_StartCode == Packet::PACKET_START_CODE)
+				{
+					std::shared_ptr<char> Out_Buffer;
+					if (Packet::DeCompressFromPacket(pPacket, bufref.data() + Packet::CompressPacketSize, Out_Buffer))
+					{
+						Out_sMsg = &(*Out_Buffer);
+						return err;
+					}
+				}
+			}
 			Out_sMsg = msgptr->to_string().c_str();
 		}
 		else

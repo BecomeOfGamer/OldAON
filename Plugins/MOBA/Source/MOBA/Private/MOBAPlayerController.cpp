@@ -49,17 +49,17 @@ void AMOBAPlayerController::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
 			FString::Printf(TEXT("FlannActor is Null")));
 	}
-// 	RoomActor = GetWorld()->SpawnActor<AMqttRoomActor>(SubAMqttRoomActor);
-// 	if (RoomActor == nullptr)
-// 	{
-// 		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
-// 			FString::Printf(TEXT("RoomActor is Null")));
-// 	}
-// 	else
-// 	{
-// 		RoomActor->LocalController = this;
-// 		RoomActor->m_pAMHUD = Hud;
-// 	}
+ 	RoomActor = GetWorld()->SpawnActor<AMqttRoomActor>(SubAMqttRoomActor);
+ 	if (RoomActor == nullptr)
+ 	{
+ 		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
+ 			FString::Printf(TEXT("RoomActor is Null")));
+ 	}
+ 	else
+ 	{
+ 		RoomActor->LocalController = this;
+ 		RoomActor->m_pAMHUD = Hud;
+ 	}
 	bMouseRButton = false;
 	bMouseLButton = false;
 	bShowMouseCursor = false;
