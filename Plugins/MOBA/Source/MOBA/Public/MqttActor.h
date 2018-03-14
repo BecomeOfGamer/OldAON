@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include "DataPacket.h"
 #include "MqttActor.generated.h"
 
 UCLASS()
