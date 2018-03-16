@@ -2,6 +2,7 @@
 #include "MOBAPrivatePCH.h"
 #include "MHUD.h"
 #include <algorithm>
+#include <cmath>
 #include "EngineUtils.h"
 // for GEngine
 #include "Engine.h"
