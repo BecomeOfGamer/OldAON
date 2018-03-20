@@ -146,31 +146,48 @@ int32 AMqttActor::Stop_Consuming()
 int32 AMqttActor::Try_consume_message(FString &Out_sTopic, FString &Out_sMsg)
 {
 	err_code err((err_code)IsConnected());
+	bool bGotMsg(false);
 
 	if (err == err_success)
 	{
+		err = err_fail;
+
 		mqtt::const_message_ptr msgptr;
 		if (m_async_client_ptr->try_consume_message(&msgptr))
 		{
-			Out_sTopic = msgptr->get_topic().c_str();
 			auto bufref = msgptr->get_payload_ref();
-			if (bufref.length() >= Packet::CompressPacketSize)
+			//Check Packet....
+			if (bufref.length() > Packet::CompressPacketSize 
+				&& ((Packet::CompressPacket *)bufref.data())->u32_StartCode == Packet::PACKET_START_CODE)
 			{
 				auto pPacket = *(Packet::CompressPacket *)bufref.data();
-				if (pPacket.u32_StartCode == Packet::PACKET_START_CODE)
+				if (pPacket.u16_CompressType == Packet::RAW)
+				{
+					Out_sTopic = msgptr->get_topic().c_str();
+					Out_sMsg = (bufref.data() + Packet::CompressPacketSize);
+					err = err_success;
+					bGotMsg = true;
+				}
+				else
 				{
 					std::shared_ptr<char> Out_Buffer;
 					if (Packet::DeCompressFromPacket(pPacket, bufref.data() + Packet::CompressPacketSize, Out_Buffer))
 					{
+						Out_sTopic = msgptr->get_topic().c_str();
 						Out_sMsg = &(*Out_Buffer);
-						return err;
+						err = err_success;
+						bGotMsg = true;
 					}
 				}
 			}
-			Out_sMsg = msgptr->to_string().c_str();
+
+			if (!bGotMsg)
+			{
+				Out_sTopic = msgptr->get_topic().c_str();
+				Out_sMsg = msgptr->to_string().c_str();
+				err = err_success;
+			}
 		}
-		else
-			err = err_fail;
 	}
 	return err;
 }
@@ -202,6 +219,19 @@ int32 AMqttActor::Publish(FString In_sTopic, FString In_sMsg, int32 In_iQOS)
 	if (err == err_success)
 	{
 		mqtt::message_ptr pubmsg = mqtt::make_message(TCHAR_TO_UTF8(*In_sTopic), TCHAR_TO_UTF8(*In_sMsg));
+		pubmsg->set_qos(In_iQOS);
+		m_async_client_ptr->publish(pubmsg);
+	}
+	return err;
+}
+
+int32 AMqttActor::Publish(FString In_sTopic, char *In_pBuf, size_t In_BufSize, int32 In_iQOS)
+{
+	err_code err((err_code)IsConnected());
+
+	if (err == err_success)
+	{
+		mqtt::message_ptr pubmsg = mqtt::make_message(TCHAR_TO_UTF8(*In_sTopic), In_pBuf, In_BufSize);
 		pubmsg->set_qos(In_iQOS);
 		m_async_client_ptr->publish(pubmsg);
 	}

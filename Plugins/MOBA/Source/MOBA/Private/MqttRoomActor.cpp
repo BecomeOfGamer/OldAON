@@ -97,23 +97,17 @@ void AMqttRoomActor::Tick(float DeltaTime)
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(RootObject.ToSharedRef(), Writer);
-			Publish("gamedata/" + m_sRoomID, OutputString);
 
-			
-			Packet::CompressPacket CompressPacket;
 			std::shared_ptr<char> shared_buf, shared_buf2;
+			Packet::CompressPacket CompressPacket;
+			std::string UTF8Str = TCHAR_TO_UTF8(*OutputString);
+			CompressPacket.u32_DecompressSize = UTF8Str.size() + 1;
+			if(Packet::CreateCompressPacket(CompressPacket, UTF8Str.c_str(), shared_buf))
+				Publish("gamedata/" + m_sRoomID, &(*shared_buf), CompressPacket.u32_CompressSize + sizeof(Packet::CompressPacket));
 
-			static const int NumArraySize = 4096;
-
-			char *samplechar = new char [NumArraySize + 1];
-			samplechar[NumArraySize] = 0x00;
-			for (int i = 0; i < NumArraySize; ++i)
-				samplechar[i] = 0x30 + (i % 10);
-			CompressPacket.u32_DecompressSize = strlen(samplechar) + 1;
-			Packet::CreateCompressPacket(CompressPacket, samplechar, shared_buf);
-			delete samplechar;
-			//Packet::DeCompressFromPacket(CompressPacket, &(*shared_buf), shared_buf2);
-			//std::string OutputString2(&(*shared_buf2));
+			//Packet::DeCompressFromPacket(CompressPacket, &(*shared_buf) + sizeof(Packet::CompressPacket), shared_buf2);
+			//FString OutputString2(&(*shared_buf2));
+			//Publish("gamedata/" + m_sRoomID, OutputString);
 		}
 	}
 }
