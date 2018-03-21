@@ -2,8 +2,9 @@
 #include "MOBAPrivatePCH.h"
 #include "MHUD.h"
 #include <algorithm>
-
-#include "EngineUtils.h"
+##undef max
+#undef min
+#include <cmath>#include "EngineUtils.h"
 // for GEngine
 #include "Engine.h"
 #include "UnrealString.h"
@@ -16,9 +17,7 @@
 #include "HeroActionx.h"
 #include "SceneObject.h"
 #include "Equipment.h"
-#undef max
-#undef min
-#include <cmath>
+
 
 AMHUD::AMHUD(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())

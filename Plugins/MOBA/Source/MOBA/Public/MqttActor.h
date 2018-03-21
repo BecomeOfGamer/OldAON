@@ -67,6 +67,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnReceive(const FString &sTopic, const FString &sMsg);
 
+protected:
+	int32 Publish(FString In_sTopic, char *In_pBuf, size_t In_BufSize, int32 In_iQOS = 0);
+
 private:
 	//開關Queue接收模式
 	int32 Start_Consuming();
