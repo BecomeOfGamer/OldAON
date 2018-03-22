@@ -2,9 +2,10 @@
 #include "MOBAPrivatePCH.h"
 #include "MHUD.h"
 #include <algorithm>
-##undef max
+#undef max
 #undef min
-#include <cmath>#include "EngineUtils.h"
+#include <cmath>
+#include "EngineUtils.h"
 // for GEngine
 #include "Engine.h"
 #include "UnrealString.h"
