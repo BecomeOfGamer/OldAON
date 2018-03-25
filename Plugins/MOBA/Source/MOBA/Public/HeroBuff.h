@@ -233,6 +233,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnUpgrade(AHeroCharacter* caster, int32 Level);
 
+	//be damage by someone
 	//受到傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void BeDamage(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
