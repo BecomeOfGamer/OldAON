@@ -169,10 +169,13 @@ void AMqttRoomActor::NewHero(TSharedPtr<FJsonObject> In_JsonObj)
 		loc.Y = In_JsonObj->GetNumberField("y");
 		loc.Z = 0;
 
-		AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor);
+		FActorSpawnParameters fsp;
+		fsp.Owner = this;//enable rpc
+
+		//AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor, loc, FRotator(0.0f, 0.0f, 0.0f), fsp);
+		AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor, loc, FRotator(), fsp);
 		if (IsValid(pAHeroCharacter))
 		{
-			pAHeroCharacter->SetActorLocation(loc);
 			pAHeroCharacter->ClientID = In_JsonObj->GetStringField("id");
 			pAHeroCharacter->CustomName = In_JsonObj->GetStringField("name");
 			pAHeroCharacter->HeroName = In_JsonObj->GetStringField("id");

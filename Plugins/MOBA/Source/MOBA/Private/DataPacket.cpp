@@ -2,7 +2,7 @@
 #include "MOBAPrivatePCH.h"
 #include "MOBA.h"
 #include "DataPacket.h"
-#include <Windows.h>
+
 namespace Packet
 {
 	bool CreateCompressPacket(CompressPacket &InOut_CompressPacket, const char *pSrcBuf, std::shared_ptr<char> &Out_Buf)
