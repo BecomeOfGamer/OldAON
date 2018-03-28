@@ -3,10 +3,11 @@
 #include "MOBA.h"
 #include "MOBAPlayerController.h"
 #include "MqttRoomActor.h"
+#include "MOBAGameMode.h"
 #include <Json.h>
 
 AMqttRoomActor::AMqttRoomActor()
-	:m_SequenceNumber(0), m_bCreated(false)
+	:m_SequenceNumber(0), m_bCreated(false), m_pAMOBAGameMode(nullptr)
 {
 	if (Role == ROLE_Authority)
 	{
@@ -173,15 +174,15 @@ void AMqttRoomActor::NewHero(TSharedPtr<FJsonObject> In_JsonObj)
 		fsp.Owner = this;//enable rpc
 
 		//AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor, loc, FRotator(0.0f, 0.0f, 0.0f), fsp);
-		AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor, loc, FRotator(), fsp);
+		AHeroCharacter *pAHeroCharacter = GetWorld()->SpawnActor<AHeroCharacter>(SubHeroActor, loc, FRotator(0.0f, 0.0f, 0.0f), fsp);
 		if (IsValid(pAHeroCharacter))
 		{
 			pAHeroCharacter->ClientID = In_JsonObj->GetStringField("id");
 			pAHeroCharacter->CustomName = In_JsonObj->GetStringField("name");
 			pAHeroCharacter->HeroName = In_JsonObj->GetStringField("id");
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "NewHero:" + In_JsonObj->GetStringField("id"));
-			if (IsValid(m_pAMHUD))
-				m_pAMHUD->HeroCanSelection.Add(pAHeroCharacter);
+			//if (IsValid(m_pAMHUD))
+			//	m_pAMHUD->HeroCanSelection.Add(pAHeroCharacter);
 			m_mapHeroActor.Emplace(pAHeroCharacter->ClientID, pAHeroCharacter);
 		}
 		else
@@ -205,7 +206,7 @@ void AMqttRoomActor::HeroMove(TSharedPtr<FJsonObject> In_JsonObj)
 			{
 				auto RealObject = *cpJsonObject;
 				auto ppiter = m_mapHeroActor.Find(RealObject->GetStringField("id"));
-				if (ppiter && IsValid(LocalController) && IsValid(*ppiter))
+				if (ppiter && IsValid(m_pAMOBAGameMode) && IsValid(*ppiter))
 				{
 					AHeroCharacter* pHero = *ppiter;
 
@@ -216,7 +217,7 @@ void AMqttRoomActor::HeroMove(TSharedPtr<FJsonObject> In_JsonObj)
 					act.TargetVec1.Z = 0;
 					act.SequenceNumber = m_SequenceNumber++;
 
-					LocalController->ServerSetHeroAction(pHero, act);
+					m_pAMOBAGameMode->ServerSetHeroAction(pHero, act);
 				}
 			}
 		}
@@ -229,8 +230,8 @@ void AMqttRoomActor::DeleteHero(TSharedPtr<FJsonObject> In_JsonObj)
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "DeleteHero:" + In_JsonObj->GetStringField("id"));
 	if (ppiter && IsValid(*ppiter))
 	{
-		if (IsValid(m_pAMHUD))
-			m_pAMHUD->HeroCanSelection.Remove((*ppiter));
+		//if (IsValid(m_pAMHUD))
+		//	m_pAMHUD->HeroCanSelection.Remove((*ppiter));
 		(*ppiter)->Destroy();
 		m_mapHeroActor.Remove(In_JsonObj->GetStringField("id"));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Delete Found");
@@ -249,6 +250,6 @@ void AMqttRoomActor::Reset(TSharedPtr<FJsonObject> In_JsonObj)
 
 	m_mapHeroActor.Empty();
 
-	if (IsValid(m_pAMHUD))
-		m_pAMHUD->HeroCanSelection.Empty();
+	//if (IsValid(m_pAMHUD))
+	//	m_pAMHUD->HeroCanSelection.Empty();
 }

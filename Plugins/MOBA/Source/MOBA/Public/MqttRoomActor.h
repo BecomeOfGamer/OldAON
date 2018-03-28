@@ -11,6 +11,8 @@
 #include "DataPacket.h"
 #include "MqttRoomActor.generated.h"
 
+class AMOBAGameMode;
+
 UCLASS()
 class MOBA_API AMqttRoomActor : public AMqttActor
 {
@@ -46,6 +48,7 @@ public:
 public:
 	AMOBAPlayerController * LocalController;
 	AMHUD *m_pAMHUD;
+	AMOBAGameMode *m_pAMOBAGameMode;
 
 private:
 	void NewHero(TSharedPtr<FJsonObject> In_JsonObj);
@@ -69,4 +72,5 @@ private:
 	TMap<FString, AHeroCharacter*> m_mapHeroActor;
 	int32 m_SequenceNumber;
 	bool m_bCreated;
+
 };
