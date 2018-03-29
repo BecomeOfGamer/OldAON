@@ -52,6 +52,8 @@ SourceArt/**/*.tga
 Binaries/*
 Plugins/MOBA/Binaries/*
 Plugins/MOBA/Intermediate/*
+Plugins/WebUI/Binaries/*
+Plugins/WebUI/Intermediate/*
 
 # Builds
 Build/*

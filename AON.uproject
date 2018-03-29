@@ -29,6 +29,11 @@
 		{
 			"Name": "MOBA",
 			"Enabled": true
+		},
+		{
+			"Name": "WebUI",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/277c943e8fcc48bdb53607cae4505aa8"
 		}
 	]
 }
