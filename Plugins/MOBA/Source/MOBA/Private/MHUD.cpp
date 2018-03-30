@@ -102,6 +102,17 @@ void AMHUD::Tick(float DeltaSeconds)
 		}
 		RemoveSelection.Empty();
 	}
+	if (CurrentSelection.Num() > 0)
+	{
+		if (IsValid(CurrentSelection[0]))
+		{
+			UpdateHeroData(CurrentSelection[0]);
+		}
+	}
+	else
+	{
+		UpdateHeroData(0);
+	}
 	OnSize();
 }
 

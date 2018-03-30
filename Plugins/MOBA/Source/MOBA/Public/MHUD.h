@@ -100,6 +100,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void MOBA_MouseRButtonPressed();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateHeroData(AHeroCharacter* hero);
+
 	// 加入一個可以被點選的按鈕
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void MOBA_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, 

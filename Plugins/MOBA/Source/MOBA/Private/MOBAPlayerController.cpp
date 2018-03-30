@@ -129,7 +129,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 				{
 					if(GetHUD()->UpdateAndDispatchHitBoxClickEvents(MousePosition, EventType))
 					{
-						ClickedPrimitive = NULL;
+						//ClickedPrimitive = NULL;
 					}
 				}
 
@@ -171,7 +171,35 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 void AMOBAPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
+	if (LocalPlayer && LocalPlayer->ViewportClient)
+	{
+		FVector2D MousePosition;
+		FHitResult HitResult;
+		bool bHit = false;
 
+		UGameViewportClient* ViewportClient = LocalPlayer->ViewportClient;
+
+		{
+			if (ViewportClient->GetMousePosition(MousePosition))
+			{
+				bHit = GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, /*out*/ HitResult);
+			}
+		}
+
+		UPrimitiveComponent* PreviousComponent = CurrentClickablePrimitive.Get();
+		UPrimitiveComponent* CurrentComponent = (bHit ? HitResult.Component.Get() : NULL);
+
+		UPrimitiveComponent::DispatchMouseOverEvents(PreviousComponent, CurrentComponent);
+		if (IsValid(CurrentComponent))
+		{
+			CurrentClickablePrimitive = CurrentComponent;
+		}
+		else
+		{
+			CurrentClickablePrimitive = 0;
+		}
+	}
 	if(Hud)
 	{
 		CurrentMouseXY = GetMouseScreenPosition();
