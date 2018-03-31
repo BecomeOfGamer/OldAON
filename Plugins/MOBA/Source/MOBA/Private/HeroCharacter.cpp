@@ -16,6 +16,9 @@
 #include "HeroSkill.h"
 #include "MOBAPlayerController.h"
 #include "Engine/World.h"
+#include "WebInterfaceJSON.h"
+#include "WebInterfaceObject.h"
+#include "WebInterfaceHelpers.h"
 
 AMOBAPlayerController* AHeroCharacter::localPC = 0;
 
@@ -441,6 +444,58 @@ TArray<AHeroCharacter*> AHeroCharacter::FindRadiusActorByLocation(FVector Center
 		}
 	}
 	return res;
+}
+
+UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
+{
+	UWebInterfaceJsonObject* wjo = UWebInterfaceHelpers::ConstructObject();
+	wjo->SetString(FString(TEXT("HeroName")), HeroName);
+	wjo->SetInteger(FString(TEXT("TeamId")), TeamId);
+	wjo->SetBoolean(FString(TEXT("IsAlive")), IsAlive);
+	wjo->SetInteger(FString(TEXT("CurrentMoveSpeed")), CurrentMoveSpeed);
+	wjo->SetInteger(FString(TEXT("CurrentMaxHP")), CurrentMaxHP);
+	wjo->SetInteger(FString(TEXT("CurrentHP")), CurrentHP);
+	wjo->SetInteger(FString(TEXT("CurrentMaxMP")), CurrentMaxMP);
+	wjo->SetInteger(FString(TEXT("CurrentMP")), CurrentMP);
+	wjo->SetNumber(FString(TEXT("CurrentRegenHP")), CurrentRegenHP);
+	wjo->SetNumber(FString(TEXT("CurrentRegenMP")), CurrentRegenMP);
+	wjo->SetNumber(FString(TEXT("CurrentAttackSpeed")), CurrentAttackSpeed);
+	wjo->SetInteger(FString(TEXT("CurrentAttack")), CurrentAttack);
+	wjo->SetNumber(FString(TEXT("CurrentArmor")), CurrentArmor);
+	wjo->SetInteger(FString(TEXT("CurrentAttackRange")), CurrentAttackRange);
+	wjo->SetNumber(FString(TEXT("CurrentAttackSpeedSecond")), CurrentAttackSpeedSecond);
+	wjo->SetNumber(FString(TEXT("CurrentMagicInjured")), CurrentMagicInjured);
+	wjo->SetInteger(FString(TEXT("CurrentLevel")), CurrentLevel);
+	wjo->SetInteger(FString(TEXT("CurrentEXP")), CurrentEXP);
+	wjo->SetInteger(FString(TEXT("CurrentSkillIndex")), CurrentSkillIndex);
+	wjo->SetInteger(FString(TEXT("CurrentSkillPoints")), CurrentSkillPoints);
+	wjo->SetInteger(FString(TEXT("CurrentLevel")), CurrentLevel);
+	wjo->SetInteger(FString(TEXT("StunningLeftCounting")), StunningLeftCounting);
+	wjo->SetInteger(FString(TEXT("AdditionStrength")), AdditionStrength);
+	wjo->SetInteger(FString(TEXT("AdditionAgility")), AdditionAgility);
+	wjo->SetInteger(FString(TEXT("AdditionIntelligence")), AdditionIntelligence);
+	wjo->SetInteger(FString(TEXT("AdditionAttackSpeed")), AdditionAttackSpeed);
+	wjo->SetInteger(FString(TEXT("DeadTime")), DeadTime);
+	wjo->SetInteger(FString(TEXT("BountyEXP")), BountyEXP);
+	wjo->SetInteger(FString(TEXT("BountyGold")), BountyGold);
+	wjo->SetInteger(FString(TEXT("Strength")), Strength);
+	wjo->SetInteger(FString(TEXT("Agility")), Agility);
+	wjo->SetInteger(FString(TEXT("Intelligence")), Intelligence);
+	wjo->SetInteger(FString(TEXT("BaseAttack")), BaseAttack);
+	wjo->SetNumber(FString(TEXT("BaseArmor")), BaseArmor);
+	wjo->SetInteger(FString(TEXT("BaseMoveSpeed")), BaseMoveSpeed);
+	wjo->SetInteger(FString(TEXT("BaseAttackRange")), BaseAttackRange);
+
+	for (int i=0;i < Skills.Num();++i)
+	{
+		wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), Skills[i]->Name);
+		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CDPercent"),i+1), Skills[i]->GetSkillCDPercent());
+		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentCD"), i + 1), Skills[i]->CurrentCD);
+		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), Skills[i]->MaxCD);
+		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentLevel"), i + 1), Skills[i]->CurrentLevel);
+		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), Skills[i]->MaxLevel);
+	}
+	return UWebInterfaceHelpers::ConvertObject(wjo);
 }
 
 // Called to bind functionality to input

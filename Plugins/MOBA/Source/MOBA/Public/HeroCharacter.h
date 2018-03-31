@@ -57,6 +57,7 @@ class ABulletActor;
 class AHeroSkill;
 class ASkillHintActor;
 class AMOBAPlayerController;
+class UWebInterfaceJsonValue;
 
 UCLASS()
 class MOBA_API AHeroCharacter : public ACharacter
@@ -90,6 +91,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	TArray<AHeroCharacter*> FindRadiusActorByLocation(FVector Center, float Radius, ETeamFlag flag, bool CheckAlive);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	UWebInterfaceJsonValue* BuildJsonValue();
 
 	// for UI
 	UFUNCTION()
@@ -176,7 +180,7 @@ public:
 
 	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable, Category = "MOBA")
 	void ServerPlayAttackLandedSFX();
-	
+		
 	// 確定當前動作做完了沒
 	bool CheckCurrentActionFinish();
 
@@ -499,7 +503,7 @@ public:
 	float CurrentSpellingEndingTimeLength;
 
 	// 目前攻擊計時器
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float AttackingCounting;
 	// 目前施法計時器
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting", Replicated)

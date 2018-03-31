@@ -256,6 +256,7 @@ void AMHUD::DrawHUD()
 			}
 
 			// 畫經驗條
+			/*
 			{
 				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
 				DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale,
@@ -265,6 +266,7 @@ void AMHUD::DrawHUD()
 				DrawText(FString::Printf(TEXT("LV %d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1),
 					skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, LevelFont);
 			}
+			*/
 			// 畫技能圖
 			if (SkillMaterial)
 			{
