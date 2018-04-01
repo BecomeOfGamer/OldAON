@@ -95,6 +95,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	UWebInterfaceJsonValue* BuildJsonValue();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnAnimaStatusChanged(int32 LastAnimaStatus, int32 AnimaStatus);
+
 	// for UI
 	UFUNCTION()
 	void OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
@@ -567,6 +570,12 @@ public:
 	// 裝備
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AEquipment*> Equipments;
+
+	// 裝備
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	int32 AnimaStatus;
+
+	int32 LastAnimaStatus;
 
 	// 依序做完裡面的動作
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)

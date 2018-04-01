@@ -70,6 +70,8 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	FollowActorUpdateCounting = 0;
 	SpellingCounting = 0;
 	StunningLeftCounting = 0;
+	AnimaStatus = 0;
+	LastAnimaStatus = 0;
 
 	// 基礎攻擊前搖時間長度
 	BaseAttackingBeginingTimeLength = 0.5;
@@ -218,6 +220,11 @@ void AHeroCharacter::Tick(float DeltaTime)
 			EXPIncreaseArray = ags->GetEXPIncreaseArray();
 		}
 	}
+	if (LastAnimaStatus != AnimaStatus)
+	{
+		OnAnimaStatusChanged(LastAnimaStatus, AnimaStatus);
+		LastAnimaStatus = AnimaStatus;
+	}
 	{ // 計算各種buff
 		TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
 		TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
@@ -351,6 +358,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 			// 釋放記憶體
 			if (!BuffQueue[i]->IsPendingKillPending())
 			{
+				BuffQueue[i]->OnDestroy();
 				BuffQueue[i]->Destroy();
 			}
 			BuffQueue.RemoveAt(i);
@@ -448,6 +456,19 @@ TArray<AHeroCharacter*> AHeroCharacter::FindRadiusActorByLocation(FVector Center
 
 UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 {
+	bool initok = true;
+	for (int i = 0; i < Skills.Num(); ++i)
+	{
+		if (!IsValid(Skills[i]))
+		{
+			initok = false;
+			break;
+		}
+	}
+	if (initok == false)
+	{
+		return 0;
+	}
 	UWebInterfaceJsonObject* wjo = UWebInterfaceHelpers::ConstructObject();
 	wjo->SetString(FString(TEXT("HeroName")), HeroName);
 	wjo->SetInteger(FString(TEXT("TeamId")), TeamId);
@@ -1983,6 +2004,7 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AHeroCharacter, LastUseSkill);
 	DOREPLIFETIME(AHeroCharacter, CurrentSkillPoints);
 	DOREPLIFETIME(AHeroCharacter, CurrentLevel);
+	DOREPLIFETIME(AHeroCharacter, AnimaStatus);
 	DOREPLIFETIME(AHeroCharacter, IsAlive);
 	DOREPLIFETIME(AHeroCharacter, CurrentEXP);
 	DOREPLIFETIME(AHeroCharacter, CurrentAttackingBeginingTimeLength);

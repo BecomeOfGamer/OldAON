@@ -228,6 +228,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	//Buff時間到時消失的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnDestroy();
 
 	//升級的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
