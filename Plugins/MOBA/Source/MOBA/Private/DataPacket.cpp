@@ -26,28 +26,21 @@ namespace Packet
 				int worst_compress_size = LZ4_compressBound(InOut_CompressPacket.u32_DecompressSize);
 				if (worst_compress_size)
 				{
-					try
-					{
-						char *pCompressBuffer = new char[worst_compress_size + sizeof(CompressPacket)];
-						InOut_CompressPacket.u32_StartCode = PACKET_START_CODE;
-						InOut_CompressPacket.u16_CompressType = LZ4;
-						InOut_CompressPacket.u32_CompressSize = LZ4_compress_default(pSrcBuf, pCompressBuffer + sizeof(CompressPacket), InOut_CompressPacket.u32_DecompressSize, worst_compress_size);
-						memcpy_s(pCompressBuffer, sizeof(CompressPacket), &InOut_CompressPacket, sizeof(CompressPacket));
-						//char chartemp[32] = { 0 };
-						//sprintf_s(chartemp, 32, "cpsize=%d data=", InOut_CompressPacket.u32_CompressSize);
-						//OutputDebugStringA(chartemp);
-						//for (unsigned int i = 0; i < InOut_CompressPacket.u32_CompressSize; ++i)
-						//{
-						//	sprintf_s(chartemp, 32, "%d,", (uint8)pCompressBuffer[i+ sizeof(CompressPacket)]);
-						//	OutputDebugStringA(chartemp);
-						//}
-						//OutputDebugStringA("\n");
-						Out_Buf.reset(pCompressBuffer);
-					}
-					catch (...)
-					{
-						bRet = false;
-					}
+					char *pCompressBuffer = new char[worst_compress_size + sizeof(CompressPacket)];
+					InOut_CompressPacket.u32_StartCode = PACKET_START_CODE;
+					InOut_CompressPacket.u16_CompressType = LZ4;
+					InOut_CompressPacket.u32_CompressSize = LZ4_compress_default(pSrcBuf, pCompressBuffer + sizeof(CompressPacket), InOut_CompressPacket.u32_DecompressSize, worst_compress_size);
+					memcpy_s(pCompressBuffer, sizeof(CompressPacket), &InOut_CompressPacket, sizeof(CompressPacket));
+					//char chartemp[32] = { 0 };
+					//sprintf_s(chartemp, 32, "cpsize=%d data=", InOut_CompressPacket.u32_CompressSize);
+					//OutputDebugStringA(chartemp);
+					//for (unsigned int i = 0; i < InOut_CompressPacket.u32_CompressSize; ++i)
+					//{
+					//	sprintf_s(chartemp, 32, "%d,", (uint8)pCompressBuffer[i+ sizeof(CompressPacket)]);
+					//	OutputDebugStringA(chartemp);
+					//}
+					//OutputDebugStringA("\n");
+					Out_Buf.reset(pCompressBuffer);
 				}
 				else
 					bRet = false;
@@ -66,20 +59,13 @@ namespace Packet
 		if (In_CompressPacket.u32_StartCode == PACKET_START_CODE && In_CompressPacket.u16_CompressType != eCompressType::RAW
 			&&In_CompressPacket.u32_CompressSize && In_CompressPacket.u32_DecompressSize)
 		{
-			try
+			char *pDeCompressBuffer = new char[In_CompressPacket.u32_DecompressSize];
+			auto DeSize = LZ4_decompress_safe(pSrcBuf, pDeCompressBuffer, In_CompressPacket.u32_CompressSize, In_CompressPacket.u32_DecompressSize);
+			if (DeSize > 0)
+				Out_Buf.reset(pDeCompressBuffer);
+			else
 			{
-				char *pDeCompressBuffer = new char[In_CompressPacket.u32_DecompressSize];
-				auto DeSize = LZ4_decompress_safe(pSrcBuf, pDeCompressBuffer, In_CompressPacket.u32_CompressSize, In_CompressPacket.u32_DecompressSize);
-				if (DeSize > 0)
-					Out_Buf.reset(pDeCompressBuffer);
-				else
-				{
-					delete pDeCompressBuffer;
-					bRet = false;
-				}
-			}
-			catch (...)
-			{
+				delete pDeCompressBuffer;
 				bRet = false;
 			}
 		}
