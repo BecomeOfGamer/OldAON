@@ -32,6 +32,8 @@ protected:
 	uint32 bMouseLButton : 1;
 	UPrimitiveComponent* ClickedPrimitive;
 
+	//RP
+	bool IsRPing;
 
 	// Begin PlayerController interface
 	virtual void PlayerTick(float DeltaTime) override;

@@ -203,7 +203,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	// 如果沒有初始化成功就初始化 local AMOBAPlayerController
-	if (!localPC)
+	if (!IsValid(localPC))
 	{
 		localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
 	}
@@ -308,7 +308,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 	if(CurrentHP <= 0 && IsAlive)
 	{
 		// 死了還想跑，給我停下
-		if (GetVelocity().Size() > 5)
+		if (GetVelocity().Size() > 5 && IsValid(localPC))
 		{
 			localPC->ServerCharacterStopMove(this);
 		}
@@ -324,7 +324,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 		CurrentHP = 0;
 		// TODO: event dead
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
+		if (ags && IsValid(localPC))
 		{
 			TArray<AHeroCharacter*> EnemyGetExp = FindRadiusActorByLocation(this->GetActorLocation(), ags->EXPGetRange, ETeamFlag::TeamEnemy, true);
 			float exp = this->BountyEXP / EnemyGetExp.Num();
@@ -591,9 +591,10 @@ void AHeroCharacter::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey Butto
 				hud->HeroAttackHero(this);
 			}
 		}
+
 		hud->CurrentSelectTarget = nullptr;
 	}
-	else
+	else if(hud)
 	{
 		hud->CurrentSelectTarget = this;
 	}
@@ -1066,7 +1067,10 @@ void AHeroCharacter::DoNothing()
 		break;
 	case EHeroBodyStatus::Moving:
 	{
-		localPC->ServerCharacterStopMove(this);
+		if (IsValid(localPC))
+		{
+			localPC->ServerCharacterStopMove(this);
+		}
 		BodyStatus = EHeroBodyStatus::Standing;
 	}
 	break;
@@ -1080,10 +1084,15 @@ void AHeroCharacter::DoNothing()
 
 void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentAction)
 {
+	if (!IsValid(localPC))
+	{
+		return;
+	}
 	AHeroCharacter* TargetActor = nullptr;
 	MovingAttackTarget = nullptr;
 	
 	StartFollowPosition = GetActorLocation();
+	
 	TArray<AHeroCharacter*> Enemys = localPC->FindRadiusActorByLocation(
 		this, StartFollowPosition, MovingAttackRange, ETeamFlag::TeamEnemy, true);
 	if (Enemys.Num() == 0)
@@ -1126,7 +1135,10 @@ void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentA
 			}
 			else
 			{
-				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+				if (IsValid(localPC))
+				{
+					localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+				}
 				BodyStatus = EHeroBodyStatus::Moving;
 			}
 		}
@@ -1136,14 +1148,20 @@ void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentA
 			float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
 			if (CurrentAttackRange > DistanceToTargetActor)
 			{
-				localPC->ServerCharacterStopMove(this);
+				if (IsValid(localPC))
+				{
+					localPC->ServerCharacterStopMove(this);
+				}
 				BodyStatus = EHeroBodyStatus::AttackWating;
 				IsAttacked = false;
 			}
 			else if (FollowActorUpdateCounting > FollowActorUpdateTimeGap)
 			{
 				FollowActorUpdateCounting = 0;
-				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+				if (IsValid(localPC))
+				{
+					localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+				}
 			}
 		}
 		break;
@@ -1182,7 +1200,10 @@ void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentA
 				}
 				else
 				{// 近戰傷害
-					localPC->ServerAttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack, true);
+					if (IsValid(localPC))
+					{
+						localPC->ServerAttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack, true);
+					}
 				}
 				BodyStatus = EHeroBodyStatus::AttackEnding;
 			}
@@ -1263,7 +1284,10 @@ void AHeroCharacter::DoAction_MoveToPosition(const FHeroAction& CurrentAction)
 {
 	if (BodyStatus == EHeroBodyStatus::Stunning && GetVelocity().Size() > 5)
 	{
-		localPC->ServerCharacterStopMove(this);
+		if (IsValid(localPC))
+		{
+			localPC->ServerCharacterStopMove(this);
+		}
 	}
 	else
 	{
@@ -1348,7 +1372,10 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		}
 		else
 		{
-			localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			}
 			BodyStatus = EHeroBodyStatus::Moving;
 		}
 	}
@@ -1358,14 +1385,20 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
 		if (CurrentAttackRange > DistanceToTargetActor)
 		{
-			localPC->ServerCharacterStopMove(this);
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterStopMove(this);
+			}
 			BodyStatus = EHeroBodyStatus::AttackWating;
 			IsAttacked = false;
 		}
 		else if (FollowActorUpdateCounting > FollowActorUpdateTimeGap)
 		{
 			FollowActorUpdateCounting = 0;
-			localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			}
 		}
 	}
 	break;
@@ -1404,7 +1437,10 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 			}
 			else
 			{// 近戰傷害
-				localPC->ServerAttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack, true);
+				if (IsValid(localPC))
+				{
+					localPC->ServerAttackCompute(this, TargetActor, EDamageType::DAMAGE_PHYSICAL, this->CurrentAttack, true);
+				}
 			}
 			BodyStatus = EHeroBodyStatus::AttackEnding;
 		}
@@ -1569,7 +1605,10 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 		}
 		else
 		{
-			localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			}
 			BodyStatus = EHeroBodyStatus::Moving;
 		}
 	}
@@ -1579,14 +1618,20 @@ void AHeroCharacter::DoAction_AttackSceneObject(const FHeroAction& CurrentAction
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
 		if (CurrentAttackRange > DistanceToTargetActor)
 		{
-			localPC->ServerCharacterStopMove(this);
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterStopMove(this);
+			}
 			BodyStatus = EHeroBodyStatus::AttackWating;
 			IsAttacked = false;
 		}
 		else if (FollowActorUpdateCounting > FollowActorUpdateTimeGap)
 		{
 			FollowActorUpdateCounting = 0;
-			localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			}
 		}
 	}
 	break;
@@ -1784,7 +1829,10 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 		}
 		else
 		{
-			localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			}
 			BodyStatus = EHeroBodyStatus::Moving;
 		}
 	}
@@ -1794,14 +1842,20 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
 		if (Skills[CurrentAction.TargetIndex1]->CastRange > DistanceToTargetActor)
 		{
-			localPC->ServerCharacterStopMove(this);
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterStopMove(this);
+			}
 			BodyStatus = EHeroBodyStatus::SpellWating;
 			SpellingCounting = 0;
 		}
 		else if (FollowActorUpdateCounting > FollowActorUpdateTimeGap)
 		{
 			FollowActorUpdateCounting = 0;
-			localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			if (IsValid(localPC))
+			{
+				localPC->ServerCharacterMove(this, TargetActor->GetActorLocation());
+			}
 		}
 	}
 	break;
@@ -1826,8 +1880,11 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 		{
 			if (LastUseSkill != CurrentAction)
 			{
-				localPC->ServerHeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
-					CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+				if (IsValid(localPC))
+				{
+					localPC->ServerHeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
+						CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+				}
 				BodyStatus = EHeroBodyStatus::SpellEnding;
 				LastUseSkill = CurrentAction;
 			}
@@ -1845,7 +1902,10 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	default:
 	{
 		BodyStatus = EHeroBodyStatus::Moving;
-		localPC->ServerCharacterStopMove(this);
+		if (IsValid(localPC))
+		{
+			localPC->ServerCharacterStopMove(this);
+		}
 	}
 	break;
 	}
@@ -1856,7 +1916,12 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 	switch (BodyStatus)
 	{
 	case EHeroBodyStatus::Moving:
-		localPC->ServerCharacterStopMove(this);
+	{
+		if (IsValid(localPC))
+		{
+			localPC->ServerCharacterStopMove(this);
+		}
+	}	
 	// no break;
 	case EHeroBodyStatus::Standing:
 	{
@@ -1885,8 +1950,11 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 				{
 					BodyStatus = EHeroBodyStatus::SpellEnding;
 					SpellingCounting = 0;
-					localPC->ServerHeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
-						CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+					if (IsValid(localPC))
+					{
+						localPC->ServerHeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
+							CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+					}
 					LastUseSkill = CurrentAction;
 				}
 			}
@@ -1904,7 +1972,10 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 	default:
 	{
 		BodyStatus = EHeroBodyStatus::Moving;
-		localPC->ServerCharacterStopMove(this); 
+		if (IsValid(localPC))
+		{
+			localPC->ServerCharacterStopMove(this);
+		}
 	}
 	break;
 	}

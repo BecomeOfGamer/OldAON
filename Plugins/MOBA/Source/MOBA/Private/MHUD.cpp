@@ -751,6 +751,7 @@ void AMHUD::OnLMouseDown(FVector2D pos)
 		if(HitBox.Contains(pos, ViewportScale))
 		{
 			LButtonDownHitBox = HitBox.GetName();
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, LButtonDownHitBox);
 			break;
 		}
 	}
@@ -772,7 +773,7 @@ void AMHUD::OnLMousePressed1(FVector2D pos)
 void AMHUD::OnLMousePressed2(FVector2D pos)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		//FString::Printf(TEXT("OnLMousePressed2"), pos.X, pos.Y));
+	//	FString::Printf(TEXT("OnLMousePressed2"), pos.X, pos.Y));
 	// Role == ROLE_Authority but Client Side
 	if(bNeedMouseLDown)
 	{
@@ -895,7 +896,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				if (HitBox.Contains(pos, ViewportScale))
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
-					if (selectHero->CurrentSkillPoints > 0 && selectHero->Skills[idx]->CanLevelUp())
+					if (selectHero->CurrentSkillPoints > 0 && selectHero->Skills.Num() > idx && selectHero->Skills[idx]->CanLevelUp())
 					{
 						LocalController->ServerHeroSkillLevelUp(selectHero, idx);
 					}
