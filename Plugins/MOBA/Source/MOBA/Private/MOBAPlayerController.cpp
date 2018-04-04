@@ -22,47 +22,24 @@ AMOBAPlayerController::AMOBAPlayerController()
 
 void AMOBAPlayerController::BeginPlay()
 {
-	Hud = Cast<AMHUD>(this->GetHUD());
-	if (Hud)
-	{
-		Hud->LocalController = this;
-		KeyMapping.Add(EKeys::W);
-		KeyMapping.Add(EKeys::E);
-		KeyMapping.Add(EKeys::R);
-		KeyMapping.Add(EKeys::T);
-		KeyMapping.Add(EKeys::D);
 
-		KeyMapping2.Add(EKeys::W, EKeyBehavior::KEY_SKILL_1);
-		KeyMapping2.Add(EKeys::E, EKeyBehavior::KEY_SKILL_2);
-		KeyMapping2.Add(EKeys::R, EKeyBehavior::KEY_SKILL_3);
-		KeyMapping2.Add(EKeys::T, EKeyBehavior::KEY_SKILL_4);
-		KeyMapping2.Add(EKeys::D, EKeyBehavior::KEY_SKILL_5);
-		KeyMapping2.Add(EKeys::F, EKeyBehavior::KEY_SKILL_6);
-
-		KeyMapping2.Add(EKeys::A, EKeyBehavior::KEY_ATTACK);
-		KeyMapping2.Add(EKeys::G, EKeyBehavior::KEY_MOVE);
-		KeyMapping2.Add(EKeys::S, EKeyBehavior::KEY_STOP);
-
-
-	}
 	FlannActor = GetWorld()->SpawnActor<AFlannActor>();
 	if (FlannActor == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
 			FString::Printf(TEXT("FlannActor is Null")));
 	}
-// 	RoomActor = GetWorld()->SpawnActor<AMqttRoomActor>(SubAMqttRoomActor);
-// 	if (RoomActor == nullptr)
-// 	{
-// 		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
-// 			FString::Printf(TEXT("RoomActor is Null")));
-// 	}
-// 	else
-// 	{
-// 		RoomActor->LocalController = this;
-// 		RoomActor->m_pAMHUD = Hud;
-// 	}
-	bMouseRButton = false;
+	//RoomActor = GetWorld()->SpawnActor<AMqttRoomActor>(SubAMqttRoomActor);
+	//if (RoomActor == nullptr)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
+	//		FString::Printf(TEXT("RoomActor is Null")));
+	//}
+	//else
+	//{
+	//	RoomActor->LocalController = this;
+	//	RoomActor->m_pAMHUD = Hud;
+	//}	bMouseRButton = false;
 	bMouseLButton = false;
 	bShowMouseCursor = false;
 
@@ -171,7 +148,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 				{
 					if(GetHUD()->UpdateAndDispatchHitBoxClickEvents(MousePosition, EventType))
 					{
-						ClickedPrimitive = NULL;
+						//ClickedPrimitive = NULL;
 					}
 				}
 
@@ -213,7 +190,35 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 void AMOBAPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
+	if (LocalPlayer && LocalPlayer->ViewportClient)
+	{
+		FVector2D MousePosition;
+		FHitResult HitResult;
+		bool bHit = false;
 
+		UGameViewportClient* ViewportClient = LocalPlayer->ViewportClient;
+
+		{
+			if (ViewportClient->GetMousePosition(MousePosition))
+			{
+				bHit = GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, /*out*/ HitResult);
+			}
+		}
+
+		UPrimitiveComponent* PreviousComponent = CurrentClickablePrimitive.Get();
+		UPrimitiveComponent* CurrentComponent = (bHit ? HitResult.Component.Get() : NULL);
+
+		UPrimitiveComponent::DispatchMouseOverEvents(PreviousComponent, CurrentComponent);
+		if (IsValid(CurrentComponent))
+		{
+			CurrentClickablePrimitive = CurrentComponent;
+		}
+		else
+		{
+			CurrentClickablePrimitive = 0;
+		}
+	}
 	if(Hud)
 	{
 		CurrentMouseXY = GetMouseScreenPosition();
@@ -252,6 +257,34 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 			}
 		}
 		Hud->OnMouseMove(CurrentMouseXY, HitPoint);
+	}
+	else
+	{
+		Hud = Cast<AMHUD>(this->GetHUD());
+		if (Hud)
+		{
+			Hud->LocalController = this;
+			KeyMapping.Add(EKeys::W);
+			KeyMapping.Add(EKeys::E);
+			KeyMapping.Add(EKeys::R);
+			KeyMapping.Add(EKeys::T);
+			KeyMapping.Add(EKeys::D);
+
+			KeyMapping2.Add(EKeys::W, EKeyBehavior::KEY_SKILL_1);
+			KeyMapping2.Add(EKeys::E, EKeyBehavior::KEY_SKILL_2);
+			KeyMapping2.Add(EKeys::R, EKeyBehavior::KEY_SKILL_3);
+			KeyMapping2.Add(EKeys::T, EKeyBehavior::KEY_SKILL_4);
+			KeyMapping2.Add(EKeys::D, EKeyBehavior::KEY_SKILL_5);
+			KeyMapping2.Add(EKeys::F, EKeyBehavior::KEY_SKILL_6);
+
+			KeyMapping2.Add(EKeys::A, EKeyBehavior::KEY_ATTACK);
+			KeyMapping2.Add(EKeys::G, EKeyBehavior::KEY_MOVE);
+			KeyMapping2.Add(EKeys::S, EKeyBehavior::KEY_STOP);
+			if (RoomActor)
+			{
+				RoomActor->m_pAMHUD = Hud;
+			}
+		}
 	}
 }
 
