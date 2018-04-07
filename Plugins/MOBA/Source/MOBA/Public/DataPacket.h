@@ -22,8 +22,6 @@ namespace Packet
 		uint32_t u32_CompressSize;
 	}CompressPacket;
 	#pragma pack(pop)
-
-	static const uint32_t CompressPacketSize = sizeof(CompressPacket);
 	/*
 		Date Buffer:
 		[CompressPacket][u32_CompressSize * Byte]

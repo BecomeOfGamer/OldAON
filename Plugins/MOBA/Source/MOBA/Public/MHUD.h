@@ -100,9 +100,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void MOBA_MouseRButtonPressed();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateHeroData(AHeroCharacter* hero);
-
 	// 加入一個可以被點選的按鈕
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void MOBA_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, 
@@ -217,28 +214,28 @@ public:
 	FVector2D	HPBarOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	uint32 ClickedSelected:1;
+	bool ClickedSelected = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	uint32 bClickHero:1;
+	bool bClickHero = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	uint32 bMouseRButton:1;
+	bool bMouseRButton = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	uint32 bMouseLButton:1;
+	bool bMouseLButton = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	uint32 bNeedMouseRDown:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	uint32 bNeedMouseLDown:1;
+	bool bNeedMouseLDown = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	uint32 bLeftShiftDown:1;
+	bool bLeftShiftDown = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	uint32 bRightShiftDown:1;
+	bool bRightShiftDown = false;
 
 	// 不同狀態的滑鼠遊標圖
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")

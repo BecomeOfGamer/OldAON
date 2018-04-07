@@ -45,6 +45,11 @@ void AMOBAPlayerController::BeginPlay()
 	//}	bMouseRButton = false;
 	bMouseLButton = false;
 	bShowMouseCursor = false;
+
+	//RP Test
+	IsRPing = false;
+
+	
 }
 
 bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad)
@@ -57,7 +62,21 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 			return true;
 		}
 	}
-	
+	//start or  stop RP 
+	if (EventType == IE_Pressed && Key == EKeys::Z)
+	{
+		if (IsRPing)
+		{
+			IsRPing = true;
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Stop RP "));
+		}
+		else
+		{
+			IsRPing = false;
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Start RP "));
+		}
+		 
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Client InputKey ") + Key.ToString());
 	if (EventType == IE_Pressed && Hud)
 	{

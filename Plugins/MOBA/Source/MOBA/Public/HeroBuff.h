@@ -228,15 +228,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//Buff時間到時消失的瞬間
-	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnDestroy();
 
-	//升級的瞬間
+	//受到傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnUpgrade(AHeroCharacter* caster, int32 Level);
 
-	//be damage by someone
 	//受到傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void BeDamage(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);

@@ -29,7 +29,6 @@ public class MOBA : ModuleRules
 				"Core",
                 "flann",
                 "mqtt",
-                "lz4",
 				// ... add      other public dependencies that you statically link with here ...
 			}
 			);
@@ -46,7 +45,6 @@ public class MOBA : ModuleRules
                 "UMG",
                 "HeadMountedDisplay",
                 "Json",
-                "WebUI",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

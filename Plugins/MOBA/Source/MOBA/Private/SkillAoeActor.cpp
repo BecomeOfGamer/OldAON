@@ -20,7 +20,7 @@ ASkillAoeActor::ASkillAoeActor(const FObjectInitializer& ObjectInitializer)
 	ActiveFlyParticleDied = false;
 	ActiveBulletParticleDied = false;
 	DestoryCount = 0;
-	bReplicates = true;
+	bReplicates = true;	
 }
 
 // Called when the game starts or when spawned

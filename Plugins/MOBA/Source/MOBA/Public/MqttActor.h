@@ -8,7 +8,6 @@
 #include <string>
 #include <sstream>
 #include <chrono>
-#include "DataPacket.h"
 #include "MqttActor.generated.h"
 
 UCLASS()
@@ -66,9 +65,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnReceive(const FString &sTopic, const FString &sMsg);
-
-protected:
-	int32 Publish(FString In_sTopic, char *In_pBuf, size_t In_BufSize, int32 In_iQOS = 0);
 
 private:
 	//開關Queue接收模式

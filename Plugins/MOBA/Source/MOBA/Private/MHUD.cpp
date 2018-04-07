@@ -2,15 +2,14 @@
 #include "MOBAPrivatePCH.h"
 #include "MHUD.h"
 #include <algorithm>
-#undef max
-#undef min
-#include <cmath>
 #include "EngineUtils.h"
 // for GEngine
 #include "Engine.h"
 #include "UnrealString.h"
 #include "NameTypes.h"
 #include "WidgetLayoutLibrary.h"
+
+
 #include "HeroCharacter.h"
 #include "MOBAPlayerController.h"
 #include "Equipment.h"
@@ -101,17 +100,6 @@ void AMHUD::Tick(float DeltaSeconds)
 			CurrentSelection.Remove(EachHero);
 		}
 		RemoveSelection.Empty();
-	}
-	if (CurrentSelection.Num() > 0)
-	{
-		if (IsValid(CurrentSelection[0]))
-		{
-			UpdateHeroData(CurrentSelection[0]);
-		}
-	}
-	else
-	{
-		UpdateHeroData(0);
 	}
 	OnSize();
 }
@@ -256,7 +244,6 @@ void AMHUD::DrawHUD()
 			}
 
 			// 畫經驗條
-			/*
 			{
 				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
 				DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale,
@@ -266,7 +253,6 @@ void AMHUD::DrawHUD()
 				DrawText(FString::Printf(TEXT("LV %d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1),
 					skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, LevelFont);
 			}
-			*/
 			// 畫技能圖
 			if (SkillMaterial)
 			{
@@ -684,6 +670,7 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 
 void AMHUD::OnRMousePressed1(FVector2D pos)
 {
+	// 如果沒有下面這行在 editor 會不能移動
 	bClickHero = false;
 	ClickStatus = ERTSClickEnum::LastRightClick;
 	if(!bMouseRButton)
@@ -767,6 +754,7 @@ void AMHUD::OnLMouseDown(FVector2D pos)
 		if(HitBox.Contains(pos, ViewportScale))
 		{
 			LButtonDownHitBox = HitBox.GetName();
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, LButtonDownHitBox);
 			break;
 		}
 	}
@@ -788,7 +776,7 @@ void AMHUD::OnLMousePressed1(FVector2D pos)
 void AMHUD::OnLMousePressed2(FVector2D pos)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		//FString::Printf(TEXT("OnLMousePressed2"), pos.X, pos.Y));
+	//	FString::Printf(TEXT("OnLMousePressed2"), pos.X, pos.Y));
 	// Role == ROLE_Authority but Client Side
 	if(bNeedMouseLDown)
 	{
@@ -911,7 +899,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				if (HitBox.Contains(pos, ViewportScale))
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
-					if (selectHero->CurrentSkillPoints > 0 && selectHero->Skills[idx]->CanLevelUp())
+					if (selectHero->CurrentSkillPoints > 0 && selectHero->Skills.Num() > idx && selectHero->Skills[idx]->CanLevelUp())
 					{
 						LocalController->ServerHeroSkillLevelUp(selectHero, idx);
 					}
