@@ -320,6 +320,7 @@ void AMHUD::DrawHUD()
 		}
 	}
 	// 畫滑鼠icon
+
 	if (MouseIcon.Contains(HUDStatus) && MouseIcon[HUDStatus].mat)
 	{
 		if (MouseIcon[HUDStatus].pos == EMouseIconPosition::LeftTop)
@@ -578,6 +579,8 @@ void AMHUD::OnSize()
 void AMHUD::OnMouseMove(FVector2D pos, FVector pos3d)
 {
 	CurrentMouseXY = pos;
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+		FString::Printf(TEXT("OnMouseMove %f %f"), pos.X, pos.Y));
 	// 如果沒有點到任何東西就不更新滑鼠點到的位置
 	if (pos3d != FVector::ZeroVector)
 	{

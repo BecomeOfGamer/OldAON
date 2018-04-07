@@ -7,7 +7,7 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
 #if !UE_SERVER
-#include "SWebBrowser.h"
+#include "WSWebBrowser.h"
 #endif
 
 #define LOCTEXT_NAMESPACE "WebInterface"
@@ -132,7 +132,7 @@ TSharedRef<SWidget> UWebInterface::RebuildWidget()
 				.Text( LOCTEXT( "Web UI", "Web UI" ) )
 			];
 
-	WebInterfaceWidget = SNew( SWebBrowser )
+	WebInterfaceWidget = SNew( WSWebBrowser )
 		.InitialURL( InitialURL )
 		.SupportsTransparency( true )
 		.ShowControls( false )

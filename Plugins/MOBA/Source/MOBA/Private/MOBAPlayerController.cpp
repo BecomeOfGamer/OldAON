@@ -13,6 +13,9 @@
 #include "MOBAGameState.h"
 #include <flann/flann.hpp> 
 
+#include "Kismet/GameplayStatics.h"
+#include "WidgetLayoutLibrary.h"
+
 AMOBAPlayerController::AMOBAPlayerController()
 {
 	bShowMouseCursor = true;
@@ -179,7 +182,6 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 		bool bHit = false;
 
 		UGameViewportClient* ViewportClient = LocalPlayer->ViewportClient;
-
 		{
 			if (ViewportClient->GetMousePosition(MousePosition))
 			{
@@ -288,6 +290,13 @@ void AMOBAPlayerController::SetupInputComponent()
 
 FVector2D AMOBAPlayerController::GetMouseScreenPosition()
 {
+	// change to UWidgetLayoutLibrary::GetMousePositionOnViewport 拿到viewport的座標
+	UWidgetLayoutLibrary *myWidget = Cast<UWidgetLayoutLibrary>(UGameplayStatics::GetGameInstance(GetWorld()));
+	FVector2D mouseposofview = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+	float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(GetWorld());
+	mouseposofview.X *= ViewportScale;
+	mouseposofview.Y *= ViewportScale;
+	return mouseposofview;
 	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
 	if(LocalPlayer && LocalPlayer->ViewportClient)
 	{

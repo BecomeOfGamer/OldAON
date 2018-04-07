@@ -64,7 +64,7 @@ protected:
 	FString InitialURL;
 	
 #if !UE_SERVER
-	TSharedPtr<class SWebBrowser> WebInterfaceWidget;
+	TSharedPtr<class WSWebBrowser> WebInterfaceWidget;
 #endif
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 };

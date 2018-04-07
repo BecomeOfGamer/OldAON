@@ -48,6 +48,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FString FloorActorName;
 
+	// 本地玩家的英雄
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	AHeroCharacter* LocalHero;
+
 	// 有註冊的鍵盤事件
 	TArray<FKey> KeyMapping;
 	TMap<FKey, EKeyBehavior> KeyMapping2;
