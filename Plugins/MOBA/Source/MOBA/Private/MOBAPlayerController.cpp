@@ -15,6 +15,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "WidgetLayoutLibrary.h"
+#include "WebInterface.h"
 
 AMOBAPlayerController::AMOBAPlayerController()
 {
@@ -360,6 +361,18 @@ void AMOBAPlayerController::OnMouseLButtonReleased()
 	{
 		Hud->OnLMouseReleased(GetMouseScreenPosition());
 	}
+}
+
+void AMOBAPlayerController::MouseDownCallback(FKey key, float X, float Y)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+		FString::Printf(TEXT("MouseDownCallback")));
+}
+
+void AMOBAPlayerController::SetWebUICallback(UWebInterface* wi)
+{
+	using namespace std::placeholders;
+	wi->SetMouseDownCallback(std::bind(&AMOBAPlayerController::MouseDownCallback, this, _1, _2, _3));
 }
 
 // network function

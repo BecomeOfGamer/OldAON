@@ -15,7 +15,7 @@ class UObject;
 #endif
 #define WEBUI_WebInterface_generated_h
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_16_DELEGATE \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_17_DELEGATE \
 struct WebInterface_eventOnInterfaceEvent_Parms \
 { \
 	FName Name; \
@@ -30,7 +30,7 @@ static inline void FOnInterfaceEvent_DelegateWrapper(const FMulticastScriptDeleg
 }
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_RPC_WRAPPERS \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_RPC_WRAPPERS \
  \
 	DECLARE_FUNCTION(execGetURL) \
 	{ \
@@ -107,7 +107,7 @@ static inline void FOnInterfaceEvent_DelegateWrapper(const FMulticastScriptDeleg
 	}
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_RPC_WRAPPERS_NO_PURE_DECLS \
  \
 	DECLARE_FUNCTION(execGetURL) \
 	{ \
@@ -184,7 +184,7 @@ static inline void FOnInterfaceEvent_DelegateWrapper(const FMulticastScriptDeleg
 	}
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_INCLASS_NO_PURE_DECLS \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesUWebInterface(); \
 	friend WEBUI_API class UClass* Z_Construct_UClass_UWebInterface(); \
@@ -194,7 +194,7 @@ public: \
 	enum {IsIntrinsic=COMPILED_IN_INTRINSIC};
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_INCLASS \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_INCLASS \
 private: \
 	static void StaticRegisterNativesUWebInterface(); \
 	friend WEBUI_API class UClass* Z_Construct_UClass_UWebInterface(); \
@@ -204,7 +204,7 @@ public: \
 	enum {IsIntrinsic=COMPILED_IN_INTRINSIC};
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_STANDARD_CONSTRUCTORS \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API UWebInterface(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(UWebInterface) \
@@ -217,7 +217,7 @@ private: \
 public:
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_ENHANCED_CONSTRUCTORS \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API UWebInterface(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()) : Super(ObjectInitializer) { }; \
 private: \
@@ -230,29 +230,29 @@ DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(UWebInterface); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(UWebInterface)
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_PRIVATE_PROPERTY_OFFSET \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_PRIVATE_PROPERTY_OFFSET \
 	FORCEINLINE static uint32 __PPO__InitialURL() { return STRUCT_OFFSET(UWebInterface, InitialURL); }
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_9_PROLOG
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_GENERATED_BODY_LEGACY \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_10_PROLOG
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_PRIVATE_PROPERTY_OFFSET \
-	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_RPC_WRAPPERS \
-	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_INCLASS \
-	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_STANDARD_CONSTRUCTORS \
+	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_PRIVATE_PROPERTY_OFFSET \
+	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_RPC_WRAPPERS \
+	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_INCLASS \
+	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_GENERATED_BODY \
+#define AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_PRIVATE_PROPERTY_OFFSET \
-	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
-	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_INCLASS_NO_PURE_DECLS \
-	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_12_ENHANCED_CONSTRUCTORS \
+	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_PRIVATE_PROPERTY_OFFSET \
+	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_RPC_WRAPPERS_NO_PURE_DECLS \
+	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_INCLASS_NO_PURE_DECLS \
+	AON_Plugins_WebUI_Source_WebUI_Public_WebInterface_h_13_ENHANCED_CONSTRUCTORS \
 static_assert(false, "Unknown access specifier for GENERATED_BODY() macro in class WebInterface."); \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

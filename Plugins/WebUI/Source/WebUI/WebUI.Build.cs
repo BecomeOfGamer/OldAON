@@ -21,19 +21,20 @@ namespace UnrealBuildTool.Rules
                 PublicDependencyModuleNames.AddRange(
 				    new string[]
 				    {
-					    "WebBrowser"
-				    }
+                        "WebBrowserExtension"
+                    }
 			    );
 
 		    PrivateDependencyModuleNames.AddRange(new string[]
             {
-                "Json"
+                "Json",
+                "InputCore",
             });
 
             if (Target.Type != TargetType.Server)
                 PrivateDependencyModuleNames.AddRange(new string[]
                 {
-                    "WebBrowser"
+                    "WebBrowserExtension"
                 });
 		}
 	}

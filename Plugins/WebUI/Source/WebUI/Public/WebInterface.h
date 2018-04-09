@@ -1,6 +1,7 @@
 // Copyright 2017 Tracer Interactive, LLC. All Rights Reserved.
 #pragma once
 #include "Widget.h"
+#include <functional>
 #include "WebInterface.generated.h"
 
 class UWebInterfaceJsonObject;
@@ -42,6 +43,8 @@ public:
 	// Get the current URL of the browser.
 	UFUNCTION( BlueprintCallable, Category = "Web UI" )
 	FString GetURL() const;
+
+	void SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton);
 	
 	// Called with ue.interface.broadcast(name, data) in the browser context.
 	UPROPERTY( BlueprintAssignable, Category = "Web UI|Events" )
@@ -64,7 +67,7 @@ protected:
 	FString InitialURL;
 	
 #if !UE_SERVER
-	TSharedPtr<class WSWebBrowser> WebInterfaceWidget;
+	TSharedPtr<class ESWebBrowser> WebInterfaceWidget;
 #endif
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 };

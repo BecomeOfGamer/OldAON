@@ -1,22 +1,22 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
-#include "WebUIPrivatePCH.h"
-#include "WSWebBrowser.h"
+#include "EWebPrivatePCH.h"
+#include "ESWebBrowser.h"
 #include "Widgets/Text/STextBlock.h"
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Images/SThrobber.h"
 
-#define LOCTEXT_NAMESPACE "WebInterface"
+#define LOCTEXT_NAMESPACE "WebBrowser"
 
-WSWebBrowser::WSWebBrowser()
+ESWebBrowser::ESWebBrowser()
 {
 }
 
-WSWebBrowser::~WSWebBrowser()
+ESWebBrowser::~ESWebBrowser()
 {
 }
 
-void WSWebBrowser::Construct(const FArguments& InArgs, const TSharedPtr<IWebBrowserWindow>& BrowserWindow)
+void ESWebBrowser::Construct(const FArguments& InArgs, const TSharedPtr<IEWebBrowserWindow>& BrowserWindow)
 {
 	OnLoadCompleted = InArgs._OnLoadCompleted;
 	OnLoadError = InArgs._OnLoadError;
@@ -51,23 +51,23 @@ void WSWebBrowser::Construct(const FArguments& InArgs, const TSharedPtr<IWebBrow
 				[
 					SNew(SButton)
 					.Text(LOCTEXT("Back","Back"))
-					.IsEnabled(this, &WSWebBrowser::CanGoBack)
-					.OnClicked(this, &WSWebBrowser::OnBackClicked)
+					.IsEnabled(this, &ESWebBrowser::CanGoBack)
+					.OnClicked(this, &ESWebBrowser::OnBackClicked)
 				]
 				+SHorizontalBox::Slot()
 				.AutoWidth()
 				[
 					SNew(SButton)
 					.Text(LOCTEXT("Forward", "Forward"))
-					.IsEnabled(this, &WSWebBrowser::CanGoForward)
-					.OnClicked(this, &WSWebBrowser::OnForwardClicked)
+					.IsEnabled(this, &ESWebBrowser::CanGoForward)
+					.OnClicked(this, &ESWebBrowser::OnForwardClicked)
 				]
 				+SHorizontalBox::Slot()
 				.AutoWidth()
 				[
 					SNew(SButton)
-					.Text(this, &WSWebBrowser::GetReloadButtonText)
-					.OnClicked(this, &WSWebBrowser::OnReloadClicked)
+					.Text(this, &ESWebBrowser::GetReloadButtonText)
+					.OnClicked(this, &ESWebBrowser::OnReloadClicked)
 				]
 				+SHorizontalBox::Slot()
 				.FillWidth(1.0f)
@@ -77,7 +77,7 @@ void WSWebBrowser::Construct(const FArguments& InArgs, const TSharedPtr<IWebBrow
 				[
 					SNew(STextBlock)
 					.Visibility(InArgs._ShowAddressBar ? EVisibility::Collapsed : EVisibility::Visible )
-					.Text(this, &WSWebBrowser::GetTitleText)
+					.Text(this, &ESWebBrowser::GetTitleText)
 					.Justification(ETextJustify::Right)
 				]
 			]
@@ -89,8 +89,8 @@ void WSWebBrowser::Construct(const FArguments& InArgs, const TSharedPtr<IWebBrow
 				// @todo: A proper addressbar widget should go here, for now we use a simple textbox.
 				SAssignNew(InputText, SEditableTextBox)
 				.Visibility(InArgs._ShowAddressBar ? EVisibility::Visible : EVisibility::Collapsed)
-				.OnTextCommitted(this, &WSWebBrowser::OnUrlTextCommitted)
-				.Text(this, &WSWebBrowser::GetAddressBarUrlText)
+				.OnTextCommitted(this, &ESWebBrowser::OnUrlTextCommitted)
+				.Text(this, &ESWebBrowser::GetAddressBarUrlText)
 				.SelectAllTextWhenFocused(true)
 				.ClearKeyboardFocusOnCommit(true)
 				.RevertTextOnEscape(true)
@@ -101,7 +101,7 @@ void WSWebBrowser::Construct(const FArguments& InArgs, const TSharedPtr<IWebBrow
 			SNew(SOverlay)
 			+ SOverlay::Slot()
 			[
-				SAssignNew(BrowserView, SWebBrowserView, BrowserWindow)
+				SAssignNew(BrowserView, ESWebBrowserView, BrowserWindow)
 				.ParentWindow(InArgs._ParentWindow)
 				.InitialURL(InArgs._InitialURL)
 				.ContentsToLoad(InArgs._ContentsToLoad)
@@ -123,7 +123,7 @@ void WSWebBrowser::Construct(const FArguments& InArgs, const TSharedPtr<IWebBrow
 				.OnLoadUrl(OnLoadUrl)
 				.OnShowDialog(OnShowDialog)
 				.OnDismissAllDialogs(OnDismissAllDialogs)
-				.Visibility(this, &WSWebBrowser::GetViewportVisibility)
+				.Visibility(this, &ESWebBrowser::GetViewportVisibility)
 				.OnSuppressContextMenu(InArgs._OnSuppressContextMenu)
 			]
 			+ SOverlay::Slot()
@@ -133,13 +133,13 @@ void WSWebBrowser::Construct(const FArguments& InArgs, const TSharedPtr<IWebBrow
 				SNew(SCircularThrobber)
 				.Radius(10.0f)
 				.ToolTipText(LOCTEXT("LoadingThrobberToolTip", "Loading page..."))
-				.Visibility(this, &WSWebBrowser::GetLoadingThrobberVisibility)
+				.Visibility(this, &ESWebBrowser::GetLoadingThrobberVisibility)
 			]
 		]
 	];
 }
 
-void WSWebBrowser::LoadURL(FString NewURL)
+void ESWebBrowser::LoadURL(FString NewURL)
 {
 	if (BrowserView.IsValid())
 	{
@@ -147,7 +147,7 @@ void WSWebBrowser::LoadURL(FString NewURL)
 	}
 }
 
-void WSWebBrowser::LoadString(FString Contents, FString DummyURL)
+void ESWebBrowser::LoadString(FString Contents, FString DummyURL)
 {
 	if (BrowserView.IsValid())
 	{
@@ -155,7 +155,7 @@ void WSWebBrowser::LoadString(FString Contents, FString DummyURL)
 	}
 }
 
-void WSWebBrowser::Reload()
+void ESWebBrowser::Reload()
 {
 	if (BrowserView.IsValid())
 	{
@@ -163,7 +163,7 @@ void WSWebBrowser::Reload()
 	}
 }
 
-void WSWebBrowser::StopLoad()
+void ESWebBrowser::StopLoad()
 {
 	if (BrowserView.IsValid())
 	{
@@ -171,7 +171,7 @@ void WSWebBrowser::StopLoad()
 	}
 }
 
-FText WSWebBrowser::GetTitleText() const
+FText ESWebBrowser::GetTitleText() const
 {
 	if (BrowserView.IsValid())
 	{
@@ -180,7 +180,7 @@ FText WSWebBrowser::GetTitleText() const
 	return LOCTEXT("InvalidWindow", "Browser Window is not valid/supported");
 }
 
-FString WSWebBrowser::GetUrl() const
+FString ESWebBrowser::GetUrl() const
 {
 	if (BrowserView.IsValid())
 	{
@@ -190,7 +190,7 @@ FString WSWebBrowser::GetUrl() const
 	return FString();
 }
 
-FText WSWebBrowser::GetAddressBarUrlText() const
+FText ESWebBrowser::GetAddressBarUrlText() const
 {
 	if(BrowserView.IsValid())
 	{
@@ -199,7 +199,7 @@ FText WSWebBrowser::GetAddressBarUrlText() const
 	return FText::GetEmpty();
 }
 
-bool WSWebBrowser::IsLoaded() const
+bool ESWebBrowser::IsLoaded() const
 {
 	if (BrowserView.IsValid())
 	{
@@ -209,7 +209,7 @@ bool WSWebBrowser::IsLoaded() const
 	return false;
 }
 
-bool WSWebBrowser::IsLoading() const
+bool ESWebBrowser::IsLoading() const
 {
 	if (BrowserView.IsValid())
 	{
@@ -219,7 +219,7 @@ bool WSWebBrowser::IsLoading() const
 	return false;
 }
 
-bool WSWebBrowser::CanGoBack() const
+bool ESWebBrowser::CanGoBack() const
 {
 	if (BrowserView.IsValid())
 	{
@@ -228,7 +228,7 @@ bool WSWebBrowser::CanGoBack() const
 	return false;
 }
 
-void WSWebBrowser::GoBack()
+void ESWebBrowser::GoBack()
 {
 	if (BrowserView.IsValid())
 	{
@@ -236,13 +236,13 @@ void WSWebBrowser::GoBack()
 	}
 }
 
-FReply WSWebBrowser::OnBackClicked()
+FReply ESWebBrowser::OnBackClicked()
 {
 	GoBack();
 	return FReply::Handled();
 }
 
-bool WSWebBrowser::CanGoForward() const
+bool ESWebBrowser::CanGoForward() const
 {
 	if (BrowserView.IsValid())
 	{
@@ -251,7 +251,7 @@ bool WSWebBrowser::CanGoForward() const
 	return false;
 }
 
-void WSWebBrowser::GoForward()
+void ESWebBrowser::GoForward()
 {
 	if (BrowserView.IsValid())
 	{
@@ -259,13 +259,13 @@ void WSWebBrowser::GoForward()
 	}
 }
 
-FReply WSWebBrowser::OnForwardClicked()
+FReply ESWebBrowser::OnForwardClicked()
 {
 	GoForward();
 	return FReply::Handled();
 }
 
-FText WSWebBrowser::GetReloadButtonText() const
+FText ESWebBrowser::GetReloadButtonText() const
 {
 	static FText ReloadText = LOCTEXT("Reload", "Reload");
 	static FText StopText = LOCTEXT("StopText", "Stop");
@@ -280,7 +280,7 @@ FText WSWebBrowser::GetReloadButtonText() const
 	return ReloadText;
 }
 
-FReply WSWebBrowser::OnReloadClicked()
+FReply ESWebBrowser::OnReloadClicked()
 {
 	if (IsLoading())
 	{
@@ -293,7 +293,7 @@ FReply WSWebBrowser::OnReloadClicked()
 	return FReply::Handled();
 }
 
-void WSWebBrowser::OnUrlTextCommitted( const FText& NewText, ETextCommit::Type CommitType )
+void ESWebBrowser::OnUrlTextCommitted( const FText& NewText, ETextCommit::Type CommitType )
 {
 	if(CommitType == ETextCommit::OnEnter)
 	{
@@ -301,7 +301,7 @@ void WSWebBrowser::OnUrlTextCommitted( const FText& NewText, ETextCommit::Type C
 	}
 }
 
-EVisibility WSWebBrowser::GetViewportVisibility() const
+EVisibility ESWebBrowser::GetViewportVisibility() const
 {
 	if (!bShowInitialThrobber || BrowserView->IsInitialized())
 	{
@@ -310,7 +310,7 @@ EVisibility WSWebBrowser::GetViewportVisibility() const
 	return EVisibility::Hidden;
 }
 
-EVisibility WSWebBrowser::GetLoadingThrobberVisibility() const
+EVisibility ESWebBrowser::GetLoadingThrobberVisibility() const
 {
 	if (bShowInitialThrobber && !BrowserView->IsInitialized())
 	{
@@ -319,8 +319,12 @@ EVisibility WSWebBrowser::GetLoadingThrobberVisibility() const
 	return EVisibility::Hidden;
 }
 
+void ESWebBrowser::SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton)
+{
+	BrowserView->SetMouseDownCallback(_LButton);
+}
 
-void WSWebBrowser::ExecuteJavascript(const FString& ScriptText)
+void ESWebBrowser::ExecuteJavascript(const FString& ScriptText)
 {
 	if (BrowserView.IsValid())
 	{
@@ -328,7 +332,7 @@ void WSWebBrowser::ExecuteJavascript(const FString& ScriptText)
 	}
 }
 
-void WSWebBrowser::GetSource(TFunction<void (const FString&)> Callback) const
+void ESWebBrowser::GetSource(TFunction<void (const FString&)> Callback) const
 {
 	if (BrowserView.IsValid())
 	{
@@ -336,7 +340,7 @@ void WSWebBrowser::GetSource(TFunction<void (const FString&)> Callback) const
 	}
 }
 
-void WSWebBrowser::BindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
+void ESWebBrowser::BindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
 {
 	if (BrowserView.IsValid())
 	{
@@ -344,7 +348,7 @@ void WSWebBrowser::BindUObject(const FString& Name, UObject* Object, bool bIsPer
 	}
 }
 
-void WSWebBrowser::UnbindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
+void ESWebBrowser::UnbindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
 {
 	if (BrowserView.IsValid())
 	{
@@ -352,7 +356,7 @@ void WSWebBrowser::UnbindUObject(const FString& Name, UObject* Object, bool bIsP
 	}
 }
 
-void WSWebBrowser::BindAdapter(const TSharedRef<IWebBrowserAdapter>& Adapter)
+void ESWebBrowser::BindAdapter(const TSharedRef<IEWebBrowserAdapter>& Adapter)
 {
 	if (BrowserView.IsValid())
 	{
@@ -360,7 +364,7 @@ void WSWebBrowser::BindAdapter(const TSharedRef<IWebBrowserAdapter>& Adapter)
 	}
 }
 
-void WSWebBrowser::UnbindAdapter(const TSharedRef<IWebBrowserAdapter>& Adapter)
+void ESWebBrowser::UnbindAdapter(const TSharedRef<IEWebBrowserAdapter>& Adapter)
 {
 	if (BrowserView.IsValid())
 	{
@@ -368,7 +372,7 @@ void WSWebBrowser::UnbindAdapter(const TSharedRef<IWebBrowserAdapter>& Adapter)
 	}
 }
 
-void WSWebBrowser::BindInputMethodSystem(ITextInputMethodSystem* TextInputMethodSystem)
+void ESWebBrowser::BindInputMethodSystem(ITextInputMethodSystem* TextInputMethodSystem)
 {
 	if (BrowserView.IsValid())
 	{
@@ -376,7 +380,7 @@ void WSWebBrowser::BindInputMethodSystem(ITextInputMethodSystem* TextInputMethod
 	}
 }
 
-void WSWebBrowser::UnbindInputMethodSystem()
+void ESWebBrowser::UnbindInputMethodSystem()
 {
 	if (BrowserView.IsValid())
 	{

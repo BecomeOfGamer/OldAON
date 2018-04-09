@@ -7,7 +7,7 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
 #if !UE_SERVER
-#include "WSWebBrowser.h"
+#include "ESWebBrowser.h"
 #endif
 
 #define LOCTEXT_NAMESPACE "WebInterface"
@@ -112,6 +112,12 @@ FString UWebInterface::GetURL() const
 	return FString();
 }
 
+
+void UWebInterface::SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton)
+{
+	WebInterfaceWidget->SetMouseDownCallback(_LButton);
+}
+
 void UWebInterface::ReleaseSlateResources( bool bReleaseChildren )
 {
 	Super::ReleaseSlateResources( bReleaseChildren );
@@ -132,7 +138,7 @@ TSharedRef<SWidget> UWebInterface::RebuildWidget()
 				.Text( LOCTEXT( "Web UI", "Web UI" ) )
 			];
 
-	WebInterfaceWidget = SNew( WSWebBrowser )
+	WebInterfaceWidget = SNew( ESWebBrowser )
 		.InitialURL( InitialURL )
 		.SupportsTransparency( true )
 		.ShowControls( false )

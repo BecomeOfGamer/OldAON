@@ -1,58 +1,64 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Layout/Visibility.h"
-#include "Input/Reply.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
+#include "Input/PopupMethodReply.h"
+#include "Widgets/SWidget.h"
 #include "Widgets/SCompoundWidget.h"
-#include "SWebBrowserView.h"
+#include "Framework/SlateDelegates.h"
+#include "Framework/Application/IMenu.h"
+#include "Widgets/SViewport.h"
+#include "EIWebBrowserSingleton.h"
+#include <functional>
 
-class IWebBrowserAdapter;
-class IWebBrowserDialog;
-class IWebBrowserWindow;
-class SEditableTextBox;
-struct FWebNavigationRequest;
-enum class EWebBrowserDialogEventResponse;
+class FEWebBrowserViewport;
+class IEWebBrowserAdapter;
+class IEWebBrowserDialog;
+class IEWebBrowserPopupFeatures;
+class IEWebBrowserWindow;
+struct FEWebNavigationRequest;
+enum class EEWebBrowserDialogEventResponse;
+enum class EEWebBrowserDocumentState;
 
-DECLARE_DELEGATE_RetVal(bool, FOnSuppressContextMenu);
+DECLARE_DELEGATE_RetVal_TwoParams(bool, FOnBeforePopupDelegate, FString, FString);
+DECLARE_DELEGATE_RetVal_TwoParams(bool, FOnCreateWindowDelegate, const TWeakPtr<IEWebBrowserWindow>&, const TWeakPtr<IEWebBrowserPopupFeatures>&);
+DECLARE_DELEGATE_RetVal_OneParam(bool, FOnCloseWindowDelegate, const TWeakPtr<IEWebBrowserWindow>&);
 
-class WEBUI_API WSWebBrowser
+#if WITH_CEF3
+typedef SViewport ESWebBrowserWidget;
+#else
+typedef SWidget ESWebBrowserWidget;
+#endif
+
+class WEBBROWSEREXTENSION_API ESWebBrowserView
 	: public SCompoundWidget
 {
 public:
-	DECLARE_DELEGATE_RetVal_TwoParams(bool, FOnBeforeBrowse, const FString&, const FWebNavigationRequest& /*Request*/)
+	DECLARE_DELEGATE_RetVal_TwoParams(bool, FOnBeforeBrowse, const FString& /*Url*/, const FEWebNavigationRequest& /*Request*/)
 	DECLARE_DELEGATE_RetVal_ThreeParams(bool, FOnLoadUrl, const FString& /*Method*/, const FString& /*Url*/, FString& /* Response */)
-	DECLARE_DELEGATE_RetVal_OneParam(EWebBrowserDialogEventResponse, FOnShowDialog, const TWeakPtr<IWebBrowserDialog>&);
+	DECLARE_DELEGATE_RetVal_OneParam(EEWebBrowserDialogEventResponse, FOnShowDialog, const TWeakPtr<IEWebBrowserDialog>&);
+	DECLARE_DELEGATE_RetVal(bool, FOnSuppressContextMenu);
 
-	SLATE_BEGIN_ARGS(WSWebBrowser)
+	SLATE_BEGIN_ARGS(ESWebBrowserView)
 		: _InitialURL(TEXT("https://www.google.com"))
-		, _ShowControls(true)
-		, _ShowAddressBar(false)
 		, _ShowErrorMessage(true)
 		, _SupportsTransparency(false)
 		, _SupportsThumbMouseButtonNavigation(false)
-		, _ShowInitialThrobber(true)
 		, _BackgroundColor(255,255,255,255)
 		, _PopupMenuMethod(TOptional<EPopupMethod>())
+		, _ContextSettings()
 		, _ViewportSize(FVector2D::ZeroVector)
 	{ }
 
 		/** A reference to the parent window. */
 		SLATE_ARGUMENT(TSharedPtr<SWindow>, ParentWindow)
 
-		/** URL that the browser will initially navigate to. The URL should include the protocol, eg http:// */
+		/** URL that the browser will initially navigate to. */
 		SLATE_ARGUMENT(FString, InitialURL)
 
 		/** Optional string to load contents as a web page. */
 		SLATE_ARGUMENT(TOptional<FString>, ContentsToLoad)
-
-		/** Whether to show standard controls like Back, Forward, Reload etc. */
-		SLATE_ARGUMENT(bool, ShowControls)
-
-		/** Whether to show an address bar. */
-		SLATE_ARGUMENT(bool, ShowAddressBar)
 
 		/** Whether to show an error message in case of loading errors. */
 		SLATE_ARGUMENT(bool, ShowErrorMessage)
@@ -63,14 +69,14 @@ public:
 		/** Whether to allow forward and back navigation via the mouse thumb buttons. */
 		SLATE_ARGUMENT(bool, SupportsThumbMouseButtonNavigation)
 
-		/** Whether to show a throbber overlay during browser initialization. */
-		SLATE_ARGUMENT(bool, ShowInitialThrobber)
-
 		/** Opaque background color used before a document is loaded and when no document color is specified. */
 		SLATE_ARGUMENT(FColor, BackgroundColor)
 
 		/** Override the popup menu method used for popup menus. If not set, parent widgets will be queried instead. */
 		SLATE_ARGUMENT(TOptional<EPopupMethod>, PopupMenuMethod)
+
+		/** Override the default global context settings for this specific window. If not set, the global default will be used. */
+		SLATE_ARGUMENT(TOptional<FEBrowserContextSettings>, ContextSettings)
 
 		/** Desired size of the web browser viewport. */
 		SLATE_ATTRIBUTE(FVector2D, ViewportSize);
@@ -113,23 +119,26 @@ public:
 
 		SLATE_EVENT(FOnSuppressContextMenu, OnSuppressContextMenu);
 
-
 	SLATE_END_ARGS()
 
 
 	/** Default constructor. */
-	WSWebBrowser();
+	ESWebBrowserView();
 
-	~WSWebBrowser();
+	~ESWebBrowserView();
 
-	virtual bool SupportsKeyboardFocus() const override {return false;}
+	void SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton);
+
+	virtual bool SupportsKeyboardFocus() const override {return true;}
 
 	/**
 	 * Construct the widget.
 	 *
 	 * @param InArgs  Declaration from which to construct the widget.
 	 */
-	void Construct(const FArguments& InArgs, const TSharedPtr<IWebBrowserWindow>& InWebBrowserWindow = nullptr);
+	void Construct(const FArguments& InArgs, const TSharedPtr<IEWebBrowserWindow>& InWebBrowserWindow = nullptr);
+
+	virtual int32 OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
 
 	/**
 	 * Load the specified URL.
@@ -175,6 +184,9 @@ public:
 	/** Whether the document is currently being loaded. */
 	bool IsLoading() const;
 
+	/** Whether the browser widget is done initializing. */
+	bool IsInitialized() const;
+
 	/** Execute javascript on the current window */
 	void ExecuteJavascript(const FString& ScriptText);
 
@@ -185,7 +197,7 @@ public:
 	 * result is ready.
 	 * @param	Callback	A callable that takes a single string reference for handling the result.
 	 */
-	void GetSource(TFunction<void (const FString&)> Callback) const;
+	void GetSource(TFunction<void (const FString&)> Callback) const ;
 
 	/**
 	 * Expose a UObject instance to the browser runtime.
@@ -207,9 +219,9 @@ public:
 	 */
 	void UnbindUObject(const FString& Name, UObject* Object, bool bIsPermanent = true);
 
-	void BindAdapter(const TSharedRef<IWebBrowserAdapter>& Adapter);
+	void BindAdapter(const TSharedRef<IEWebBrowserAdapter>& Adapter);
 
-	void UnbindAdapter(const TSharedRef<IWebBrowserAdapter>& Adapter);
+	void UnbindAdapter(const TSharedRef<IEWebBrowserAdapter>& Adapter);
 
 	void BindInputMethodSystem(ITextInputMethodSystem* TextInputMethodSystem);
 
@@ -229,34 +241,100 @@ public:
 
 private:
 
-	/** Navigate backwards. */
-	FReply OnBackClicked();
+	void SetupParentWindowHandlers();
 
-	/** Navigate forwards. */
-	FReply OnForwardClicked();
+	/** Callback for document loading state changes. */
+	void HandleBrowserWindowDocumentStateChanged(EEWebBrowserDocumentState NewState);
 
-	/** Get text for reload button depending on status */
-	FText GetReloadButtonText() const;
+	/** Callback to tell slate we want to update the contents of the web view based on changes inside the view. */
+	void HandleBrowserWindowNeedsRedraw();
 
-	/** Reload or stop loading */
-	FReply OnReloadClicked();
+	/** Callback for document title changes. */
+	void HandleTitleChanged(FString NewTitle);
 
-	/** Invoked whenever text is committed in the address bar. */
-	void OnUrlTextCommitted( const FText& NewText, ETextCommit::Type CommitType );
+	/** Callback for loaded url changes. */
+	void HandleUrlChanged(FString NewUrl);
 
-	/** Get whether the page viewport should be visible */
-	EVisibility GetViewportVisibility() const;
+	/** Callback for showing browser tool tips. */
+	void HandleToolTip(FString ToolTipText);
 
-	/** Get whether loading throbber should be visible */
-	EVisibility GetLoadingThrobberVisibility() const;
+	/**
+	 * A delegate that is executed prior to browser navigation.
+	 *
+	 * @return true if the navigation was handled an no further action should be taken by the browser, false if the browser should handle.
+	 */
+	bool HandleBeforeNavigation(const FString& Url, const FEWebNavigationRequest& Request);
+
+	bool HandleLoadUrl(const FString& Method, const FString& Url, FString& OutResponse);
+
+	/**
+	 * A delegate that is executed when the browser requests window creation.
+	 *
+	 * @return true if if the window request was handled, false if the browser requesting the new window should be closed.
+	 */
+	bool HandleCreateWindow(const TWeakPtr<IEWebBrowserWindow>& NewBrowserWindow, const TWeakPtr<IEWebBrowserPopupFeatures>& PopupFeatures);
+
+	/**
+	 * A delegate that is executed when closing the browser window.
+	 *
+	 * @return true if if the window close was handled, false otherwise.
+	 */
+	bool HandleCloseWindow(const TWeakPtr<IEWebBrowserWindow>& BrowserWindow);
+
+	/** Callback for showing dialogs to the user */
+	EEWebBrowserDialogEventResponse HandleShowDialog(const TWeakPtr<IEWebBrowserDialog>& DialogParams);
+
+	/** Callback for dismissing any dialogs previously shown  */
+	void HandleDismissAllDialogs();
+
+	/** Callback for popup window permission */
+	bool HandleBeforePopup(FString URL, FString Target);
+
+	/** Callback for showing a popup menu */
+	void HandleShowPopup(const FIntRect& PopupSize);
+
+	/** Callback for hiding the popup menu */
+	void HandleDismissPopup();
+
+	/** Callback from the popup menu notifiying it has been dismissed */
+	void HandleMenuDismissed(TSharedRef<IMenu>);
+
+	virtual FPopupMethodReply OnQueryPopupMethod() const override
+	{
+		return PopupMenuMethod.IsSet()
+			? FPopupMethodReply::UseMethod(PopupMenuMethod.GetValue())
+			: FPopupMethodReply::Unhandled();
+	}
+
+	void HandleWindowDeactivated();
+	void HandleWindowActivated();
 
 private:
 
-	/** The actual web browser view */
-	TSharedPtr<SWebBrowserView> BrowserView;
+	/** Interface for dealing with a web browser window. */
+	TSharedPtr<IEWebBrowserWindow> BrowserWindow;
+	/** The slate window that contains this widget. This must be stored weak otherwise we create a circular reference. */
+	mutable TWeakPtr<SWindow> SlateParentWindowPtr;
+	/** Viewport interface for rendering the web page. */
+	TSharedPtr<FEWebBrowserViewport> BrowserViewport;
+	/** Viewport interface for rendering popup menus. */
+	TSharedPtr<FEWebBrowserViewport>	MenuViewport;
+	/** The implementation dependent widget that renders the browser contents. */
+	TSharedPtr<ESWebBrowserWidget> BrowserWidget;
 
-	/** Editable text widget used for an address bar */
-	TSharedPtr< SEditableTextBox > InputText;
+	TArray<TSharedRef<IEWebBrowserAdapter>> Adapters;
+
+	/**
+	 * An interface pointer to a menu object presenting a popup.
+	 * Pointer is null when a popup is not visible.
+	 */
+	TWeakPtr<IMenu> PopupMenuPtr;
+
+	/** Can be set to override the popup menu method used for popup menus. If not set, parent widgets will be queried instead. */
+	TOptional<EPopupMethod> PopupMenuMethod;
+
+	/** The url that appears in the address bar which can differ from the url of the loaded page */
+	FText AddressBarUrl;
 
 	/** A delegate that is invoked when document loading completed. */
 	FSimpleDelegate OnLoadCompleted;
@@ -294,7 +372,11 @@ private:
 	/** A delegate that is invoked when when the browser needs to dismiss all dialogs */
 	FSimpleDelegate OnDismissAllDialogs;
 
-	/** The initial throbber setting */
-	bool bShowInitialThrobber;
+	FDelegateHandle SlateParentWindowSetupTickHandle;
+
+	FOnSuppressContextMenu OnSuppressContextMenu;
+
+protected:
+	bool HandleSuppressContextMenu();
 
 };

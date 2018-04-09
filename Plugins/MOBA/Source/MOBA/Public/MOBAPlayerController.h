@@ -9,7 +9,7 @@
 class AMHUD;
 class AHeroCharacter;
 class AEquipment;
-
+class UWebInterface;
 
 UCLASS()
 class AMOBAPlayerController : public APlayerController
@@ -105,6 +105,11 @@ public:
 	void OnMouseLButtonPressed1();
 	void OnMouseLButtonPressed2();
 	void OnMouseLButtonReleased();
+
+	void MouseDownCallback(FKey key, float X, float Y);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void SetWebUICallback(UWebInterface* wi);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SubClass")
