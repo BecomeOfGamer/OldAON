@@ -53,8 +53,7 @@ public:
 	AHeroCharacter* LocalHero;
 
 	// 有註冊的鍵盤事件
-	TArray<FKey> KeyMapping;
-	TMap<FKey, EKeyBehavior> KeyMapping2;
+	TMap<FKey, EKeyBehavior> KeyMapping;
 
 	AFlannActor* FlannActor = nullptr;
 	AMqttRoomActor *RoomActor = nullptr;

@@ -126,11 +126,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	AHeroCharacter* GetMouseTarget(float MinDistance);
 	
-
-	void KeyboardCallUseSkill2(EKeyBehavior idx);
-
 	// use skill callback by localcontroller
-	void KeyboardCallUseSkill(int32 idx);
+	void KeyboardCallUseSkill(EKeyBehavior idx);
+
 	
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	FVector GetCurrentDirection();
@@ -166,6 +164,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void GetExpPosition(FVector2D& pos, FVector2D& size);
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	AHeroCharacter* F1Hero;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TArray<AHeroCharacter*> HeroCanSelection;
 	

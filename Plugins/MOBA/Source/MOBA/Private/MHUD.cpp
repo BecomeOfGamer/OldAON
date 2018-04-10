@@ -519,7 +519,7 @@ void AMHUD::HeroAttackSceneObject(ASceneObject* SceneObj)
 	}
 }
 
-void AMHUD::KeyboardCallUseSkill2(EKeyBehavior kb)
+void AMHUD::KeyboardCallUseSkill(EKeyBehavior kb)
 {
 	if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
@@ -538,17 +538,16 @@ void AMHUD::KeyboardCallUseSkill2(EKeyBehavior kb)
 			HUDStatus = EMHUDStatus::Attack;
 		}
 	}
-}
-
-void AMHUD::KeyboardCallUseSkill(int32 idx)
-{
-	if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
+	if (kb == EKeyBehavior::KEY_SELECT_OWNED_HERO)
 	{
-		bool res = CurrentSelection[0]->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120 * ViewportScale));
-		CurrentSkillIndex = idx;
-		if (res)
+		HUDStatus = EMHUDStatus::Normal;
+		ClearAllSelection();
+		ClickedSelected = true;
+		if (IsValid(F1Hero))
 		{
-			HUDStatus = EMHUDStatus::SkillHint;
+			CurrentSelection.Add(F1Hero);
+			F1Hero->SelectionOn();
+			CurrentSelectTarget = F1Hero;
 		}
 	}
 }

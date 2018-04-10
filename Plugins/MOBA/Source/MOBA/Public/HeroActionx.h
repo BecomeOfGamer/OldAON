@@ -38,6 +38,8 @@ enum class EKeyBehavior : uint8
 	KEY_MOVE,
 	// 停止所有動作
 	KEY_STOP,
+	// 選擇自己的英雄
+	KEY_SELECT_OWNED_HERO,
 };
 
 UENUM(BlueprintType)

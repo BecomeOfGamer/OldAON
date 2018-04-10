@@ -62,14 +62,9 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Client InputKey ") + Key.ToString());
 	if (EventType == IE_Pressed && Hud)
 	{
-		if (KeyMapping2.Contains(Key))
+		if (KeyMapping.Contains(Key))
 		{
-			Hud->KeyboardCallUseSkill2(KeyMapping2[Key]);
-		}
-		int32 idx = KeyMapping.Find(Key);
-		if (idx != INDEX_NONE)
-		{
-			//Hud->KeyboardCallUseSkill(idx);
+			Hud->KeyboardCallUseSkill(KeyMapping[Key]);
 		}
 	}
 	if (Key == EKeys::LeftShift && Hud)
@@ -248,22 +243,18 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 		if (Hud)
 		{
 			Hud->LocalController = this;
-			KeyMapping.Add(EKeys::W);
-			KeyMapping.Add(EKeys::E);
-			KeyMapping.Add(EKeys::R);
-			KeyMapping.Add(EKeys::T);
-			KeyMapping.Add(EKeys::D);
+			KeyMapping.Add(EKeys::W, EKeyBehavior::KEY_SKILL_1);
+			KeyMapping.Add(EKeys::E, EKeyBehavior::KEY_SKILL_2);
+			KeyMapping.Add(EKeys::R, EKeyBehavior::KEY_SKILL_3);
+			KeyMapping.Add(EKeys::T, EKeyBehavior::KEY_SKILL_4);
+			KeyMapping.Add(EKeys::D, EKeyBehavior::KEY_SKILL_5);
+			KeyMapping.Add(EKeys::F, EKeyBehavior::KEY_SKILL_6);
 
-			KeyMapping2.Add(EKeys::W, EKeyBehavior::KEY_SKILL_1);
-			KeyMapping2.Add(EKeys::E, EKeyBehavior::KEY_SKILL_2);
-			KeyMapping2.Add(EKeys::R, EKeyBehavior::KEY_SKILL_3);
-			KeyMapping2.Add(EKeys::T, EKeyBehavior::KEY_SKILL_4);
-			KeyMapping2.Add(EKeys::D, EKeyBehavior::KEY_SKILL_5);
-			KeyMapping2.Add(EKeys::F, EKeyBehavior::KEY_SKILL_6);
+			KeyMapping.Add(EKeys::A, EKeyBehavior::KEY_ATTACK);
+			KeyMapping.Add(EKeys::G, EKeyBehavior::KEY_MOVE);
+			KeyMapping.Add(EKeys::S, EKeyBehavior::KEY_STOP);
 
-			KeyMapping2.Add(EKeys::A, EKeyBehavior::KEY_ATTACK);
-			KeyMapping2.Add(EKeys::G, EKeyBehavior::KEY_MOVE);
-			KeyMapping2.Add(EKeys::S, EKeyBehavior::KEY_STOP);
+			KeyMapping.Add(EKeys::One, EKeyBehavior::KEY_SELECT_OWNED_HERO);
 			if (RoomActor)
 			{
 				RoomActor->m_pAMHUD = Hud;
