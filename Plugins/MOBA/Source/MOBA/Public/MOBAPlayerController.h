@@ -106,7 +106,8 @@ public:
 	void OnMouseLButtonPressed2();
 	void OnMouseLButtonReleased();
 
-	void MouseDownCallback(FKey key, float X, float Y);
+	void MouseDownCallback(FKey key);
+	void MouseUpCallback(FKey key);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SetWebUICallback(UWebInterface* wi);

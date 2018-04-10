@@ -319,9 +319,14 @@ EVisibility ESWebBrowser::GetLoadingThrobberVisibility() const
 	return EVisibility::Hidden;
 }
 
-void ESWebBrowser::SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton)
+void ESWebBrowser::SetMouseDownCallback(std::function< void(FKey) > _LButton)
 {
 	BrowserView->SetMouseDownCallback(_LButton);
+}
+
+void ESWebBrowser::SetMouseUpCallback(std::function< void(FKey) > _LButton)
+{
+	BrowserView->SetMouseUpCallback(_LButton);
 }
 
 void ESWebBrowser::ExecuteJavascript(const FString& ScriptText)

@@ -76,9 +76,14 @@ ESWebBrowserView::~ESWebBrowserView()
 	}
 }
 
-void ESWebBrowserView::SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton)
+void ESWebBrowserView::SetMouseDownCallback(std::function< void(FKey) > _LButton)
 {
 	BrowserViewport->SetMouseDownCallback(_LButton);
+}
+
+void ESWebBrowserView::SetMouseUpCallback(std::function< void(FKey) > _LButton)
+{
+	BrowserViewport->SetMouseUpCallback(_LButton);
 }
 
 void ESWebBrowserView::Construct(const FArguments& InArgs, const TSharedPtr<IEWebBrowserWindow>& InWebBrowserWindow)

@@ -10,9 +10,14 @@
 #include "CEF/CEFWebBrowserWindow.h"
 #endif
 
-void FEWebBrowserViewport::SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton)
+void FEWebBrowserViewport::SetMouseDownCallback(std::function< void(FKey) > _LButton)
 {
-	LButton = _LButton;
+	LButton1 = _LButton;
+}
+
+void FEWebBrowserViewport::SetMouseUpCallback(std::function< void(FKey) > _LButton)
+{
+	LButton2 = _LButton;
 }
 
 FIntPoint FEWebBrowserViewport::GetSize() const
@@ -56,10 +61,9 @@ FReply FEWebBrowserViewport::OnMouseButtonDown(const FGeometry& MyGeometry, cons
 {
 	// Capture mouse on left button down so that you can drag out of the viewport
 	FReply Reply = WebBrowserWindow->OnMouseButtonDown(MyGeometry, MouseEvent, bIsPopup);
+	LButton1(MouseEvent.GetEffectingButton());
 	if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-		FVector2D pos = MouseEvent.GetScreenSpacePosition();
-		LButton(EKeys::LeftMouseButton, pos.X, pos.Y);
 		const FWidgetPath* Path = MouseEvent.GetEventPath();
 		if (Path->IsValid())
 		{
@@ -74,6 +78,7 @@ FReply FEWebBrowserViewport::OnMouseButtonUp(const FGeometry& MyGeometry, const 
 {
 	// Release mouse capture when left button released
 	FReply Reply = WebBrowserWindow->OnMouseButtonUp(MyGeometry, MouseEvent, bIsPopup);
+	LButton2(MouseEvent.GetEffectingButton());
 	if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
 		return Reply.ReleaseMouseCapture();

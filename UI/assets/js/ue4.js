@@ -30,11 +30,15 @@ if (typeof ue == "object" && typeof ue.interface == "object") {
     })(ue.interface);
 }    
 
+
 if (typeof ue4 == "function") {
     ue4("debug",
     {
         "browser": navigator.userAgent,
         "time": Date.now()
+    });
+    $("#button1").click(function() {
+      ue4("delete",{});
     });
 }
 

@@ -363,16 +363,23 @@ void AMOBAPlayerController::OnMouseLButtonReleased()
 	}
 }
 
-void AMOBAPlayerController::MouseDownCallback(FKey key, float X, float Y)
+void AMOBAPlayerController::MouseDownCallback(FKey key)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
-		FString::Printf(TEXT("MouseDownCallback")));
+	InputKey(key, EInputEvent::IE_Pressed, 0, false);
 }
+
+
+void AMOBAPlayerController::MouseUpCallback(FKey key)
+{
+	InputKey(key, EInputEvent::IE_Released, 0, false);
+}
+
 
 void AMOBAPlayerController::SetWebUICallback(UWebInterface* wi)
 {
 	using namespace std::placeholders;
-	wi->SetMouseDownCallback(std::bind(&AMOBAPlayerController::MouseDownCallback, this, _1, _2, _3));
+	wi->SetMouseDownCallback(std::bind(&AMOBAPlayerController::MouseDownCallback, this, _1));
+	wi->SetMouseUpCallback(std::bind(&AMOBAPlayerController::MouseUpCallback, this, _1));
 }
 
 // network function

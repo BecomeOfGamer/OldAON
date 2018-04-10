@@ -44,8 +44,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Web UI" )
 	FString GetURL() const;
 
-	void SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton);
-	
+	void SetMouseDownCallback(std::function< void(FKey) > _LButton);
+	void SetMouseUpCallback(std::function< void(FKey) > _LButton);
+
 	// Called with ue.interface.broadcast(name, data) in the browser context.
 	UPROPERTY( BlueprintAssignable, Category = "Web UI|Events" )
 	FOnInterfaceEvent OnInterfaceEvent;
@@ -71,3 +72,4 @@ protected:
 #endif
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 };
+

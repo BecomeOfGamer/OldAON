@@ -252,7 +252,8 @@ private:
 	EVisibility GetLoadingThrobberVisibility() const;
 
 public:
-	void SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton);
+	void SetMouseDownCallback(std::function< void(FKey) > _LButton);
+	void SetMouseUpCallback(std::function< void(FKey) > _LButton);
 
 	
 private:

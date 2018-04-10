@@ -34,7 +34,8 @@ public:
 	~FEWebBrowserViewport( )
 	{
 	}
-	void SetMouseDownCallback(std::function< void(FKey, float, float) > _LButton);
+	void SetMouseDownCallback(std::function< void(FKey) > _LButton);
+	void SetMouseUpCallback(std::function< void(FKey) > _LButton);
 	
 	// ISlateViewport interface
 	virtual FIntPoint GetSize() const override;
@@ -61,5 +62,6 @@ private:
 	/** Whether this viewport is showing the browser window or a popup menu widget */
 	bool const						bIsPopup;
 
-	std::function< void(FKey, float, float) > LButton;
+	std::function< void(FKey) > LButton1;
+	std::function< void(FKey) > LButton2;
 };
