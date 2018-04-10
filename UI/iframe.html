@@ -1,0 +1,39 @@
+<html>
+<head>
+<script>
+// create the global ue4(...) helper function
+if (typeof ue == "object" && typeof ue.interface == "object")
+    (function(obj)
+    {
+        if (typeof obj.broadcast != "function")
+            return;
+
+        ue.interface = {};
+        ue.interface.broadcast = function(name, data)
+        {
+            if (typeof data != "undefined")
+                obj.broadcast(name, JSON.stringify(data));
+            else
+                obj.broadcast(name, "");
+        };
+
+        ue4 = ue.interface.broadcast;
+    })(ue.interface);
+
+if (typeof ue4 == "function")
+    ue4("debug",
+    {
+        "browser": navigator.userAgent,
+        "time": Date.now()
+    });
+	
+
+$('#iFrame1').load(function () {
+    $(this).height($(this).contents().height());
+    $(this).width($(this).contents().width());
+});
+
+</script>
+</head>
+<body style=""> <iframe style="width:1280px;height:720px" id="iFrame1" src="https://hackmd.io/iBmrk5KGTvaawmOwHrfS-Q?view"></iframe> </body>
+</html>1

@@ -1,0 +1,17 @@
+body {
+  background-color:transparent;
+}
+
+body {
+}
+
+#status {
+  position:absolute;
+  top:70%;
+  width:40%;
+}
+
+.row {
+  height:20px;
+}
+
