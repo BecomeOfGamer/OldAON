@@ -25,7 +25,7 @@ THIRD_PARTY_INCLUDES_END
 /**
  * Implements CEF App and other Process level interfaces
  */
-class FCEFBrowserApp : public CefApp,
+class FCEFBrowserAppEx : public CefApp,
 	public CefBrowserProcessHandler
 {
 public:
@@ -33,7 +33,7 @@ public:
 	/**
 	 * Default Constructor
 	 */
-	FCEFBrowserApp();
+	FCEFBrowserAppEx();
 
 	/** A delegate this is invoked when an existing browser requests creation of a new browser window. */
 	DECLARE_DELEGATE_OneParam(FOnRenderProcessThreadCreated, CefRefPtr<CefListValue> /*ExtraInfo*/);
@@ -53,6 +53,6 @@ private:
 	FOnRenderProcessThreadCreated RenderProcessThreadCreatedDelegate;
 
 	// Include the default reference counting implementation.
-	IMPLEMENT_REFCOUNTING(FCEFBrowserApp);
+	IMPLEMENT_REFCOUNTING(FCEFBrowserAppEx);
 };
 #endif

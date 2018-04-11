@@ -168,7 +168,7 @@ private:
 	IMPLEMENT_REFCOUNTING(FCefSchemeHandlerFactory);
 };
 
-void FCefSchemeHandlerFactories::AddSchemeHandlerFactory(FString Scheme, FString Domain, IEWebBrowserSchemeHandlerFactory* WebBrowserSchemeHandlerFactory)
+void FCefSchemeHandlerFactoriesEx::AddSchemeHandlerFactory(FString Scheme, FString Domain, IEWebBrowserSchemeHandlerFactory* WebBrowserSchemeHandlerFactory)
 {
 	checkf(WebBrowserSchemeHandlerFactory != nullptr, TEXT("WebBrowserSchemeHandlerFactory must be provided."));
 	CefRefPtr<CefSchemeHandlerFactory> Factory = new FCefSchemeHandlerFactory(WebBrowserSchemeHandlerFactory);
@@ -176,7 +176,7 @@ void FCefSchemeHandlerFactories::AddSchemeHandlerFactory(FString Scheme, FString
 	SchemeHandlerFactories.Emplace(MoveTemp(Scheme), MoveTemp(Domain), MoveTemp(Factory));
 }
 
-void FCefSchemeHandlerFactories::RemoveSchemeHandlerFactory(IEWebBrowserSchemeHandlerFactory* WebBrowserSchemeHandlerFactory)
+void FCefSchemeHandlerFactoriesEx::RemoveSchemeHandlerFactory(IEWebBrowserSchemeHandlerFactory* WebBrowserSchemeHandlerFactory)
 {
 	checkf(WebBrowserSchemeHandlerFactory != nullptr, TEXT("WebBrowserSchemeHandlerFactory must be provided."));
 	SchemeHandlerFactories.RemoveAll([WebBrowserSchemeHandlerFactory](const FFactory& Element)
@@ -185,7 +185,7 @@ void FCefSchemeHandlerFactories::RemoveSchemeHandlerFactory(IEWebBrowserSchemeHa
 	});
 }
 
-void FCefSchemeHandlerFactories::RegisterFactoriesWith(CefRefPtr<CefRequestContext>& Context)
+void FCefSchemeHandlerFactoriesEx::RegisterFactoriesWith(CefRefPtr<CefRequestContext>& Context)
 {
 	if (Context)
 	{
@@ -196,7 +196,7 @@ void FCefSchemeHandlerFactories::RegisterFactoriesWith(CefRefPtr<CefRequestConte
 	}
 }
 
-FCefSchemeHandlerFactories::FFactory::FFactory(FString InScheme, FString InDomain, CefRefPtr<CefSchemeHandlerFactory> InFactory)
+FCefSchemeHandlerFactoriesEx::FFactory::FFactory(FString InScheme, FString InDomain, CefRefPtr<CefSchemeHandlerFactory> InFactory)
 	: Scheme(MoveTemp(InScheme))
 	, Domain(MoveTemp(InDomain))
 	, Factory(MoveTemp(InFactory))

@@ -22,13 +22,13 @@
 // Used to force returning custom content instead of performing a request.
 const FString CustomContentMethod(TEXT("X-GET-CUSTOM-CONTENT"));
 
-FCEFBrowserHandler::FCEFBrowserHandler(bool InUseTransparency)
+FCEFBrowserHandlerEx::FCEFBrowserHandlerEx(bool InUseTransparency)
 : bUseTransparency(InUseTransparency)
 { }
 
-void FCEFBrowserHandler::OnTitleChange(CefRefPtr<CefBrowser> Browser, const CefString& Title)
+void FCEFBrowserHandlerEx::OnTitleChange(CefRefPtr<CefBrowser> Browser, const CefString& Title)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 	if (BrowserWindow.IsValid())
 	{
@@ -36,11 +36,11 @@ void FCEFBrowserHandler::OnTitleChange(CefRefPtr<CefBrowser> Browser, const CefS
 	}
 }
 
-void FCEFBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, const CefString& Url)
+void FCEFBrowserHandlerEx::OnAddressChange(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, const CefString& Url)
 {
 	if (Frame->IsMain())
 	{
-		TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+		TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 		if (BrowserWindow.IsValid())
 		{
@@ -49,9 +49,9 @@ void FCEFBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> Browser, CefRefPt
 	}
 }
 
-bool FCEFBrowserHandler::OnTooltip(CefRefPtr<CefBrowser> Browser, CefString& Text)
+bool FCEFBrowserHandlerEx::OnTooltip(CefRefPtr<CefBrowser> Browser, CefString& Text)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		BrowserWindow->SetToolTip(Text);
@@ -60,14 +60,14 @@ bool FCEFBrowserHandler::OnTooltip(CefRefPtr<CefBrowser> Browser, CefString& Tex
 	return false;
 }
 
-void FCEFBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> Browser)
+void FCEFBrowserHandlerEx::OnAfterCreated(CefRefPtr<CefBrowser> Browser)
 {
 	if(Browser->IsPopup())
 	{
-		TSharedPtr<FCEFWebBrowserWindow> BrowserWindowParent = ParentHandler.get() ? ParentHandler->BrowserWindowPtr.Pin() : nullptr;
+		TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindowParent = ParentHandler.get() ? ParentHandler->BrowserWindowPtr.Pin() : nullptr;
 		if(BrowserWindowParent.IsValid() && ParentHandler->OnCreateWindow().IsBound())
 		{
-			TSharedPtr<FEWebBrowserWindowInfo> NewBrowserWindowInfo = MakeShareable(new FEWebBrowserWindowInfo(Browser, this));
+			TSharedPtr<FEWebBrowserWindowInfoEx> NewBrowserWindowInfo = MakeShareable(new FEWebBrowserWindowInfoEx(Browser, this));
 			TSharedPtr<IEWebBrowserWindow> NewBrowserWindow = IEWebBrowserModule::Get().GetSingleton()->CreateBrowserWindow(
 				BrowserWindowParent,
 				NewBrowserWindowInfo
@@ -75,7 +75,7 @@ void FCEFBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> Browser)
 
 			{
 				// @todo: At the moment we need to downcast since the handler does not support using the interface.
-				TSharedPtr<FCEFWebBrowserWindow> HandlerSpecificBrowserWindow = StaticCastSharedPtr<FCEFWebBrowserWindow>(NewBrowserWindow);
+				TSharedPtr<FCEFWebBrowserWindowEx> HandlerSpecificBrowserWindow = StaticCastSharedPtr<FCEFWebBrowserWindowEx>(NewBrowserWindow);
 				BrowserWindowPtr = HandlerSpecificBrowserWindow;
 			}
 
@@ -97,9 +97,9 @@ void FCEFBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> Browser)
 	}
 }
 
-bool FCEFBrowserHandler::DoClose(CefRefPtr<CefBrowser> Browser)
+bool FCEFBrowserHandlerEx::DoClose(CefRefPtr<CefBrowser> Browser)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if(BrowserWindow.IsValid())
 	{
 		BrowserWindow->OnBrowserClosing();
@@ -127,9 +127,9 @@ bool FCEFBrowserHandler::DoClose(CefRefPtr<CefBrowser> Browser)
 	return false;
 }
 
-void FCEFBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> Browser)
+void FCEFBrowserHandlerEx::OnBeforeClose(CefRefPtr<CefBrowser> Browser)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		BrowserWindow->OnBrowserClosed();
@@ -137,7 +137,7 @@ void FCEFBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> Browser)
 
 }
 
-bool FCEFBrowserHandler::OnBeforePopup( CefRefPtr<CefBrowser> Browser,
+bool FCEFBrowserHandlerEx::OnBeforePopup( CefRefPtr<CefBrowser> Browser,
 	CefRefPtr<CefFrame> Frame,
 	const CefString& TargetUrl,
 	const CefString& TargetFrameName,
@@ -159,7 +159,7 @@ bool FCEFBrowserHandler::OnBeforePopup( CefRefPtr<CefBrowser> Browser,
 	}
 	else
 	{
-		TSharedPtr<FCEFBrowserPopupFeatures> NewBrowserPopupFeatures = MakeShareable(new FCEFBrowserPopupFeatures(PopupFeatures));
+		TSharedPtr<FCEFBrowserPopupFeaturesEx> NewBrowserPopupFeatures = MakeShareable(new FCEFBrowserPopupFeaturesEx(PopupFeatures));
 
 		bool shouldUseTransparency = URL.Contains(TEXT("chrome-devtools")) ? false : bUseTransparency;
 
@@ -169,7 +169,7 @@ bool FCEFBrowserHandler::OnBeforePopup( CefRefPtr<CefBrowser> Browser,
 		cef_color_t B = CefColorGetB(OutSettings.background_color);
 		OutSettings.background_color = CefColorSetARGB(Alpha, R, G, B);
 
-		CefRefPtr<FCEFBrowserHandler> NewHandler(new FCEFBrowserHandler(shouldUseTransparency));
+		CefRefPtr<FCEFBrowserHandlerEx> NewHandler(new FCEFBrowserHandlerEx(shouldUseTransparency));
 		NewHandler->ParentHandler = this;
 		NewHandler->SetPopupFeatures(NewBrowserPopupFeatures);
 		OutClient = NewHandler;
@@ -186,7 +186,7 @@ bool FCEFBrowserHandler::OnBeforePopup( CefRefPtr<CefBrowser> Browser,
 	}
 }
 
-bool FCEFBrowserHandler::OnCertificateError(CefRefPtr<CefBrowser> Browser,
+bool FCEFBrowserHandlerEx::OnCertificateError(CefRefPtr<CefBrowser> Browser,
 	cef_errorcode_t CertError,
 	const CefString &RequestUrl,
 	CefRefPtr<CefSSLInfo> SslInfo,
@@ -198,7 +198,7 @@ bool FCEFBrowserHandler::OnCertificateError(CefRefPtr<CefBrowser> Browser,
 	return false;
 }
 
-void FCEFBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> Browser,
+void FCEFBrowserHandlerEx::OnLoadError(CefRefPtr<CefBrowser> Browser,
 	CefRefPtr<CefFrame> Frame,
 	CefLoadHandler::ErrorCode InErrorCode,
 	const CefString& ErrorText,
@@ -207,7 +207,7 @@ void FCEFBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> Browser,
 	// notify browser window
 	if (Frame->IsMain())
 	{
-		TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+		TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 		if (BrowserWindow.IsValid())
 		{
@@ -217,19 +217,19 @@ void FCEFBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> Browser,
 }
 
 #if PLATFORM_LINUX
-void FCEFBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame)
+void FCEFBrowserHandlerEx::OnLoadStart(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame)
 {
 }
 #else
-void FCEFBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, TransitionType CefTransitionType)
+void FCEFBrowserHandlerEx::OnLoadStart(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, TransitionType CefTransitionType)
 {
 }
 #endif
 
 
-void FCEFBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> Browser, bool bIsLoading, bool bCanGoBack, bool bCanGoForward)
+void FCEFBrowserHandlerEx::OnLoadingStateChange(CefRefPtr<CefBrowser> Browser, bool bIsLoading, bool bCanGoBack, bool bCanGoForward)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 	if (BrowserWindow.IsValid())
 	{
@@ -237,7 +237,7 @@ void FCEFBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> Browser, boo
 	}
 }
 
-bool FCEFBrowserHandler::GetRootScreenRect(CefRefPtr<CefBrowser> Browser, CefRect& Rect)
+bool FCEFBrowserHandlerEx::GetRootScreenRect(CefRefPtr<CefBrowser> Browser, CefRect& Rect)
 {
 	FDisplayMetrics DisplayMetrics;
 	FSlateApplication::Get().GetDisplayMetrics(DisplayMetrics);
@@ -246,9 +246,9 @@ bool FCEFBrowserHandler::GetRootScreenRect(CefRefPtr<CefBrowser> Browser, CefRec
 	return true;
 }
 
-bool FCEFBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> Browser, CefRect& Rect)
+bool FCEFBrowserHandlerEx::GetViewRect(CefRefPtr<CefBrowser> Browser, CefRect& Rect)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 	if (BrowserWindow.IsValid())
 	{
@@ -260,13 +260,13 @@ bool FCEFBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> Browser, CefRect& Rec
 	}
 }
 
-void FCEFBrowserHandler::OnPaint(CefRefPtr<CefBrowser> Browser,
+void FCEFBrowserHandlerEx::OnPaint(CefRefPtr<CefBrowser> Browser,
 	PaintElementType Type,
 	const RectList& DirtyRects,
 	const void* Buffer,
 	int Width, int Height)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 	if (BrowserWindow.IsValid())
 	{
@@ -274,9 +274,9 @@ void FCEFBrowserHandler::OnPaint(CefRefPtr<CefBrowser> Browser,
 	}
 }
 
-void FCEFBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> Browser, CefCursorHandle Cursor, CefRenderHandler::CursorType Type, const CefCursorInfo& CustomCursorInfo)
+void FCEFBrowserHandlerEx::OnCursorChange(CefRefPtr<CefBrowser> Browser, CefCursorHandle Cursor, CefRenderHandler::CursorType Type, const CefCursorInfo& CustomCursorInfo)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 	if (BrowserWindow.IsValid())
 	{
@@ -285,9 +285,9 @@ void FCEFBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> Browser, CefCursor
 
 }
 
-void FCEFBrowserHandler::OnPopupShow(CefRefPtr<CefBrowser> Browser, bool bShow)
+void FCEFBrowserHandlerEx::OnPopupShow(CefRefPtr<CefBrowser> Browser, bool bShow)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 	if (BrowserWindow.IsValid())
 	{
@@ -296,9 +296,9 @@ void FCEFBrowserHandler::OnPopupShow(CefRefPtr<CefBrowser> Browser, bool bShow)
 
 }
 
-void FCEFBrowserHandler::OnPopupSize(CefRefPtr<CefBrowser> Browser, const CefRect& Rect)
+void FCEFBrowserHandlerEx::OnPopupSize(CefRefPtr<CefBrowser> Browser, const CefRect& Rect)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 	if (BrowserWindow.IsValid())
 	{
@@ -306,7 +306,7 @@ void FCEFBrowserHandler::OnPopupSize(CefRefPtr<CefBrowser> Browser, const CefRec
 	}
 }
 
-bool FCEFBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> Browser, CefScreenInfo& ScreenInfo)
+bool FCEFBrowserHandlerEx::GetScreenInfo(CefRefPtr<CefBrowser> Browser, CefScreenInfo& ScreenInfo)
 {
 	TSharedPtr<FWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
 
@@ -325,12 +325,12 @@ bool FCEFBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> Browser, CefScreenI
 
 
 #if !PLATFORM_LINUX
-void FCEFBrowserHandler::OnImeCompositionRangeChanged(
+void FCEFBrowserHandlerEx::OnImeCompositionRangeChanged(
 	CefRefPtr<CefBrowser> Browser,
 	const CefRange& SelectionRange,
 	const CefRenderHandler::RectList& CharacterBounds)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		BrowserWindow->OnImeCompositionRangeChanged(Browser, SelectionRange, CharacterBounds);
@@ -338,7 +338,7 @@ void FCEFBrowserHandler::OnImeCompositionRangeChanged(
 }
 #endif
 
-CefRequestHandler::ReturnValue FCEFBrowserHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, CefRefPtr<CefRequest> Request, CefRefPtr<CefRequestCallback> Callback)
+CefRequestHandler::ReturnValue FCEFBrowserHandlerEx::OnBeforeResourceLoad(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, CefRefPtr<CefRequest> Request, CefRefPtr<CefRequestCallback> Callback)
 {
 	// Current thread is IO thread. We need to invoke BrowserWindow->GetResourceContent on the UI (aka Game) thread:
 	CefPostTask(TID_UI, new FCEFBrowserClosureTask(this, [=]()
@@ -357,7 +357,7 @@ CefRequestHandler::ReturnValue FCEFBrowserHandler::OnBeforeResourceLoad(CefRefPt
 			HeaderMap.insert(std::pair<CefString, CefString>(*LanguageHeaderText, *LocaleCode));
 		}
 
-		TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+		TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 
 		if (BrowserWindow.IsValid())
 		{
@@ -398,22 +398,22 @@ CefRequestHandler::ReturnValue FCEFBrowserHandler::OnBeforeResourceLoad(CefRefPt
 	return RV_CONTINUE_ASYNC;
 }
 
-void FCEFBrowserHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> Browser, TerminationStatus Status)
+void FCEFBrowserHandlerEx::OnRenderProcessTerminated(CefRefPtr<CefBrowser> Browser, TerminationStatus Status)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		BrowserWindow->OnRenderProcessTerminated(Status);
 	}
 }
 
-bool FCEFBrowserHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> Browser,
+bool FCEFBrowserHandlerEx::OnBeforeBrowse(CefRefPtr<CefBrowser> Browser,
 	CefRefPtr<CefFrame> Frame,
 	CefRefPtr<CefRequest> Request,
 	bool IsRedirect)
 {
 	// Current thread: UI thread
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		if(BrowserWindow->OnBeforeBrowse(Browser, Frame, Request, IsRedirect))
@@ -425,7 +425,7 @@ bool FCEFBrowserHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> Browser,
 	return false;
 }
 
-CefRefPtr<CefResourceHandler> FCEFBrowserHandler::GetResourceHandler( CefRefPtr<CefBrowser> Browser, CefRefPtr< CefFrame > Frame, CefRefPtr< CefRequest > Request )
+CefRefPtr<CefResourceHandler> FCEFBrowserHandlerEx::GetResourceHandler( CefRefPtr<CefBrowser> Browser, CefRefPtr< CefFrame > Frame, CefRefPtr< CefRequest > Request )
 {
 
 	if (Request->GetMethod() == *CustomContentMethod)
@@ -446,23 +446,23 @@ CefRefPtr<CefResourceHandler> FCEFBrowserHandler::GetResourceHandler( CefRefPtr<
 			// reply with the post data
 			CefPostData::ElementVector Elements;
 			Request->GetPostData()->GetElements(Elements);
-			return new FCEFBrowserByteResource(Elements[0], MimeType);
+			return new FCEFBrowserByteResourceEx(Elements[0], MimeType);
 		}
 	}
 	return nullptr;
 }
 
-void FCEFBrowserHandler::SetBrowserWindow(TSharedPtr<FCEFWebBrowserWindow> InBrowserWindow)
+void FCEFBrowserHandlerEx::SetBrowserWindow(TSharedPtr<FCEFWebBrowserWindowEx> InBrowserWindow)
 {
 	BrowserWindowPtr = InBrowserWindow;
 }
 
-bool FCEFBrowserHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser,
+bool FCEFBrowserHandlerEx::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser,
 	CefProcessId SourceProcess,
 	CefRefPtr<CefProcessMessage> Message)
 {
 	bool Retval = false;
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		Retval = BrowserWindow->OnProcessMessageReceived(Browser, SourceProcess, Message);
@@ -470,7 +470,7 @@ bool FCEFBrowserHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser,
 	return Retval;
 }
 
-bool FCEFBrowserHandler::ShowDevTools(const CefRefPtr<CefBrowser>& Browser)
+bool FCEFBrowserHandlerEx::ShowDevTools(const CefRefPtr<CefBrowser>& Browser)
 {
 	CefPoint Point;
 	CefString TargetUrl = "chrome-devtools://devtools/devtools.html";
@@ -508,7 +508,7 @@ bool FCEFBrowserHandler::ShowDevTools(const CefRefPtr<CefBrowser>& Browser)
 	return !bSuppressWindowCreation;
 }
 
-bool FCEFBrowserHandler::OnKeyEvent(CefRefPtr<CefBrowser> Browser,
+bool FCEFBrowserHandlerEx::OnKeyEvent(CefRefPtr<CefBrowser> Browser,
 	const CefKeyEvent& Event,
 	CefEventHandle OsEvent)
 {
@@ -566,7 +566,7 @@ bool FCEFBrowserHandler::OnKeyEvent(CefRefPtr<CefBrowser> Browser,
 		}
 	}
 #endif
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		return BrowserWindow->OnUnhandledKeyEvent(Event);
@@ -576,13 +576,13 @@ bool FCEFBrowserHandler::OnKeyEvent(CefRefPtr<CefBrowser> Browser,
 }
 
 #if PLATFORM_LINUX
-bool FCEFBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> Browser, const CefString& OriginUrl, const CefString& AcceptLang, JSDialogType DialogType, const CefString& MessageText, const CefString& DefaultPromptText, CefRefPtr<CefJSDialogCallback> Callback, bool& OutSuppressMessage)
+bool FCEFBrowserHandlerEx::OnJSDialog(CefRefPtr<CefBrowser> Browser, const CefString& OriginUrl, const CefString& AcceptLang, JSDialogType DialogType, const CefString& MessageText, const CefString& DefaultPromptText, CefRefPtr<CefJSDialogCallback> Callback, bool& OutSuppressMessage)
 #else
-bool FCEFBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> Browser, const CefString& OriginUrl, JSDialogType DialogType, const CefString& MessageText, const CefString& DefaultPromptText, CefRefPtr<CefJSDialogCallback> Callback, bool& OutSuppressMessage)
+bool FCEFBrowserHandlerEx::OnJSDialog(CefRefPtr<CefBrowser> Browser, const CefString& OriginUrl, JSDialogType DialogType, const CefString& MessageText, const CefString& DefaultPromptText, CefRefPtr<CefJSDialogCallback> Callback, bool& OutSuppressMessage)
 #endif
 {
 	bool Retval = false;
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		Retval = BrowserWindow->OnJSDialog(DialogType, MessageText, DefaultPromptText, Callback, OutSuppressMessage);
@@ -590,10 +590,10 @@ bool FCEFBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> Browser, const CefStri
 	return Retval;
 }
 
-bool FCEFBrowserHandler::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> Browser, const CefString& MessageText, bool IsReload, CefRefPtr<CefJSDialogCallback> Callback)
+bool FCEFBrowserHandlerEx::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> Browser, const CefString& MessageText, bool IsReload, CefRefPtr<CefJSDialogCallback> Callback)
 {
 	bool Retval = false;
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		Retval = BrowserWindow->OnBeforeUnloadDialog(MessageText, IsReload, Callback);
@@ -601,9 +601,9 @@ bool FCEFBrowserHandler::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> Browser, con
 	return Retval;
 }
 
-void FCEFBrowserHandler::OnResetDialogState(CefRefPtr<CefBrowser> Browser)
+void FCEFBrowserHandlerEx::OnResetDialogState(CefRefPtr<CefBrowser> Browser)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if (BrowserWindow.IsValid())
 	{
 		BrowserWindow->OnResetDialogState();
@@ -611,9 +611,9 @@ void FCEFBrowserHandler::OnResetDialogState(CefRefPtr<CefBrowser> Browser)
 }
 
 
-void FCEFBrowserHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, CefRefPtr<CefContextMenuParams> Params, CefRefPtr<CefMenuModel> Model)
+void FCEFBrowserHandlerEx::OnBeforeContextMenu(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, CefRefPtr<CefContextMenuParams> Params, CefRefPtr<CefMenuModel> Model)
 {
-	TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = BrowserWindowPtr.Pin();
+	TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = BrowserWindowPtr.Pin();
 	if ( BrowserWindow.IsValid() && BrowserWindow->OnSuppressContextMenu().IsBound() && BrowserWindow->OnSuppressContextMenu().Execute() )
 	{
 		Model->Clear();

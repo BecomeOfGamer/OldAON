@@ -25,14 +25,14 @@ THIRD_PARTY_INCLUDES_END
 #endif
 
 class ITextInputMethodSystem;
-class FCEFTextInputMethodContext;
+class FCEFTextInputMethodContextEx;
 class ITextInputMethodChangeNotifier;
 
-class FCEFImeHandler
-	: public TSharedFromThis<FCEFImeHandler>
+class FCEFImeHandlerEx
+	: public TSharedFromThis<FCEFImeHandlerEx>
 {
 public:
-	FCEFImeHandler(CefRefPtr<CefBrowser> Browser);
+	FCEFImeHandlerEx(CefRefPtr<CefBrowser> Browser);
 
 	void UnbindCefBrowser();
 	void CacheBrowserSlateInfo(const TSharedRef<SWidget>& Widget);
@@ -93,13 +93,13 @@ private:
 	ITextInputMethodSystem* TextInputMethodSystem;
 
 	/** IME context for this browser window.  This gets recreated whenever we change focus to an editable input field. */
-	TSharedPtr<FCEFTextInputMethodContext> TextInputMethodContext;
+	TSharedPtr<FCEFTextInputMethodContextEx> TextInputMethodContext;
 
 	/** Notification interface object for IMEs */
 	TSharedPtr<ITextInputMethodChangeNotifier> TextInputMethodChangeNotifier;
 
 	// Allow IME context to access functions only it needs.
-	friend class FCEFTextInputMethodContext;
+	friend class FCEFTextInputMethodContextEx;
 };
 
 #endif

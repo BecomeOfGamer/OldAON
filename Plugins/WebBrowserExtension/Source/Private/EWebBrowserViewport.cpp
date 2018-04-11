@@ -46,7 +46,7 @@ void FEWebBrowserViewport::Tick( const FGeometry& AllottedGeometry, double InCur
 
 #if WITH_CEF3
 		// Forward the AllottedGeometry to the WebBrowserWindow so the IME implementation can use it
-		TSharedPtr<FCEFWebBrowserWindow> CefWebBrowserWindow = StaticCastSharedPtr<FCEFWebBrowserWindow>(WebBrowserWindow);
+		TSharedPtr<FCEFWebBrowserWindowEx> CefWebBrowserWindow = StaticCastSharedPtr<FCEFWebBrowserWindowEx>(WebBrowserWindow);
 		CefWebBrowserWindow->UpdateCachedGeometry(AllottedGeometry);
 #endif
 	}

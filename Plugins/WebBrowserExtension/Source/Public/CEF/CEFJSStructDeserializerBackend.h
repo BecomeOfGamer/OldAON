@@ -28,7 +28,7 @@ THIRD_PARTY_INCLUDES_END
 
 #endif
 
-class FCEFJSScripting;
+class FCEFJSScriptingEx;
 class IStructDeserializerBackend;
 enum class EStructDeserializerBackendTokens;
 class UProperty;
@@ -36,52 +36,52 @@ class UStruct;
 
 #if WITH_CEF3
 
-class ICefContainerWalker
-	: public TSharedFromThis<ICefContainerWalker>
+class ICefContainerWalkerEx
+	: public TSharedFromThis<ICefContainerWalkerEx>
 {
 public:
-	ICefContainerWalker(TSharedPtr<ICefContainerWalker> InParent)
+	ICefContainerWalkerEx(TSharedPtr<ICefContainerWalkerEx> InParent)
 		: Parent(InParent)
 	{}
-	virtual ~ICefContainerWalker() {}
+	virtual ~ICefContainerWalkerEx() {}
 
-	virtual TSharedPtr<ICefContainerWalker> GetNextToken( EStructDeserializerBackendTokens& OutToken, FString& PropertyName ) = 0;
-	virtual bool ReadProperty(TSharedPtr<FCEFJSScripting> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex) = 0;
+	virtual TSharedPtr<ICefContainerWalkerEx> GetNextToken( EStructDeserializerBackendTokens& OutToken, FString& PropertyName ) = 0;
+	virtual bool ReadProperty(TSharedPtr<FCEFJSScriptingEx> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex) = 0;
 
-	TSharedPtr<ICefContainerWalker> Parent;
+	TSharedPtr<ICefContainerWalkerEx> Parent;
 };
 
 class FCefListValueWalker
-	: public ICefContainerWalker
+	: public ICefContainerWalkerEx
 {
 public:
-	FCefListValueWalker(TSharedPtr<ICefContainerWalker> InParent, CefRefPtr<CefListValue> InList)
-		: ICefContainerWalker(InParent)
+	FCefListValueWalker(TSharedPtr<ICefContainerWalkerEx> InParent, CefRefPtr<CefListValue> InList)
+		: ICefContainerWalkerEx(InParent)
 		, List(InList)
 		, Index(-2)
 	{}
 
-	virtual TSharedPtr<ICefContainerWalker> GetNextToken( EStructDeserializerBackendTokens& OutToken, FString& PropertyName ) override;
-	virtual bool ReadProperty(TSharedPtr<FCEFJSScripting> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex ) override;
+	virtual TSharedPtr<ICefContainerWalkerEx> GetNextToken( EStructDeserializerBackendTokens& OutToken, FString& PropertyName ) override;
+	virtual bool ReadProperty(TSharedPtr<FCEFJSScriptingEx> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex ) override;
 
 	CefRefPtr<CefListValue> List;
 	size_t Index;
 };
 
-class FCefDictionaryValueWalker
-	: public ICefContainerWalker
+class FCefDictionaryValueWalkerEx
+	: public ICefContainerWalkerEx
 {
 public:
-	FCefDictionaryValueWalker(TSharedPtr<ICefContainerWalker> InParent, CefRefPtr<CefDictionaryValue> InDictionary)
-		: ICefContainerWalker(InParent)
+	FCefDictionaryValueWalkerEx(TSharedPtr<ICefContainerWalkerEx> InParent, CefRefPtr<CefDictionaryValue> InDictionary)
+		: ICefContainerWalkerEx(InParent)
 		, Dictionary(InDictionary)
 		, Index(-2)
 	{
 		Dictionary->GetKeys(Keys);
 	}
 
-	virtual TSharedPtr<ICefContainerWalker> GetNextToken( EStructDeserializerBackendTokens& OutToken, FString& PropertyName ) override;
-	virtual bool ReadProperty(TSharedPtr<FCEFJSScripting> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex ) override;
+	virtual TSharedPtr<ICefContainerWalkerEx> GetNextToken( EStructDeserializerBackendTokens& OutToken, FString& PropertyName ) override;
+	virtual bool ReadProperty(TSharedPtr<FCEFJSScriptingEx> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex ) override;
 
 private:
 	CefRefPtr<CefDictionaryValue> Dictionary;
@@ -92,7 +92,7 @@ private:
 /**
  * Implements a writer for UStruct serialization using CefDictionary.
  */
-class FCEFJSStructDeserializerBackend
+class FCEFJSStructDeserializerBackendEx
 	: public IStructDeserializerBackend
 {
 public:
@@ -102,9 +102,9 @@ public:
 	 *
 	 * @param Archive The archive to deserialize from.
 	 */
-	FCEFJSStructDeserializerBackend(TSharedPtr<FCEFJSScripting> InScripting, CefRefPtr<CefDictionaryValue> InDictionary)
+	FCEFJSStructDeserializerBackendEx(TSharedPtr<FCEFJSScriptingEx> InScripting, CefRefPtr<CefDictionaryValue> InDictionary)
 		: Scripting(InScripting)
-		, Walker(new FCefDictionaryValueWalker(nullptr, InDictionary))
+		, Walker(new FCefDictionaryValueWalkerEx(nullptr, InDictionary))
 		, CurrentPropertyName()
 	{ }
 
@@ -121,9 +121,9 @@ public:
 	virtual void SkipStructure() override;
 
 private:
-	TSharedPtr<FCEFJSScripting> Scripting;
+	TSharedPtr<FCEFJSScriptingEx> Scripting;
 	/** Holds the source CEF dictionary containing a serialized verion of the structure. */
-	TSharedPtr<ICefContainerWalker> Walker;
+	TSharedPtr<ICefContainerWalkerEx> Walker;
 	FString CurrentPropertyName;
 };
 

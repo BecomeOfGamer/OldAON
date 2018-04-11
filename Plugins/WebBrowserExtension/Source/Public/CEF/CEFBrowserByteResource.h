@@ -28,14 +28,14 @@ THIRD_PARTY_INCLUDES_END
 /**
  * Implements a resource handler that will return the contents of a string as the result.
  */
-class FCEFBrowserByteResource
+class FCEFBrowserByteResourceEx
 	: public CefResourceHandler
 {
 public:
 	/**
 	 */
-	FCEFBrowserByteResource(const CefRefPtr<CefPostDataElement>& PostData, const FString& InMimeType);
-	~FCEFBrowserByteResource();
+	FCEFBrowserByteResourceEx(const CefRefPtr<CefPostDataElement>& PostData, const FString& InMimeType);
+	~FCEFBrowserByteResourceEx();
 	
 	// CefResourceHandler interface
 	virtual void Cancel() override;
@@ -50,7 +50,7 @@ private:
 	FString MimeType;
 	
 	// Include the default reference counting implementation.
-	IMPLEMENT_REFCOUNTING(FCEFBrowserByteResource);
+	IMPLEMENT_REFCOUNTING(FCEFBrowserByteResourceEx);
 };
 
 

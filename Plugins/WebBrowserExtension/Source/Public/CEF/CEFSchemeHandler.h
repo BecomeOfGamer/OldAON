@@ -29,7 +29,7 @@ THIRD_PARTY_INCLUDES_END
 /**
  * Implementation for managing CEF custom scheme handlers.
  */
-class FCefSchemeHandlerFactories
+class FCefSchemeHandlerFactoriesEx
 {
 public:
 	/**

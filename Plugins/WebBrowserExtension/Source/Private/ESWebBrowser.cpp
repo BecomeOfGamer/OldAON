@@ -6,7 +6,7 @@
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Images/SThrobber.h"
 
-#define LOCTEXT_NAMESPACE "WebBrowser"
+#define LOCTEXT_NAMESPACE "WebBrowserExtension"
 
 ESWebBrowser::ESWebBrowser()
 {

@@ -4,7 +4,7 @@
 
 #if WITH_CEF3
 
-FCEFBrowserPopupFeatures::FCEFBrowserPopupFeatures()
+FCEFBrowserPopupFeaturesEx::FCEFBrowserPopupFeaturesEx()
 	: X(0)
 	, bXSet(false)
 	, Y(0)
@@ -25,7 +25,7 @@ FCEFBrowserPopupFeatures::FCEFBrowserPopupFeatures()
 }
 
 
-FCEFBrowserPopupFeatures::FCEFBrowserPopupFeatures( const CefPopupFeatures& PopupFeatures )
+FCEFBrowserPopupFeaturesEx::FCEFBrowserPopupFeaturesEx( const CefPopupFeatures& PopupFeatures )
 {
 	X = PopupFeatures.x;
 	bXSet = PopupFeatures.xSet ? true : false;
@@ -45,91 +45,91 @@ FCEFBrowserPopupFeatures::FCEFBrowserPopupFeatures( const CefPopupFeatures& Popu
 	bIsDialog = PopupFeatures.dialog ? true : false;
 }
 
-FCEFBrowserPopupFeatures::~FCEFBrowserPopupFeatures()
+FCEFBrowserPopupFeaturesEx::~FCEFBrowserPopupFeaturesEx()
 {
 }
 
-int FCEFBrowserPopupFeatures::GetX() const
+int FCEFBrowserPopupFeaturesEx::GetX() const
 {
 	return X;
 }
 
-bool FCEFBrowserPopupFeatures::IsXSet() const
+bool FCEFBrowserPopupFeaturesEx::IsXSet() const
 {
 	return bXSet;
 }
 
-int FCEFBrowserPopupFeatures::GetY() const
+int FCEFBrowserPopupFeaturesEx::GetY() const
 {
 	return Y;
 }
 
-bool FCEFBrowserPopupFeatures::IsYSet() const
+bool FCEFBrowserPopupFeaturesEx::IsYSet() const
 {
 	return bYSet;
 }
 
-int FCEFBrowserPopupFeatures::GetWidth() const
+int FCEFBrowserPopupFeaturesEx::GetWidth() const
 {
 	return Width;
 }
 
-bool FCEFBrowserPopupFeatures::IsWidthSet() const
+bool FCEFBrowserPopupFeaturesEx::IsWidthSet() const
 {
 	return bWidthSet;
 }
 
-int FCEFBrowserPopupFeatures::GetHeight() const
+int FCEFBrowserPopupFeaturesEx::GetHeight() const
 {
 	return Height;
 }
 
-bool FCEFBrowserPopupFeatures::IsHeightSet() const
+bool FCEFBrowserPopupFeaturesEx::IsHeightSet() const
 {
 	return bHeightSet;
 }
 
-bool FCEFBrowserPopupFeatures::IsMenuBarVisible() const
+bool FCEFBrowserPopupFeaturesEx::IsMenuBarVisible() const
 {
 	return bMenuBarVisible;
 }
 
-bool FCEFBrowserPopupFeatures::IsStatusBarVisible() const
+bool FCEFBrowserPopupFeaturesEx::IsStatusBarVisible() const
 {
 	return bStatusBarVisible;
 }
 
-bool FCEFBrowserPopupFeatures::IsToolBarVisible() const
+bool FCEFBrowserPopupFeaturesEx::IsToolBarVisible() const
 {
 	return bToolBarVisible;
 }
 
-bool FCEFBrowserPopupFeatures::IsLocationBarVisible() const
+bool FCEFBrowserPopupFeaturesEx::IsLocationBarVisible() const
 {
 	return bLocationBarVisible;
 }
 
-bool FCEFBrowserPopupFeatures::IsScrollbarsVisible() const
+bool FCEFBrowserPopupFeaturesEx::IsScrollbarsVisible() const
 {
 	return bScrollbarsVisible;
 }
 
-bool FCEFBrowserPopupFeatures::IsResizable() const
+bool FCEFBrowserPopupFeaturesEx::IsResizable() const
 {
 	return bResizable;
 }
 
-bool FCEFBrowserPopupFeatures::IsFullscreen() const
+bool FCEFBrowserPopupFeaturesEx::IsFullscreen() const
 {
 	return bIsFullscreen;
 }
 
-bool FCEFBrowserPopupFeatures::IsDialog() const
+bool FCEFBrowserPopupFeaturesEx::IsDialog() const
 {
 	return bIsDialog;
 }
 
-TArray<FString> FCEFBrowserPopupFeatures::GetAdditionalFeatures() const
+TArray<FString> FCEFBrowserPopupFeaturesEx::GetAdditionalFeatures() const
 {
 	TArray<FString> Empty;
 	return Empty;

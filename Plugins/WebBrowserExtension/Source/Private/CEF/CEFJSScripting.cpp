@@ -46,9 +46,9 @@ namespace
 	}
 }
 
-CefRefPtr<CefDictionaryValue> FCEFJSScripting::ConvertStruct(UStruct* TypeInfo, const void* StructPtr)
+CefRefPtr<CefDictionaryValue> FCEFJSScriptingEx::ConvertStruct(UStruct* TypeInfo, const void* StructPtr)
 {
-	FCEFJSStructSerializerBackend Backend (SharedThis(this));
+	FCEFJSStructSerializerBackendEx Backend (SharedThis(this));
 	FStructSerializer::Serialize(StructPtr, *TypeInfo, Backend);
 
 	CefRefPtr<CefDictionaryValue> Result = CefDictionaryValue::Create();
@@ -58,7 +58,7 @@ CefRefPtr<CefDictionaryValue> FCEFJSScripting::ConvertStruct(UStruct* TypeInfo, 
 	return Result;
 }
 
-CefRefPtr<CefDictionaryValue> FCEFJSScripting::ConvertObject(UObject* Object)
+CefRefPtr<CefDictionaryValue> FCEFJSScriptingEx::ConvertObject(UObject* Object)
 {
 	CefRefPtr<CefDictionaryValue> Result = CefDictionaryValue::Create();
 	RetainBinding(Object);
@@ -79,7 +79,7 @@ CefRefPtr<CefDictionaryValue> FCEFJSScripting::ConvertObject(UObject* Object)
 }
 
 
-bool FCEFJSScripting::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, CefProcessId SourceProcess, CefRefPtr<CefProcessMessage> Message)
+bool FCEFJSScriptingEx::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, CefProcessId SourceProcess, CefRefPtr<CefProcessMessage> Message)
 {
 	bool Result = false;
 	FString MessageName = Message->GetName().ToWString().c_str();
@@ -94,7 +94,7 @@ bool FCEFJSScripting::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, Ce
 	return Result;
 }
 
-void FCEFJSScripting::SendProcessMessage(CefRefPtr<CefProcessMessage> Message)
+void FCEFJSScriptingEx::SendProcessMessage(CefRefPtr<CefProcessMessage> Message)
 {
 	if (IsValid() )
 	{
@@ -102,7 +102,7 @@ void FCEFJSScripting::SendProcessMessage(CefRefPtr<CefProcessMessage> Message)
 	}
 }
 
-CefRefPtr<CefDictionaryValue> FCEFJSScripting::GetPermanentBindings()
+CefRefPtr<CefDictionaryValue> FCEFJSScriptingEx::GetPermanentBindings()
 {
 	CefRefPtr<CefDictionaryValue> Result = CefDictionaryValue::Create();
 	for(auto& Entry : PermanentUObjectsByName)
@@ -113,7 +113,7 @@ CefRefPtr<CefDictionaryValue> FCEFJSScripting::GetPermanentBindings()
 }
 
 
-void FCEFJSScripting::BindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
+void FCEFJSScriptingEx::BindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
 {
 	const FString ExposedName = GetBindingName(Name, Object);
 	CefRefPtr<CefDictionaryValue> Converted = ConvertObject(Object);
@@ -144,7 +144,7 @@ void FCEFJSScripting::BindUObject(const FString& Name, UObject* Object, bool bIs
 	SendProcessMessage(SetValueMessage);
 }
 
-void FCEFJSScripting::UnbindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
+void FCEFJSScriptingEx::UnbindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
 {
 	const FString ExposedName = GetBindingName(Name, Object);
 
@@ -174,7 +174,7 @@ void FCEFJSScripting::UnbindUObject(const FString& Name, UObject* Object, bool b
 	SendProcessMessage(DeleteValueMessage);
 }
 
-bool FCEFJSScripting::HandleReleaseUObjectMessage(CefRefPtr<CefListValue> MessageArguments)
+bool FCEFJSScriptingEx::HandleReleaseUObjectMessage(CefRefPtr<CefListValue> MessageArguments)
 {
 	FGuid ObjectKey;
 	// Message arguments are Name, Value, bGlobal
@@ -200,7 +200,7 @@ bool FCEFJSScripting::HandleReleaseUObjectMessage(CefRefPtr<CefListValue> Messag
 	return true;
 }
 
-bool FCEFJSScripting::HandleExecuteUObjectMethodMessage(CefRefPtr<CefListValue> MessageArguments)
+bool FCEFJSScriptingEx::HandleExecuteUObjectMethodMessage(CefRefPtr<CefListValue> MessageArguments)
 {
 	FGuid ObjectKey;
 	// Message arguments are Name, Value, bGlobal
@@ -284,7 +284,7 @@ bool FCEFJSScripting::HandleExecuteUObjectMethodMessage(CefRefPtr<CefListValue> 
 		// UFunction is a subclass of UStruct, so we can treat the arguments as a struct for deserialization
 		Params.AddUninitialized(ParamsSize);
 		Function->InitializeStruct(Params.GetData());
-		FCEFJSStructDeserializerBackend Backend = FCEFJSStructDeserializerBackend(SharedThis(this), NamedArgs);
+		FCEFJSStructDeserializerBackendEx Backend = FCEFJSStructDeserializerBackendEx(SharedThis(this), NamedArgs);
 		FStructDeserializer::Deserialize(Params.GetData(), *Function, Backend);
 	}
 
@@ -309,7 +309,7 @@ bool FCEFJSScripting::HandleExecuteUObjectMethodMessage(CefRefPtr<CefListValue> 
 			{
 				return ParentProperty != nullptr || CandidateProperty == ReturnParam;
 			};
-			FCEFJSStructSerializerBackend ReturnBackend(SharedThis(this));
+			FCEFJSStructSerializerBackendEx ReturnBackend(SharedThis(this));
 			FStructSerializer::Serialize(Params.GetData(), *Function, ReturnBackend, ReturnPolicies);
 			CefRefPtr<CefDictionaryValue> ResultDict = ReturnBackend.GetResult();
 
@@ -321,19 +321,19 @@ bool FCEFJSScripting::HandleExecuteUObjectMethodMessage(CefRefPtr<CefListValue> 
 	return true;
 }
 
-void FCEFJSScripting::UnbindCefBrowser()
+void FCEFJSScriptingEx::UnbindCefBrowser()
 {
 	InternalCefBrowser = nullptr;
 }
 
-void FCEFJSScripting::InvokeJSErrorResult(FGuid FunctionId, const FString& Error)
+void FCEFJSScriptingEx::InvokeJSErrorResult(FGuid FunctionId, const FString& Error)
 {
 	CefRefPtr<CefListValue> FunctionArguments = CefListValue::Create();
 	FunctionArguments->SetString(0, *Error);
 	InvokeJSFunction(FunctionId, FunctionArguments, true);
 }
 
-void FCEFJSScripting::InvokeJSFunction(FGuid FunctionId, int32 ArgCount, FEWebJSParam Arguments[], bool bIsError)
+void FCEFJSScriptingEx::InvokeJSFunction(FGuid FunctionId, int32 ArgCount, FEWebJSParam Arguments[], bool bIsError)
 {
 	CefRefPtr<CefListValue> FunctionArguments = CefListValue::Create();
 	for ( int32 i=0; i<ArgCount; i++)
@@ -343,7 +343,7 @@ void FCEFJSScripting::InvokeJSFunction(FGuid FunctionId, int32 ArgCount, FEWebJS
 	InvokeJSFunction(FunctionId, FunctionArguments, bIsError);
 }
 
-void FCEFJSScripting::InvokeJSFunction(FGuid FunctionId, const CefRefPtr<CefListValue>& FunctionArguments, bool bIsError)
+void FCEFJSScriptingEx::InvokeJSFunction(FGuid FunctionId, const CefRefPtr<CefListValue>& FunctionArguments, bool bIsError)
 {
 	CefRefPtr<CefProcessMessage> Message = CefProcessMessage::Create(TEXT("UE::ExecuteJSFunction"));
 	CefRefPtr<CefListValue> MessageArguments = Message->GetArgumentList();

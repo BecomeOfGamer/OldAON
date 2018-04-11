@@ -36,7 +36,7 @@ public:
 	 */
 	static inline IEWebBrowserModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked< IEWebBrowserModule >("WebBrowser");
+		return FModuleManager::LoadModuleChecked< IEWebBrowserModule >("WebBrowserExtension");
 	}
 	
 	/**
@@ -46,7 +46,7 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded("WebBrowser");
+		return FModuleManager::Get().IsModuleLoaded("WebBrowserExtension");
 	}
 
 	/**

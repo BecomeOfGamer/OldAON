@@ -24,13 +24,13 @@ THIRD_PARTY_INCLUDES_END
 #endif
 #include "CEF/CEFSchemeHandler.h"
 class CefListValue;
-class FCEFBrowserApp;
-class FCEFWebBrowserWindow;
+class FCEFBrowserAppEx;
+class FCEFWebBrowserWindowEx;
 #endif
 
 class IEWebBrowserCookieManager;
 class IEWebBrowserWindow;
-struct FEWebBrowserWindowInfo;
+struct FEWebBrowserWindowInfoEx;
 struct FEWebBrowserInitSettings;
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
@@ -66,8 +66,8 @@ public:
 	virtual TSharedRef<IEWebBrowserWindowFactory> GetWebBrowserWindowFactory() const override;
 
 	TSharedPtr<IEWebBrowserWindow> CreateBrowserWindow(
-		TSharedPtr<FCEFWebBrowserWindow>& BrowserWindowParent,
-		TSharedPtr<FEWebBrowserWindowInfo>& BrowserWindowInfo) override;
+		TSharedPtr<FCEFWebBrowserWindowEx>& BrowserWindowParent,
+		TSharedPtr<FEWebBrowserWindowInfoEx>& BrowserWindowInfo) override;
 
 	TSharedPtr<IEWebBrowserWindow> CreateBrowserWindow(
 		void* OSWindowHandle,
@@ -127,14 +127,14 @@ private:
 	/** When new render processes are created, send all permanent variable bindings to them. */
 	void HandleRenderProcessCreated(CefRefPtr<CefListValue> ExtraInfo);
 	/** Pointer to the CEF App implementation */
-	CefRefPtr<FCEFBrowserApp>			CEFBrowserApp;
+	CefRefPtr<FCEFBrowserAppEx>			CEFBrowserApp;
 	/** List of currently existing browser windows */
-	TArray<TWeakPtr<FCEFWebBrowserWindow>>	WindowInterfaces;
+	TArray<TWeakPtr<FCEFWebBrowserWindowEx>>	WindowInterfaces;
 	/** Critical section for thread safe modification of WindowInterfaces array. */
 	FCriticalSection WindowInterfacesCS;
 
 	TMap<FString, CefRefPtr<CefRequestContext>> RequestContexts;
-	FCefSchemeHandlerFactories SchemeHandlerFactories;
+	FCefSchemeHandlerFactoriesEx SchemeHandlerFactories;
 #endif
 
 	TSharedRef<IEWebBrowserWindowFactory> WebBrowserWindowFactory;

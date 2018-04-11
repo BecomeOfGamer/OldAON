@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "Rendering/SlateRenderer.h"
 
-class FCEFWebBrowserWindow;
+class FCEFWebBrowserWindowEx;
 class IEWebBrowserCookieManager;
 class IEWebBrowserWindow;
 class IEWebBrowserSchemeHandlerFactory;
-struct FEWebBrowserWindowInfo;
+struct FEWebBrowserWindowInfoEx;
 
 class IEWebBrowserWindowFactory
 {
 public:
 
 	virtual TSharedPtr<IEWebBrowserWindow> Create(
-		TSharedPtr<FCEFWebBrowserWindow>& BrowserWindowParent,
-		TSharedPtr<FEWebBrowserWindowInfo>& BrowserWindowInfo) = 0;
+		TSharedPtr<FCEFWebBrowserWindowEx>& BrowserWindowParent,
+		TSharedPtr<FEWebBrowserWindowInfoEx>& BrowserWindowInfo) = 0;
 
 	virtual TSharedPtr<IEWebBrowserWindow> Create(
 		void* OSWindowHandle,
@@ -96,8 +96,8 @@ public:
 	 * @return New Web Browser Window Interface (may be null if not supported)
 	 */
 	virtual TSharedPtr<IEWebBrowserWindow> CreateBrowserWindow(
-		TSharedPtr<FCEFWebBrowserWindow>& BrowserWindowParent,
-		TSharedPtr<FEWebBrowserWindowInfo>& BrowserWindowInfo
+		TSharedPtr<FCEFWebBrowserWindowEx>& BrowserWindowParent,
+		TSharedPtr<FEWebBrowserWindowInfoEx>& BrowserWindowInfo
 		) = 0;
 
 	/**

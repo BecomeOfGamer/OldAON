@@ -32,7 +32,7 @@ namespace {
 	}
 
 	template<typename ContainerType, typename KeyType>
-	void AssignTokenFromContainer(ContainerType Container, KeyType Key,  EStructDeserializerBackendTokens& OutToken, FString& PropertyName, TSharedPtr<ICefContainerWalker>& Retval)
+	void AssignTokenFromContainer(ContainerType Container, KeyType Key,  EStructDeserializerBackendTokens& OutToken, FString& PropertyName, TSharedPtr<ICefContainerWalkerEx>& Retval)
 	{
 		switch (Container->GetType(Key))
 		{
@@ -52,14 +52,14 @@ namespace {
 				}
 				else
 				{
-					TSharedPtr<ICefContainerWalker> NewWalker(new FCefDictionaryValueWalker(Retval, Dictionary));
+					TSharedPtr<ICefContainerWalkerEx> NewWalker(new FCefDictionaryValueWalkerEx(Retval, Dictionary));
 					Retval = NewWalker->GetNextToken(OutToken, PropertyName);
 				}
 				break;
 			}
 			case VTYPE_LIST:
 			{
-				TSharedPtr<ICefContainerWalker> NewWalker(new FCefListValueWalker(Retval, Container->GetList(Key)));
+				TSharedPtr<ICefContainerWalkerEx> NewWalker(new FCefListValueWalker(Retval, Container->GetList(Key)));
 				Retval = NewWalker->GetNextToken(OutToken, PropertyName);
 				break;
 			}
@@ -154,7 +154,7 @@ namespace {
 	}
 
 	template<typename ContainerType, typename KeyType>
-	bool ReadJSFunctionProperty(TSharedPtr<FCEFJSScripting> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex, CefRefPtr<ContainerType> Container, KeyType Key )
+	bool ReadJSFunctionProperty(TSharedPtr<FCEFJSScriptingEx> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex, CefRefPtr<ContainerType> Container, KeyType Key )
 	{
 		if (Container->GetType(Key) != VTYPE_DICTIONARY || !Property->IsA<UStructProperty>())
 		{
@@ -238,7 +238,7 @@ namespace {
 	}
 
 	template<typename ContainerType, typename KeyType>
-	bool ReadProperty(TSharedPtr<FCEFJSScripting> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex, CefRefPtr<ContainerType> Container, KeyType Key )
+	bool ReadProperty(TSharedPtr<FCEFJSScriptingEx> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex, CefRefPtr<ContainerType> Container, KeyType Key )
 	{
 		return ReadBoolProperty(Property, Outer, Data, ArrayIndex, Container, Key)
 			|| ReadStringProperty(Property, Outer, Data, ArrayIndex, Container, Key)
@@ -256,9 +256,9 @@ namespace {
 	}
 }
 
-TSharedPtr<ICefContainerWalker> FCefListValueWalker::GetNextToken(EStructDeserializerBackendTokens& OutToken, FString& PropertyName)
+TSharedPtr<ICefContainerWalkerEx> FCefListValueWalker::GetNextToken(EStructDeserializerBackendTokens& OutToken, FString& PropertyName)
 {
-	TSharedPtr<ICefContainerWalker> Retval = SharedThis(this);
+	TSharedPtr<ICefContainerWalkerEx> Retval = SharedThis(this);
 	Index++;
 	if (Index == -1)
 	{
@@ -277,14 +277,14 @@ TSharedPtr<ICefContainerWalker> FCefListValueWalker::GetNextToken(EStructDeseria
 	return Retval;
 }
 
-bool FCefListValueWalker::ReadProperty(TSharedPtr<FCEFJSScripting> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex)
+bool FCefListValueWalker::ReadProperty(TSharedPtr<FCEFJSScriptingEx> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex)
 {
 	return ::ReadProperty(Scripting, Property, Outer, Data, ArrayIndex, List, Index);
 }
 
-TSharedPtr<ICefContainerWalker> FCefDictionaryValueWalker::GetNextToken(EStructDeserializerBackendTokens& OutToken, FString& PropertyName)
+TSharedPtr<ICefContainerWalkerEx> FCefDictionaryValueWalkerEx::GetNextToken(EStructDeserializerBackendTokens& OutToken, FString& PropertyName)
 {
-	TSharedPtr<ICefContainerWalker> Retval = SharedThis(this);
+	TSharedPtr<ICefContainerWalkerEx> Retval = SharedThis(this);
 	Index++;
 	if (Index == -1)
 	{
@@ -303,7 +303,7 @@ TSharedPtr<ICefContainerWalker> FCefDictionaryValueWalker::GetNextToken(EStructD
 	return Retval;
 }
 
-bool FCefDictionaryValueWalker::ReadProperty(TSharedPtr<FCEFJSScripting> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex)
+bool FCefDictionaryValueWalkerEx::ReadProperty(TSharedPtr<FCEFJSScriptingEx> Scripting, UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex)
 {
 	return ::ReadProperty(Scripting, Property, Outer, Data, ArrayIndex, Dictionary, Keys[Index]);
 }
@@ -314,25 +314,25 @@ bool FCefDictionaryValueWalker::ReadProperty(TSharedPtr<FCEFJSScripting> Scripti
 
 
 
-const FString& FCEFJSStructDeserializerBackend::GetCurrentPropertyName() const
+const FString& FCEFJSStructDeserializerBackendEx::GetCurrentPropertyName() const
 {
 	return CurrentPropertyName;
 }
 
 
-FString FCEFJSStructDeserializerBackend::GetDebugString() const
+FString FCEFJSStructDeserializerBackendEx::GetDebugString() const
 {
 	return CurrentPropertyName;
 }
 
 
-const FString& FCEFJSStructDeserializerBackend::GetLastErrorMessage() const
+const FString& FCEFJSStructDeserializerBackendEx::GetLastErrorMessage() const
 {
 	return CurrentPropertyName;
 }
 
 
-bool FCEFJSStructDeserializerBackend::GetNextToken( EStructDeserializerBackendTokens& OutToken )
+bool FCEFJSStructDeserializerBackendEx::GetNextToken( EStructDeserializerBackendTokens& OutToken )
 {
 	if (Walker.IsValid())
 	{
@@ -346,13 +346,13 @@ bool FCEFJSStructDeserializerBackend::GetNextToken( EStructDeserializerBackendTo
 }
 
 
-bool FCEFJSStructDeserializerBackend::ReadProperty( UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex )
+bool FCEFJSStructDeserializerBackendEx::ReadProperty( UProperty* Property, UProperty* Outer, void* Data, int32 ArrayIndex )
 {
 	return Walker->ReadProperty(Scripting, Property, Outer, Data, ArrayIndex);
 }
 
 
-void FCEFJSStructDeserializerBackend::SkipArray()
+void FCEFJSStructDeserializerBackendEx::SkipArray()
 {
 	EStructDeserializerBackendTokens Token;
 	int32 depth = 1;
@@ -372,7 +372,7 @@ void FCEFJSStructDeserializerBackend::SkipArray()
 	}
 }
 
-void FCEFJSStructDeserializerBackend::SkipStructure()
+void FCEFJSStructDeserializerBackendEx::SkipStructure()
 {
 	EStructDeserializerBackendTokens Token;
 	int32 depth = 1;

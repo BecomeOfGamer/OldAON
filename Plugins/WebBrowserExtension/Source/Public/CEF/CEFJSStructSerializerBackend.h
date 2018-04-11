@@ -30,7 +30,7 @@ THIRD_PARTY_INCLUDES_END
 
 #endif
 
-class FCEFJSScripting;
+class FCEFJSScriptingEx;
 class IStructSerializerBackend;
 struct FStructSerializerState;
 class FWebJSScripting;
@@ -43,7 +43,7 @@ class UStruct;
 /**
  * Implements a writer for UStruct serialization using CefDictionary.
  */
-class FCEFJSStructSerializerBackend
+class FCEFJSStructSerializerBackendEx
 	: public IStructSerializerBackend
 {
 public:
@@ -51,7 +51,7 @@ public:
 	/**
 	 * Creates and initializes a new instance.
 	 *	 */
-	FCEFJSStructSerializerBackend(TSharedPtr<FCEFJSScripting> InScripting)
+	FCEFJSStructSerializerBackendEx(TSharedPtr<FCEFJSScriptingEx> InScripting)
 		: Scripting(InScripting), Stack(), Result()
 	{ }
 
@@ -96,7 +96,7 @@ private:
 
 	};
 
-	TSharedPtr<FCEFJSScripting> Scripting;
+	TSharedPtr<FCEFJSScriptingEx> Scripting;
 	TArray<StackItem> Stack;
 	CefRefPtr<CefDictionaryValue> Result;
 

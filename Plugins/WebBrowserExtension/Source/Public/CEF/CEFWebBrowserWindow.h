@@ -37,8 +37,8 @@ THIRD_PARTY_INCLUDES_END
 #endif
 
 class FBrowserBufferedVideo;
-class FCEFBrowserHandler;
-class FCEFJSScripting;
+class FCEFBrowserHandlerEx;
+class FCEFJSScriptingEx;
 class FSlateUpdatableTexture;
 class IEWebBrowserPopupFeatures;
 class IEWebBrowserWindow;
@@ -50,7 +50,7 @@ struct FPointerEvent;
 class UObject;
 struct FInputEvent;
 class FWebJSScripting;
-class FCEFImeHandler;
+class FCEFImeHandlerEx;
 class ITextInputMethodSystem;
 
 #if WITH_CEF3
@@ -58,25 +58,25 @@ class ITextInputMethodSystem;
 /**
  * Helper for containing items required for CEF browser window creation.
  */
-struct FEWebBrowserWindowInfo
+struct FEWebBrowserWindowInfoEx
 {
-	FEWebBrowserWindowInfo(CefRefPtr<CefBrowser> InBrowser, CefRefPtr<FCEFBrowserHandler> InHandler)
+	FEWebBrowserWindowInfoEx(CefRefPtr<CefBrowser> InBrowser, CefRefPtr<FCEFBrowserHandlerEx> InHandler)
 		: Browser(InBrowser)
 		, Handler(InHandler)
 	{}
 	CefRefPtr<CefBrowser> Browser;
-	CefRefPtr<FCEFBrowserHandler> Handler;
+	CefRefPtr<FCEFBrowserHandlerEx> Handler;
 };
 
 /**
  * Implementation of interface for dealing with a Web Browser window.
  */
-class FCEFWebBrowserWindow
+class FCEFWebBrowserWindowEx
 	: public IEWebBrowserWindow
-	, public TSharedFromThis<FCEFWebBrowserWindow>
+	, public TSharedFromThis<FCEFWebBrowserWindowEx>
 {
 	// Allow the Handler to access functions only it needs
-	friend class FCEFBrowserHandler;
+	friend class FCEFBrowserHandlerEx;
 
 	// The WebBrowserSingleton should be the only one creating instances of this class
 	friend class FEWebBrowserSingleton;
@@ -97,7 +97,7 @@ private:
 	 * @param bUseTransparency Whether to enable transparency.
 	 * @param bJSBindingToLoweringEnabled Whether we ToLower all JavaScript member names.
 	 */
-	FCEFWebBrowserWindow(CefRefPtr<CefBrowser> Browser, CefRefPtr<FCEFBrowserHandler> Handler, FString Url, TOptional<FString> ContentsToLoad, bool bShowErrorMessage, bool bThumbMouseButtonNavigation, bool bUseTransparency, bool bJSBindingToLoweringEnabled);
+	FCEFWebBrowserWindowEx(CefRefPtr<CefBrowser> Browser, CefRefPtr<FCEFBrowserHandlerEx> Handler, FString Url, TOptional<FString> ContentsToLoad, bool bShowErrorMessage, bool bThumbMouseButtonNavigation, bool bUseTransparency, bool bJSBindingToLoweringEnabled);
 
 	/**
 	 * Create the SWidget for this WebBrowserWindow
@@ -106,7 +106,7 @@ private:
 
 public:
 	/** Virtual Destructor. */
-	virtual ~FCEFWebBrowserWindow();
+	virtual ~FCEFWebBrowserWindowEx();
 
 	bool IsShowingErrorMessages() { return bShowErrorMessage; }
 	bool IsThumbMouseButtonNavigationEnabled() { return bThumbMouseButtonNavigation; }
@@ -157,31 +157,31 @@ public:
 	virtual TSharedPtr<SWindow> GetParentWindow() const override;
 	virtual void SetParentWindow(TSharedPtr<SWindow> Window) override;
 
-	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindow, IEWebBrowserWindow::FOnDocumentStateChanged, FOnDocumentStateChanged);
+	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindowEx, IEWebBrowserWindow::FOnDocumentStateChanged, FOnDocumentStateChanged);
 	virtual FOnDocumentStateChanged& OnDocumentStateChanged() override
 	{
 		return DocumentStateChangedEvent;
 	}
 
-	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindow, IEWebBrowserWindow::FOnTitleChanged, FOnTitleChanged);
+	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindowEx, IEWebBrowserWindow::FOnTitleChanged, FOnTitleChanged);
 	virtual FOnTitleChanged& OnTitleChanged() override
 	{
 		return TitleChangedEvent;
 	}
 
-	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindow, IEWebBrowserWindow::FOnUrlChanged, FOnUrlChanged);
+	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindowEx, IEWebBrowserWindow::FOnUrlChanged, FOnUrlChanged);
 	virtual FOnUrlChanged& OnUrlChanged() override
 	{
 		return UrlChangedEvent;
 	}
 
-	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindow, IEWebBrowserWindow::FOnToolTip, FOnToolTip);
+	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindowEx, IEWebBrowserWindow::FOnToolTip, FOnToolTip);
 	virtual FOnToolTip& OnToolTip() override
 	{
 		return ToolTipEvent;
 	}
 
-	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindow, IEWebBrowserWindow::FOnNeedsRedraw, FOnNeedsRedraw);
+	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindowEx, IEWebBrowserWindow::FOnNeedsRedraw, FOnNeedsRedraw);
 	virtual FOnNeedsRedraw& OnNeedsRedraw() override
 	{
 		return NeedsRedrawEvent;
@@ -217,13 +217,13 @@ public:
 		return WebBrowserHandler->OnBeforePopup();
 	}
 
-	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindow, IEWebBrowserWindow::FOnShowPopup, FOnShowPopup);
+	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindowEx, IEWebBrowserWindow::FOnShowPopup, FOnShowPopup);
 	virtual FOnShowPopup& OnShowPopup() override
 	{
 		return ShowPopupEvent;
 	}
 
-	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindow, IEWebBrowserWindow::FOnDismissPopup, FOnDismissPopup);
+	DECLARE_DERIVED_EVENT(FCEFWebBrowserWindowEx, IEWebBrowserWindow::FOnDismissPopup, FOnDismissPopup);
 	virtual FOnDismissPopup& OnDismissPopup() override
 	{
 		return DismissPopupEvent;
@@ -498,7 +498,7 @@ private:
 	CefRefPtr<CefBrowser> InternalCefBrowser;
 
 	/** Pointer to the CEF handler for this window. */
-	CefRefPtr<FCEFBrowserHandler> WebBrowserHandler;
+	CefRefPtr<FCEFBrowserHandlerEx> WebBrowserHandler;
 
 	/** Current title of this window. */
 	FString Title;
@@ -617,16 +617,16 @@ private:
 	TUniquePtr<FBrowserBufferedVideo> BufferedVideo;
 
 	/** Handling of passing and marshalling messages for JS integration is delegated to a helper class*/
-	TSharedPtr<FCEFJSScripting> Scripting;
+	TSharedPtr<FCEFJSScriptingEx> Scripting;
 
 #if !PLATFORM_LINUX
 	/** Handling of foreign language character input is delegated to a helper class */
-	TSharedPtr<FCEFImeHandler> Ime;
+	TSharedPtr<FCEFImeHandlerEx> Ime;
 #endif
 
 	TSharedPtr<SWindow> ParentWindow;
 };
 
-typedef FCEFWebBrowserWindow FWebBrowserWindow;
+typedef FCEFWebBrowserWindowEx FWebBrowserWindow;
 
 #endif

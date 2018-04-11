@@ -365,7 +365,7 @@ private:
 
 
 
-FCEFWebBrowserWindow::FCEFWebBrowserWindow(CefRefPtr<CefBrowser> InBrowser, CefRefPtr<FCEFBrowserHandler> InHandler, FString InUrl, TOptional<FString> InContentsToLoad, bool bInShowErrorMessage, bool bInThumbMouseButtonNavigation, bool bInUseTransparency, bool bInJSBindingToLoweringEnabled)
+FCEFWebBrowserWindowEx::FCEFWebBrowserWindowEx(CefRefPtr<CefBrowser> InBrowser, CefRefPtr<FCEFBrowserHandlerEx> InHandler, FString InUrl, TOptional<FString> InContentsToLoad, bool bInShowErrorMessage, bool bInThumbMouseButtonNavigation, bool bInUseTransparency, bool bInJSBindingToLoweringEnabled)
 	: DocumentState(EEWebBrowserDocumentState::NoDocument)
 	, InternalCefBrowser(InBrowser)
 	, WebBrowserHandler(InHandler)
@@ -393,9 +393,9 @@ FCEFWebBrowserWindow::FCEFWebBrowserWindow(CefRefPtr<CefBrowser> InBrowser, CefR
 	, bRecoverFromRenderProcessCrash(false)
 	, ErrorCode(0)
 	, bDeferNavigations(false)
-	, Scripting(new FCEFJSScripting(InBrowser, bInJSBindingToLoweringEnabled))
+	, Scripting(new FCEFJSScriptingEx(InBrowser, bInJSBindingToLoweringEnabled))
 #if !PLATFORM_LINUX
-	, Ime(new FCEFImeHandler(InBrowser))
+	, Ime(new FCEFImeHandlerEx(InBrowser))
 #endif
 {
 	check(InBrowser.get() != nullptr);
@@ -425,7 +425,7 @@ FCEFWebBrowserWindow::FCEFWebBrowserWindow(CefRefPtr<CefBrowser> InBrowser, CefR
 #endif
 }
 
-FCEFWebBrowserWindow::~FCEFWebBrowserWindow()
+FCEFWebBrowserWindowEx::~FCEFWebBrowserWindowEx()
 {
 	WebBrowserHandler->OnCreateWindow().Unbind();
 	WebBrowserHandler->OnBeforePopup().Unbind();
@@ -450,17 +450,17 @@ FCEFWebBrowserWindow::~FCEFWebBrowserWindow()
 	BufferedVideo.Reset();
 }
 
-void FCEFWebBrowserWindow::LoadURL(FString NewURL)
+void FCEFWebBrowserWindowEx::LoadURL(FString NewURL)
 {
 	RequestNavigationInternal(NewURL, FString());
 }
 
-void FCEFWebBrowserWindow::LoadString(FString Contents, FString DummyURL)
+void FCEFWebBrowserWindowEx::LoadString(FString Contents, FString DummyURL)
 {
 	RequestNavigationInternal(DummyURL, Contents);
 }
 
-TSharedRef<SViewport> FCEFWebBrowserWindow::CreateWidget()
+TSharedRef<SViewport> FCEFWebBrowserWindowEx::CreateWidget()
 {
 	TSharedRef<SViewport> BrowserWidgetRef =
 		SNew(SViewport)
@@ -475,7 +475,7 @@ TSharedRef<SViewport> FCEFWebBrowserWindow::CreateWidget()
 	return BrowserWidgetRef;
 }
 
-void FCEFWebBrowserWindow::SetViewportSize(FIntPoint WindowSize, FIntPoint WindowPos)
+void FCEFWebBrowserWindowEx::SetViewportSize(FIntPoint WindowSize, FIntPoint WindowPos)
 {
 	// SetViewportSize is called from the browser viewport tick method, which means that since we are receiving ticks, we can mark the browser as visible.
 	if (! bIsDisabled)
@@ -538,7 +538,7 @@ void FCEFWebBrowserWindow::SetViewportSize(FIntPoint WindowSize, FIntPoint Windo
 	}
 }
 
-FSlateShaderResource* FCEFWebBrowserWindow::GetTexture(bool bIsPopup)
+FSlateShaderResource* FCEFWebBrowserWindowEx::GetTexture(bool bIsPopup)
 {
 	if (UpdatableTextures[bIsPopup?1:0] != nullptr)
 	{
@@ -547,32 +547,32 @@ FSlateShaderResource* FCEFWebBrowserWindow::GetTexture(bool bIsPopup)
 	return nullptr;
 }
 
-bool FCEFWebBrowserWindow::IsValid() const
+bool FCEFWebBrowserWindowEx::IsValid() const
 {
 	return InternalCefBrowser.get() != nullptr;
 }
 
-bool FCEFWebBrowserWindow::IsInitialized() const
+bool FCEFWebBrowserWindowEx::IsInitialized() const
 {
 	return bIsInitialized;
 }
 
-bool FCEFWebBrowserWindow::IsClosing() const
+bool FCEFWebBrowserWindowEx::IsClosing() const
 {
 	return bIsClosing;
 }
 
-EEWebBrowserDocumentState FCEFWebBrowserWindow::GetDocumentLoadingState() const
+EEWebBrowserDocumentState FCEFWebBrowserWindowEx::GetDocumentLoadingState() const
 {
 	return DocumentState;
 }
 
-FString FCEFWebBrowserWindow::GetTitle() const
+FString FCEFWebBrowserWindowEx::GetTitle() const
 {
 	return Title;
 }
 
-FString FCEFWebBrowserWindow::GetUrl() const
+FString FCEFWebBrowserWindowEx::GetUrl() const
 {
 	if (InternalCefBrowser != nullptr)
 	{
@@ -587,7 +587,7 @@ FString FCEFWebBrowserWindow::GetUrl() const
 	return FString();
 }
 
-void FCEFWebBrowserWindow::GetSource(TFunction<void (const FString&)> Callback) const
+void FCEFWebBrowserWindowEx::GetSource(TFunction<void (const FString&)> Callback) const
 {
 	if (IsValid())
 	{
@@ -599,7 +599,7 @@ void FCEFWebBrowserWindow::GetSource(TFunction<void (const FString&)> Callback) 
 	}
 }
 
-void FCEFWebBrowserWindow::PopulateCefKeyEvent(const FKeyEvent& InKeyEvent, CefKeyEvent& OutKeyEvent)
+void FCEFWebBrowserWindowEx::PopulateCefKeyEvent(const FKeyEvent& InKeyEvent, CefKeyEvent& OutKeyEvent)
 {
 #if PLATFORM_MAC
 	OutKeyEvent.native_key_code = InKeyEvent.GetKeyCode();
@@ -962,7 +962,7 @@ void FCEFWebBrowserWindow::PopulateCefKeyEvent(const FKeyEvent& InKeyEvent, CefK
 	OutKeyEvent.modifiers = GetCefKeyboardModifiers(InKeyEvent);
 }
 
-bool FCEFWebBrowserWindow::OnKeyDown(const FKeyEvent& InKeyEvent)
+bool FCEFWebBrowserWindowEx::OnKeyDown(const FKeyEvent& InKeyEvent)
 {
 	if (IsValid() && !bIgnoreKeyDownEvent)
 	{
@@ -976,7 +976,7 @@ bool FCEFWebBrowserWindow::OnKeyDown(const FKeyEvent& InKeyEvent)
 	return false;
 }
 
-bool FCEFWebBrowserWindow::OnKeyUp(const FKeyEvent& InKeyEvent)
+bool FCEFWebBrowserWindowEx::OnKeyUp(const FKeyEvent& InKeyEvent)
 {
 	if (IsValid() && !bIgnoreKeyUpEvent)
 	{
@@ -990,7 +990,7 @@ bool FCEFWebBrowserWindow::OnKeyUp(const FKeyEvent& InKeyEvent)
 	return false;
 }
 
-bool FCEFWebBrowserWindow::OnKeyChar(const FCharacterEvent& InCharacterEvent)
+bool FCEFWebBrowserWindowEx::OnKeyChar(const FCharacterEvent& InCharacterEvent)
 {
 	if (IsValid() && !bIgnoreCharacterEvent)
 	{
@@ -1016,7 +1016,7 @@ bool FCEFWebBrowserWindow::OnKeyChar(const FCharacterEvent& InCharacterEvent)
    has returned.
    The solution is to save a copy of the event and re-inject it into Slate while ensuring that we'll ignore it and bubble it up
    the widget hierarchy this time around. */
-bool FCEFWebBrowserWindow::OnUnhandledKeyEvent(const CefKeyEvent& CefEvent)
+bool FCEFWebBrowserWindowEx::OnUnhandledKeyEvent(const CefKeyEvent& CefEvent)
 {
 	bool bWasHandled = false;
 	if (IsValid())
@@ -1057,7 +1057,7 @@ bool FCEFWebBrowserWindow::OnUnhandledKeyEvent(const CefKeyEvent& CefEvent)
 	return bWasHandled;
 }
 
-bool FCEFWebBrowserWindow::OnJSDialog(CefJSDialogHandler::JSDialogType DialogType, const CefString& MessageText, const CefString& DefaultPromptText, CefRefPtr<CefJSDialogCallback> Callback, bool& OutSuppressMessage)
+bool FCEFWebBrowserWindowEx::OnJSDialog(CefJSDialogHandler::JSDialogType DialogType, const CefString& MessageText, const CefString& DefaultPromptText, CefRefPtr<CefJSDialogCallback> Callback, bool& OutSuppressMessage)
 {
 	bool Retval = false;
 	if ( OnShowDialog().IsBound() )
@@ -1095,7 +1095,7 @@ bool FCEFWebBrowserWindow::OnJSDialog(CefJSDialogHandler::JSDialogType DialogTyp
 	return Retval;
 }
 
-bool FCEFWebBrowserWindow::OnBeforeUnloadDialog(const CefString& MessageText, bool IsReload, CefRefPtr<CefJSDialogCallback> Callback)
+bool FCEFWebBrowserWindowEx::OnBeforeUnloadDialog(const CefString& MessageText, bool IsReload, CefRefPtr<CefJSDialogCallback> Callback)
 {
 	bool Retval = false;
 	if ( OnShowDialog().IsBound() )
@@ -1124,12 +1124,12 @@ bool FCEFWebBrowserWindow::OnBeforeUnloadDialog(const CefString& MessageText, bo
 	return Retval;
 }
 
-void FCEFWebBrowserWindow::OnResetDialogState()
+void FCEFWebBrowserWindowEx::OnResetDialogState()
 {
 	OnDismissAllDialogs().ExecuteIfBound();
 }
 
-void FCEFWebBrowserWindow::OnRenderProcessTerminated(CefRequestHandler::TerminationStatus Status)
+void FCEFWebBrowserWindowEx::OnRenderProcessTerminated(CefRequestHandler::TerminationStatus Status)
 {
 	if(bRecoverFromRenderProcessCrash)
 	{
@@ -1141,7 +1141,7 @@ void FCEFWebBrowserWindow::OnRenderProcessTerminated(CefRequestHandler::Terminat
 	Reload();
 }
 
-FReply FCEFWebBrowserWindow::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
+FReply FCEFWebBrowserWindowEx::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
 {
 	FReply Reply = FReply::Unhandled();
 	if (IsValid())
@@ -1164,7 +1164,7 @@ FReply FCEFWebBrowserWindow::OnMouseButtonDown(const FGeometry& MyGeometry, cons
 	return Reply;
 }
 
-FReply FCEFWebBrowserWindow::OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
+FReply FCEFWebBrowserWindowEx::OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
 {
 	FReply Reply = FReply::Unhandled();
 	if (IsValid())
@@ -1205,7 +1205,7 @@ FReply FCEFWebBrowserWindow::OnMouseButtonUp(const FGeometry& MyGeometry, const 
 	return Reply;
 }
 
-FReply FCEFWebBrowserWindow::OnMouseButtonDoubleClick(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
+FReply FCEFWebBrowserWindowEx::OnMouseButtonDoubleClick(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
 {
 	FReply Reply = FReply::Unhandled();
 	if (IsValid())
@@ -1228,7 +1228,7 @@ FReply FCEFWebBrowserWindow::OnMouseButtonDoubleClick(const FGeometry& MyGeometr
 	return Reply;
 }
 
-FReply FCEFWebBrowserWindow::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
+FReply FCEFWebBrowserWindowEx::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
 {
 	FReply Reply = FReply::Unhandled();
 	if (IsValid())
@@ -1240,13 +1240,13 @@ FReply FCEFWebBrowserWindow::OnMouseMove(const FGeometry& MyGeometry, const FPoi
 	return Reply;
 }
 
-void FCEFWebBrowserWindow::OnMouseLeave(const FPointerEvent& MouseEvent)
+void FCEFWebBrowserWindowEx::OnMouseLeave(const FPointerEvent& MouseEvent)
 {
 	// Ensure we clear any tooltips if the mouse leaves the window.
 	SetToolTip(CefString());
 }
 
-FReply FCEFWebBrowserWindow::OnMouseWheel(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
+FReply FCEFWebBrowserWindowEx::OnMouseWheel(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
 {
 	FReply Reply = FReply::Unhandled();
 	if(IsValid())
@@ -1263,7 +1263,7 @@ FReply FCEFWebBrowserWindow::OnMouseWheel(const FGeometry& MyGeometry, const FPo
 	return Reply;
 }
 
-void FCEFWebBrowserWindow::OnFocus(bool SetFocus, bool bIsPopup)
+void FCEFWebBrowserWindowEx::OnFocus(bool SetFocus, bool bIsPopup)
 {
 	if (bIsPopup)
 	{
@@ -1285,7 +1285,7 @@ void FCEFWebBrowserWindow::OnFocus(bool SetFocus, bool bIsPopup)
 	}
 }
 
-void FCEFWebBrowserWindow::OnCaptureLost()
+void FCEFWebBrowserWindowEx::OnCaptureLost()
 {
 	if (IsValid())
 	{
@@ -1293,7 +1293,7 @@ void FCEFWebBrowserWindow::OnCaptureLost()
 	}
 }
 
-bool FCEFWebBrowserWindow::CanGoBack() const
+bool FCEFWebBrowserWindowEx::CanGoBack() const
 {
 	if (IsValid())
 	{
@@ -1302,7 +1302,7 @@ bool FCEFWebBrowserWindow::CanGoBack() const
 	return false;
 }
 
-void FCEFWebBrowserWindow::GoBack()
+void FCEFWebBrowserWindowEx::GoBack()
 {
 	if (IsValid())
 	{
@@ -1310,7 +1310,7 @@ void FCEFWebBrowserWindow::GoBack()
 	}
 }
 
-bool FCEFWebBrowserWindow::CanGoForward() const
+bool FCEFWebBrowserWindowEx::CanGoForward() const
 {
 	if (IsValid())
 	{
@@ -1319,7 +1319,7 @@ bool FCEFWebBrowserWindow::CanGoForward() const
 	return false;
 }
 
-void FCEFWebBrowserWindow::GoForward()
+void FCEFWebBrowserWindowEx::GoForward()
 {
 	if (IsValid())
 	{
@@ -1327,7 +1327,7 @@ void FCEFWebBrowserWindow::GoForward()
 	}
 }
 
-bool FCEFWebBrowserWindow::IsLoading() const
+bool FCEFWebBrowserWindowEx::IsLoading() const
 {
 	if (IsValid())
 	{
@@ -1336,7 +1336,7 @@ bool FCEFWebBrowserWindow::IsLoading() const
 	return false;
 }
 
-void FCEFWebBrowserWindow::Reload()
+void FCEFWebBrowserWindowEx::Reload()
 {
 	if (IsValid())
 	{
@@ -1344,7 +1344,7 @@ void FCEFWebBrowserWindow::Reload()
 	}
 }
 
-void FCEFWebBrowserWindow::StopLoad()
+void FCEFWebBrowserWindowEx::StopLoad()
 {
 	if (IsValid())
 	{
@@ -1352,7 +1352,7 @@ void FCEFWebBrowserWindow::StopLoad()
 	}
 }
 
-void FCEFWebBrowserWindow::ExecuteJavascript(const FString& Script)
+void FCEFWebBrowserWindowEx::ExecuteJavascript(const FString& Script)
 {
 	if (IsValid())
 	{
@@ -1362,7 +1362,7 @@ void FCEFWebBrowserWindow::ExecuteJavascript(const FString& Script)
 }
 
 
-void FCEFWebBrowserWindow::CloseBrowser(bool bForce)
+void FCEFWebBrowserWindowEx::CloseBrowser(bool bForce)
 {
 	if (IsValid())
 	{
@@ -1383,24 +1383,24 @@ void FCEFWebBrowserWindow::CloseBrowser(bool bForce)
 	}
 }
 
-CefRefPtr<CefBrowser> FCEFWebBrowserWindow::GetCefBrowser()
+CefRefPtr<CefBrowser> FCEFWebBrowserWindowEx::GetCefBrowser()
 {
 	return InternalCefBrowser;
 }
 
-void FCEFWebBrowserWindow::SetTitle(const CefString& InTitle)
+void FCEFWebBrowserWindowEx::SetTitle(const CefString& InTitle)
 {
 	Title = InTitle.ToWString().c_str();
 	TitleChangedEvent.Broadcast(Title);
 }
 
-void FCEFWebBrowserWindow::SetUrl(const CefString& Url)
+void FCEFWebBrowserWindowEx::SetUrl(const CefString& Url)
 {
 	CurrentUrl = Url.ToWString().c_str();
 	OnUrlChanged().Broadcast(CurrentUrl);
 }
 
-void FCEFWebBrowserWindow::SetToolTip(const CefString& CefToolTip)
+void FCEFWebBrowserWindowEx::SetToolTip(const CefString& CefToolTip)
 {
 	FString NewToolTipText = CefToolTip.ToWString().c_str();
 	if (ToolTipText != NewToolTipText)
@@ -1410,7 +1410,7 @@ void FCEFWebBrowserWindow::SetToolTip(const CefString& CefToolTip)
 	}
 }
 
-bool FCEFWebBrowserWindow::GetViewRect(CefRect& Rect)
+bool FCEFWebBrowserWindowEx::GetViewRect(CefRect& Rect)
 {
 	if (ViewportSize == FIntPoint::ZeroValue)
 	{
@@ -1424,12 +1424,12 @@ bool FCEFWebBrowserWindow::GetViewRect(CefRect& Rect)
 	}
 }
 
-int FCEFWebBrowserWindow::GetLoadError()
+int FCEFWebBrowserWindowEx::GetLoadError()
 {
 	return ErrorCode;
 }
 
-void FCEFWebBrowserWindow::NotifyDocumentError(
+void FCEFWebBrowserWindowEx::NotifyDocumentError(
 	CefLoadHandler::ErrorCode InErrorCode,
 	const CefString& ErrorText,
 	const CefString& FailedUrl)
@@ -1470,14 +1470,14 @@ void FCEFWebBrowserWindow::NotifyDocumentError(
 	NotifyDocumentError((int)InErrorCode);
 }
 
-void FCEFWebBrowserWindow::NotifyDocumentError(int InErrorCode)
+void FCEFWebBrowserWindowEx::NotifyDocumentError(int InErrorCode)
 {
 	ErrorCode = InErrorCode;
 	DocumentState = EEWebBrowserDocumentState::Error;
 	DocumentStateChangedEvent.Broadcast(DocumentState);
 }
 
-void FCEFWebBrowserWindow::NotifyDocumentLoadingStateChange(bool IsLoading)
+void FCEFWebBrowserWindowEx::NotifyDocumentLoadingStateChange(bool IsLoading)
 {
 	if (! IsLoading)
 	{
@@ -1508,7 +1508,7 @@ void FCEFWebBrowserWindow::NotifyDocumentLoadingStateChange(bool IsLoading)
 
 }
 
-void FCEFWebBrowserWindow::OnPaint(CefRenderHandler::PaintElementType Type, const CefRenderHandler::RectList& DirtyRects, const void* Buffer, int Width, int Height)
+void FCEFWebBrowserWindowEx::OnPaint(CefRenderHandler::PaintElementType Type, const CefRenderHandler::RectList& DirtyRects, const void* Buffer, int Width, int Height)
 {
 	bool bNeedsRedraw = false;
 
@@ -1571,7 +1571,7 @@ void FCEFWebBrowserWindow::OnPaint(CefRenderHandler::PaintElementType Type, cons
 
 
 
-void FCEFWebBrowserWindow::UpdateVideoBuffering()
+void FCEFWebBrowserWindowEx::UpdateVideoBuffering()
 {
 	if (BufferedVideo.IsValid() && UpdatableTextures[PET_VIEW] != nullptr )
 	{
@@ -1583,7 +1583,7 @@ void FCEFWebBrowserWindow::UpdateVideoBuffering()
 	}
 }
 
-void FCEFWebBrowserWindow::OnCursorChange(CefCursorHandle CefCursor, CefRenderHandler::CursorType Type, const CefCursorInfo& CustomCursorInfo)
+void FCEFWebBrowserWindowEx::OnCursorChange(CefCursorHandle CefCursor, CefRenderHandler::CursorType Type, const CefCursorInfo& CustomCursorInfo)
 {
 	switch (Type) {
 		// Map the basic 3 cursor types directly to Slate types on all platforms
@@ -1674,7 +1674,7 @@ void FCEFWebBrowserWindow::OnCursorChange(CefCursorHandle CefCursor, CefRenderHa
 }
 
 
-bool FCEFWebBrowserWindow::OnBeforeBrowse( CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, CefRefPtr<CefRequest> Request, bool bIsRedirect )
+bool FCEFWebBrowserWindowEx::OnBeforeBrowse( CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, CefRefPtr<CefRequest> Request, bool bIsRedirect )
 {
 	if (InternalCefBrowser != nullptr && InternalCefBrowser->IsSame(Browser))
 	{
@@ -1717,7 +1717,7 @@ bool FCEFWebBrowserWindow::OnBeforeBrowse( CefRefPtr<CefBrowser> Browser, CefRef
 	return false;
 }
 
-TOptional<FString> FCEFWebBrowserWindow::GetResourceContent( CefRefPtr< CefFrame > Frame, CefRefPtr< CefRequest > Request)
+TOptional<FString> FCEFWebBrowserWindowEx::GetResourceContent( CefRefPtr< CefFrame > Frame, CefRefPtr< CefRequest > Request)
 {
 	if (ContentsToLoad.IsSet())
 	{
@@ -1740,7 +1740,7 @@ TOptional<FString> FCEFWebBrowserWindow::GetResourceContent( CefRefPtr< CefFrame
 }
 
 
-int32 FCEFWebBrowserWindow::GetCefKeyboardModifiers(const FKeyEvent& KeyEvent)
+int32 FCEFWebBrowserWindowEx::GetCefKeyboardModifiers(const FKeyEvent& KeyEvent)
 {
 	int32 Modifiers = GetCefInputModifiers(KeyEvent);
 
@@ -1776,7 +1776,7 @@ int32 FCEFWebBrowserWindow::GetCefKeyboardModifiers(const FKeyEvent& KeyEvent)
 	return Modifiers;
 }
 
-int32 FCEFWebBrowserWindow::GetCefMouseModifiers(const FPointerEvent& InMouseEvent)
+int32 FCEFWebBrowserWindowEx::GetCefMouseModifiers(const FPointerEvent& InMouseEvent)
 {
 	int32 Modifiers = GetCefInputModifiers(InMouseEvent);
 
@@ -1796,7 +1796,7 @@ int32 FCEFWebBrowserWindow::GetCefMouseModifiers(const FPointerEvent& InMouseEve
 	return Modifiers;
 }
 
-CefMouseEvent FCEFWebBrowserWindow::GetCefMouseEvent(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
+CefMouseEvent FCEFWebBrowserWindowEx::GetCefMouseEvent(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, bool bIsPopup)
 {
 	CefMouseEvent Event;
 	FVector2D LocalPos = MyGeometry.AbsoluteToLocal(MouseEvent.GetScreenSpacePosition()) * MyGeometry.Scale;
@@ -1810,7 +1810,7 @@ CefMouseEvent FCEFWebBrowserWindow::GetCefMouseEvent(const FGeometry& MyGeometry
 	return Event;
 }
 
-int32 FCEFWebBrowserWindow::GetCefInputModifiers(const FInputEvent& InputEvent)
+int32 FCEFWebBrowserWindowEx::GetCefInputModifiers(const FInputEvent& InputEvent)
 {
 	int32 Modifiers = 0;
 
@@ -1848,7 +1848,7 @@ int32 FCEFWebBrowserWindow::GetCefInputModifiers(const FInputEvent& InputEvent)
 	return Modifiers;
 }
 
-void FCEFWebBrowserWindow::UpdateCachedGeometry(const FGeometry& AllottedGeometry)
+void FCEFWebBrowserWindowEx::UpdateCachedGeometry(const FGeometry& AllottedGeometry)
 {
 #if !PLATFORM_LINUX
 	// Forward along the geometry for use by IME
@@ -1856,7 +1856,7 @@ void FCEFWebBrowserWindow::UpdateCachedGeometry(const FGeometry& AllottedGeometr
 #endif
 }
 
-void FCEFWebBrowserWindow::CheckTickActivity()
+void FCEFWebBrowserWindowEx::CheckTickActivity()
 {
 	// Early out if we're currently hidden, not initialized or currently loading.
 	if (bIsHidden || !IsValid() || IsLoading() || ViewportSize == FIntPoint::ZeroValue)
@@ -1892,7 +1892,7 @@ void FCEFWebBrowserWindow::CheckTickActivity()
 	bTickedLastFrame = false;
 }
 
-void FCEFWebBrowserWindow::RequestNavigationInternal(FString Url, FString Contents)
+void FCEFWebBrowserWindowEx::RequestNavigationInternal(FString Url, FString Contents)
 {
 	if (!IsValid())
 	{
@@ -1912,12 +1912,12 @@ void FCEFWebBrowserWindow::RequestNavigationInternal(FString Url, FString Conten
 	}
 }
 
-bool FCEFWebBrowserWindow::HasPendingNavigation()
+bool FCEFWebBrowserWindowEx::HasPendingNavigation()
 {
 	return !PendingLoadUrl.IsEmpty();
 }
 
-void FCEFWebBrowserWindow::ProcessPendingNavigation()
+void FCEFWebBrowserWindowEx::ProcessPendingNavigation()
 {
 	if (!IsValid() || bDeferNavigations || !HasPendingNavigation())
 	{
@@ -1933,7 +1933,7 @@ void FCEFWebBrowserWindow::ProcessPendingNavigation()
 	}
 }
 
-void FCEFWebBrowserWindow::SetIsHidden(bool bValue)
+void FCEFWebBrowserWindowEx::SetIsHidden(bool bValue)
 {
 	if( bIsHidden == bValue )
 	{
@@ -1956,7 +1956,7 @@ void FCEFWebBrowserWindow::SetIsHidden(bool bValue)
 	}
 }
 
-void FCEFWebBrowserWindow::SetIsDisabled(bool bValue)
+void FCEFWebBrowserWindowEx::SetIsDisabled(bool bValue)
 {
 	if (bIsDisabled == bValue)
 	{
@@ -1966,17 +1966,17 @@ void FCEFWebBrowserWindow::SetIsDisabled(bool bValue)
 	SetIsHidden(bIsDisabled);
 }
 
-TSharedPtr<SWindow> FCEFWebBrowserWindow::GetParentWindow() const
+TSharedPtr<SWindow> FCEFWebBrowserWindowEx::GetParentWindow() const
 {
 	return ParentWindow;
 }
 
-void FCEFWebBrowserWindow::SetParentWindow(TSharedPtr<SWindow> Window)
+void FCEFWebBrowserWindowEx::SetParentWindow(TSharedPtr<SWindow> Window)
 {
 	ParentWindow = Window;
 }
 
-CefRefPtr<CefDictionaryValue> FCEFWebBrowserWindow::GetProcessInfo()
+CefRefPtr<CefDictionaryValue> FCEFWebBrowserWindowEx::GetProcessInfo()
 {
 	CefRefPtr<CefDictionaryValue> Retval = nullptr;
 	if (IsValid())
@@ -1988,7 +1988,7 @@ CefRefPtr<CefDictionaryValue> FCEFWebBrowserWindow::GetProcessInfo()
 	return Retval;
 }
 
-bool FCEFWebBrowserWindow::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, CefProcessId SourceProcess, CefRefPtr<CefProcessMessage> Message)
+bool FCEFWebBrowserWindowEx::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, CefProcessId SourceProcess, CefRefPtr<CefProcessMessage> Message)
 {
 	bool bHandled = Scripting->OnProcessMessageReceived(Browser, SourceProcess, Message);
 
@@ -2002,36 +2002,36 @@ bool FCEFWebBrowserWindow::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browse
 	return bHandled;
 }
 
-void FCEFWebBrowserWindow::BindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
+void FCEFWebBrowserWindowEx::BindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
 {
 	Scripting->BindUObject(Name, Object, bIsPermanent);
 }
 
-void FCEFWebBrowserWindow::UnbindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
+void FCEFWebBrowserWindowEx::UnbindUObject(const FString& Name, UObject* Object, bool bIsPermanent)
 {
 	Scripting->UnbindUObject(Name, Object, bIsPermanent);
 }
 
-void FCEFWebBrowserWindow::BindInputMethodSystem(ITextInputMethodSystem* TextInputMethodSystem)
+void FCEFWebBrowserWindowEx::BindInputMethodSystem(ITextInputMethodSystem* TextInputMethodSystem)
 {
 #if !PLATFORM_LINUX
 	Ime->BindInputMethodSystem(TextInputMethodSystem);
 #endif
 }
 
-void FCEFWebBrowserWindow::UnbindInputMethodSystem()
+void FCEFWebBrowserWindowEx::UnbindInputMethodSystem()
 {
 #if !PLATFORM_LINUX
 	Ime->UnbindInputMethodSystem();
 #endif
 }
 
-void FCEFWebBrowserWindow::OnBrowserClosing()
+void FCEFWebBrowserWindowEx::OnBrowserClosing()
 {
 	bIsClosing = true;
 }
 
-void FCEFWebBrowserWindow::OnBrowserClosed()
+void FCEFWebBrowserWindowEx::OnBrowserClosed()
 {
 	if(OnCloseWindow().IsBound())
 	{
@@ -2045,13 +2045,13 @@ void FCEFWebBrowserWindow::OnBrowserClosed()
 	InternalCefBrowser = nullptr;
 }
 
-void FCEFWebBrowserWindow::SetPopupMenuPosition(CefRect CefPopupSize)
+void FCEFWebBrowserWindowEx::SetPopupMenuPosition(CefRect CefPopupSize)
 {
 	// We only store the position, as the size will be provided ib the OnPaint call.
 	PopupPosition = FIntPoint(CefPopupSize.x, CefPopupSize.y);
 }
 
-void FCEFWebBrowserWindow:: ShowPopupMenu(bool bShow)
+void FCEFWebBrowserWindowEx:: ShowPopupMenu(bool bShow)
 {
 	if (bShow)
 	{
@@ -2066,7 +2066,7 @@ void FCEFWebBrowserWindow:: ShowPopupMenu(bool bShow)
 }
 
 #if !PLATFORM_LINUX
-void FCEFWebBrowserWindow::OnImeCompositionRangeChanged(
+void FCEFWebBrowserWindowEx::OnImeCompositionRangeChanged(
 	CefRefPtr<CefBrowser> Browser, 
 	const CefRange& SelectionRange, 
 	const CefRenderHandler::RectList& CharacterBounds)

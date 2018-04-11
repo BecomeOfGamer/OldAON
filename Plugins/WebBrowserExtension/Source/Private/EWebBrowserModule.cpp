@@ -30,7 +30,7 @@ public:
 	virtual bool CustomInitialize(const FEWebBrowserInitSettings& WebBrowserInitSettings) override;
 };
 
-IMPLEMENT_MODULE( FEWebBrowserModule, WebBrowser );
+IMPLEMENT_MODULE( FEWebBrowserModule, WebBrowserExtension );
 
 void FEWebBrowserModule::StartupModule()
 {

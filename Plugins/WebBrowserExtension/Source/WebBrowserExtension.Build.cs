@@ -7,8 +7,6 @@ public class WebBrowserExtension : ModuleRules
 {
 	public WebBrowserExtension(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PublicIncludePaths.Add("Runtime/WebBrowserExtension/Public");
-		PrivateIncludePaths.Add("Runtime/WebBrowserExtension/Private");
         PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -29,7 +27,7 @@ public class WebBrowserExtension : ModuleRules
 			PrivateDependencyModuleNames.AddRange(
 				new string[]
 				{
-					"WebBrowserExtensionTexture",
+					"WebBrowserTexture",
 					"Engine",
 				}
 			);
@@ -45,7 +43,7 @@ public class WebBrowserExtension : ModuleRules
 				// ... add      other public dependencies that you statically link with here ...
 			}
             );
-        /*
+
         if (Target.Platform == UnrealTargetPlatform.Win64
 		||  Target.Platform == UnrealTargetPlatform.Win32
 		||  Target.Platform == UnrealTargetPlatform.Mac
@@ -76,7 +74,6 @@ public class WebBrowserExtension : ModuleRules
 				}
 			}
 		}
-        */
 
         if (Target.Platform == UnrealTargetPlatform.PS4 &&
 			Target.bCompileAgainstEngine)

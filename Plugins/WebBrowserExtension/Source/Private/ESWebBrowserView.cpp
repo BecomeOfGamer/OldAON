@@ -24,7 +24,7 @@
 #	define DUMMY_WEB_BROWSER 1
 #endif
 
-#define LOCTEXT_NAMESPACE "WebBrowser"
+#define LOCTEXT_NAMESPACE "WebBrowserExtension"
 
 ESWebBrowserView::ESWebBrowserView()
 {

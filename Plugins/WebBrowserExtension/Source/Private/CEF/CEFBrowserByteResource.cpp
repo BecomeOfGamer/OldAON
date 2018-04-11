@@ -4,7 +4,7 @@
 
 #if WITH_CEF3
 
-FCEFBrowserByteResource::FCEFBrowserByteResource(const CefRefPtr<CefPostDataElement>& PostData, const FString& InMimeType)
+FCEFBrowserByteResourceEx::FCEFBrowserByteResourceEx(const CefRefPtr<CefPostDataElement>& PostData, const FString& InMimeType)
 	: Position(0)
 	, Buffer(nullptr)
 	, MimeType(InMimeType)
@@ -17,17 +17,17 @@ FCEFBrowserByteResource::FCEFBrowserByteResource(const CefRefPtr<CefPostDataElem
 	}
 }
 
-FCEFBrowserByteResource::~FCEFBrowserByteResource()
+FCEFBrowserByteResourceEx::~FCEFBrowserByteResourceEx()
 {
 	delete[] Buffer;
 }
 
-void FCEFBrowserByteResource::Cancel()
+void FCEFBrowserByteResourceEx::Cancel()
 {
 
 }
 
-void FCEFBrowserByteResource::GetResponseHeaders(CefRefPtr<CefResponse> Response, int64& ResponseLength, CefString& RedirectUrl)
+void FCEFBrowserByteResourceEx::GetResponseHeaders(CefRefPtr<CefResponse> Response, int64& ResponseLength, CefString& RedirectUrl)
 {
 	Response->SetMimeType(*MimeType);
 	Response->SetStatus(200);
@@ -35,13 +35,13 @@ void FCEFBrowserByteResource::GetResponseHeaders(CefRefPtr<CefResponse> Response
 	ResponseLength = Size;
 }
 
-bool FCEFBrowserByteResource::ProcessRequest(CefRefPtr<CefRequest> Request, CefRefPtr<CefCallback> Callback)
+bool FCEFBrowserByteResourceEx::ProcessRequest(CefRefPtr<CefRequest> Request, CefRefPtr<CefCallback> Callback)
 {
 	Callback->Continue();
 	return true;
 }
 
-bool FCEFBrowserByteResource::ReadResponse(void* DataOut, int BytesToRead, int& BytesRead, CefRefPtr<CefCallback> Callback)
+bool FCEFBrowserByteResourceEx::ReadResponse(void* DataOut, int BytesToRead, int& BytesRead, CefRefPtr<CefCallback> Callback)
 {
 	int32 BytesLeft = Size - Position;
 	BytesRead = BytesLeft >= BytesToRead ? BytesToRead : BytesLeft;

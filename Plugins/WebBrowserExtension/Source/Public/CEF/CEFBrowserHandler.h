@@ -30,15 +30,15 @@ THIRD_PARTY_INCLUDES_END
 
 class IEWebBrowserWindow;
 struct Rect;
-class FCEFWebBrowserWindow;
-class FCEFBrowserPopupFeatures;
+class FCEFWebBrowserWindowEx;
+class FCEFBrowserPopupFeaturesEx;
 
 #if WITH_CEF3
 
 /**
  * Implements CEF Client and other Browser level interfaces.
  */
-class FCEFBrowserHandler
+class FCEFBrowserHandlerEx
 	: public CefClient
 	, public CefDisplayHandler
 	, public CefLifeSpanHandler
@@ -52,7 +52,7 @@ class FCEFBrowserHandler
 public:
 
 	/** Default constructor. */
-	FCEFBrowserHandler(bool InUseTransparency);
+	FCEFBrowserHandlerEx(bool InUseTransparency);
 
 public:
 
@@ -61,14 +61,14 @@ public:
 	 *
 	 * @param InBrowserWindow The browser window this will be handling.
 	 */
-	void SetBrowserWindow(TSharedPtr<FCEFWebBrowserWindow> InBrowserWindow);
+	void SetBrowserWindow(TSharedPtr<FCEFWebBrowserWindowEx> InBrowserWindow);
 	
 	/**
 	 * Sets the browser window features and settings for popups which will be passed along when creating the new window.
 	 *
 	 * @param InPopupFeatures The popup features and settings for the window.
 	 */
-	void SetPopupFeatures(const TSharedPtr<FCEFBrowserPopupFeatures>& InPopupFeatures)
+	void SetPopupFeatures(const TSharedPtr<FCEFBrowserPopupFeaturesEx>& InPopupFeatures)
 	{
 		BrowserPopupFeatures = InPopupFeatures;
 	}
@@ -305,16 +305,16 @@ private:
 	IEWebBrowserWindow::FOnCreateWindow CreateWindowDelegate;
 
 	/** Weak Pointer to our Web Browser window so that events can be passed on while it's valid.*/
-	TWeakPtr<FCEFWebBrowserWindow> BrowserWindowPtr;
+	TWeakPtr<FCEFWebBrowserWindowEx> BrowserWindowPtr;
 	
 	/** Pointer to the parent web browser handler */
-	CefRefPtr<FCEFBrowserHandler> ParentHandler;
+	CefRefPtr<FCEFBrowserHandlerEx> ParentHandler;
 
 	/** Stores popup window features and settings */
-	TSharedPtr<FCEFBrowserPopupFeatures> BrowserPopupFeatures;
+	TSharedPtr<FCEFBrowserPopupFeaturesEx> BrowserPopupFeatures;
 
 	// Include the default reference counting implementation.
-	IMPLEMENT_REFCOUNTING(FCEFBrowserHandler);
+	IMPLEMENT_REFCOUNTING(FCEFBrowserHandlerEx);
 };
 
 #endif

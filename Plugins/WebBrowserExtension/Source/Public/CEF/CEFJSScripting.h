@@ -34,12 +34,12 @@ struct FEWebJSParam;
 /**
  * Implements handling of bridging UObjects client side with JavaScript renderer side.
  */
-class FCEFJSScripting
+class FCEFJSScriptingEx
 	: public FEWebJSScripting
-	, public TSharedFromThis<FCEFJSScripting>
+	, public TSharedFromThis<FCEFJSScriptingEx>
 {
 public:
-	FCEFJSScripting(CefRefPtr<CefBrowser> Browser, bool bJSBindingToLoweringEnabled)
+	FCEFJSScriptingEx(CefRefPtr<CefBrowser> Browser, bool bJSBindingToLoweringEnabled)
 		: FEWebJSScripting(bJSBindingToLoweringEnabled)
 		, InternalCefBrowser(Browser)
 	{}

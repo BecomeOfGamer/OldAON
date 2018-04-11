@@ -1,29 +1,29 @@
 {
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "Web UI",
-	"Description": "Create a web-based user interface using the Chromium Embedded Framework.",
-	"Category": "Widgets",
-	"CreatedBy": "Tracer Interactive",
-	"CreatedByURL": "http://tracerinteractive.com",
-	"DocsURL": "http://cdn.tracerinteractive.com/webui/documentation.pdf",
-	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/277c943e8fcc48bdb53607cae4505aa8",
-	"SupportURL": "",
-	"EngineVersion": "4.19.0",
-	"CanContainContent": false,
-	"Installed": true,
-	"Modules": [
-		{
-			"Name": "WebBrowserExtension",
-			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Win32",
-				"Mac",
-				"Linux"
-			]
-		}
-	]
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "Web UI",
+  "Description": "Create a web-based user interface using the Chromium Embedded Framework.",
+  "Category": "Widgets",
+  "CreatedBy": "Tracer Interactive",
+  "CreatedByURL": "http://tracerinteractive.com",
+  "DocsURL": "http://cdn.tracerinteractive.com/webui/documentation.pdf",
+  "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/277c943e8fcc48bdb53607cae4505aa8",
+  "SupportURL": "",
+  "EngineVersion": "4.19.0",
+  "CanContainContent": false,
+  "Installed": true,
+  "Modules": [
+    {
+      "Name": "WebBrowserExtension",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Win32",
+        "Mac",
+        "Linux"
+      ]
+    }
+  ]
 }

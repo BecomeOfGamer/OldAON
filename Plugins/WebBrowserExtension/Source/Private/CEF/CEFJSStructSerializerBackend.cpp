@@ -11,7 +11,7 @@
 /* Private methods
  *****************************************************************************/
 
-void FCEFJSStructSerializerBackend::AddNull(const FStructSerializerState& State)
+void FCEFJSStructSerializerBackendEx::AddNull(const FStructSerializerState& State)
 {
 	StackItem& Current = Stack.Top();
 	switch (Current.Kind) {
@@ -25,7 +25,7 @@ void FCEFJSStructSerializerBackend::AddNull(const FStructSerializerState& State)
 }
 
 
-void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, bool Value)
+void FCEFJSStructSerializerBackendEx::Add(const FStructSerializerState& State, bool Value)
 {
 	StackItem& Current = Stack.Top();
 	switch (Current.Kind) {
@@ -39,7 +39,7 @@ void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, boo
 }
 
 
-void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, int32 Value)
+void FCEFJSStructSerializerBackendEx::Add(const FStructSerializerState& State, int32 Value)
 {
 	StackItem& Current = Stack.Top();
 	switch (Current.Kind) {
@@ -53,7 +53,7 @@ void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, int
 }
 
 
-void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, double Value)
+void FCEFJSStructSerializerBackendEx::Add(const FStructSerializerState& State, double Value)
 {
 	StackItem& Current = Stack.Top();
 	switch (Current.Kind) {
@@ -67,7 +67,7 @@ void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, dou
 }
 
 
-void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, FString Value)
+void FCEFJSStructSerializerBackendEx::Add(const FStructSerializerState& State, FString Value)
 {
 	StackItem& Current = Stack.Top();
 	switch (Current.Kind) {
@@ -81,7 +81,7 @@ void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, FSt
 }
 
 
-void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, UObject* Value)
+void FCEFJSStructSerializerBackendEx::Add(const FStructSerializerState& State, UObject* Value)
 {
 	StackItem& Current = Stack.Top();
 	switch (Current.Kind) {
@@ -98,14 +98,14 @@ void FCEFJSStructSerializerBackend::Add(const FStructSerializerState& State, UOb
 /* IStructSerializerBackend interface
  *****************************************************************************/
 
-void FCEFJSStructSerializerBackend::BeginArray(const FStructSerializerState& State)
+void FCEFJSStructSerializerBackendEx::BeginArray(const FStructSerializerState& State)
 {
 	CefRefPtr<CefListValue> ListValue = CefListValue::Create();
 	Stack.Push(StackItem(Scripting->GetBindingName(State.ValueProperty), ListValue));
 }
 
 
-void FCEFJSStructSerializerBackend::BeginStructure(const FStructSerializerState& State)
+void FCEFJSStructSerializerBackendEx::BeginStructure(const FStructSerializerState& State)
 {
 	if (State.KeyProperty != nullptr)
 	{
@@ -128,7 +128,7 @@ void FCEFJSStructSerializerBackend::BeginStructure(const FStructSerializerState&
 }
 
 
-void FCEFJSStructSerializerBackend::EndArray(const FStructSerializerState& /*State*/)
+void FCEFJSStructSerializerBackendEx::EndArray(const FStructSerializerState& /*State*/)
 {
 	StackItem Previous = Stack.Pop();
 	check(Previous.Kind == StackItem::STYPE_LIST);
@@ -146,7 +146,7 @@ void FCEFJSStructSerializerBackend::EndArray(const FStructSerializerState& /*Sta
 }
 
 
-void FCEFJSStructSerializerBackend::EndStructure(const FStructSerializerState& /*State*/)
+void FCEFJSStructSerializerBackendEx::EndStructure(const FStructSerializerState& /*State*/)
 {
 	StackItem Previous = Stack.Pop();
 	check(Previous.Kind == StackItem::STYPE_DICTIONARY);
@@ -171,13 +171,13 @@ void FCEFJSStructSerializerBackend::EndStructure(const FStructSerializerState& /
 }
 
 
-void FCEFJSStructSerializerBackend::WriteComment(const FString& Comment)
+void FCEFJSStructSerializerBackendEx::WriteComment(const FString& Comment)
 {
 	// Cef values do not support comments
 }
 
 
-void FCEFJSStructSerializerBackend::WriteProperty(const FStructSerializerState& State, int32 ArrayIndex)
+void FCEFJSStructSerializerBackendEx::WriteProperty(const FStructSerializerState& State, int32 ArrayIndex)
 {
 	// booleans
 	if (State.ValueType == UBoolProperty::StaticClass())

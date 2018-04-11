@@ -32,13 +32,13 @@ class IEWebBrowserPopupFeatures;
 
 #if WITH_CEF3
 
-class FCEFBrowserPopupFeatures
+class FCEFBrowserPopupFeaturesEx
 	: public IEWebBrowserPopupFeatures
 {
 public:
-	FCEFBrowserPopupFeatures();
-	FCEFBrowserPopupFeatures(const CefPopupFeatures& PopupFeatures);
-	virtual ~FCEFBrowserPopupFeatures();
+	FCEFBrowserPopupFeaturesEx();
+	FCEFBrowserPopupFeaturesEx(const CefPopupFeatures& PopupFeatures);
+	virtual ~FCEFBrowserPopupFeaturesEx();
 
 	// IEWebBrowserPopupFeatures Interface
 

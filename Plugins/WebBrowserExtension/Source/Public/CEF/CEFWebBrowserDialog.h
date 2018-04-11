@@ -85,7 +85,7 @@ private:
 		, Callback(InCallback)
 	{};
 
-	friend class FCEFWebBrowserWindow;
+	friend class FCEFWebBrowserWindowEx;
 };
 
 typedef FCEFWebBrowserDialog FWebBrowserDialog;

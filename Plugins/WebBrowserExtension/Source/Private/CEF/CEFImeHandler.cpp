@@ -7,14 +7,14 @@
 #include "CEFTextInputMethodContext.h"
 
 
-FCEFImeHandler::FCEFImeHandler(CefRefPtr<CefBrowser> Browser)
+FCEFImeHandlerEx::FCEFImeHandlerEx(CefRefPtr<CefBrowser> Browser)
 	: InternalCefBrowser(Browser)
 	, TextInputMethodSystem(nullptr)
 {
 
 }
 
-bool FCEFImeHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, CefProcessId SourceProcess, CefRefPtr<CefProcessMessage> Message)
+bool FCEFImeHandlerEx::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, CefProcessId SourceProcess, CefRefPtr<CefProcessMessage> Message)
 {
 	bool Result = false;
 	FString MessageName = Message->GetName().ToWString().c_str();
@@ -25,7 +25,7 @@ bool FCEFImeHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, Cef
 	return Result;
 }
 
-void FCEFImeHandler::SendProcessMessage(CefRefPtr<CefProcessMessage> Message)
+void FCEFImeHandlerEx::SendProcessMessage(CefRefPtr<CefProcessMessage> Message)
 {
 	if (IsValid() )
 	{
@@ -33,7 +33,7 @@ void FCEFImeHandler::SendProcessMessage(CefRefPtr<CefProcessMessage> Message)
 	}
 }
 
-void FCEFImeHandler::BindInputMethodSystem(ITextInputMethodSystem* InTextInputMethodSystem)
+void FCEFImeHandlerEx::BindInputMethodSystem(ITextInputMethodSystem* InTextInputMethodSystem)
 {
 	TextInputMethodSystem = InTextInputMethodSystem;
 	if (TextInputMethodSystem && TextInputMethodContext.IsValid())
@@ -42,7 +42,7 @@ void FCEFImeHandler::BindInputMethodSystem(ITextInputMethodSystem* InTextInputMe
 	}
 }
 
-void FCEFImeHandler::UnbindInputMethodSystem()
+void FCEFImeHandlerEx::UnbindInputMethodSystem()
 {
 	if (TextInputMethodContext.IsValid())
 	{
@@ -51,7 +51,7 @@ void FCEFImeHandler::UnbindInputMethodSystem()
 	TextInputMethodSystem = nullptr;
 }
 
-void FCEFImeHandler::InitContext()
+void FCEFImeHandlerEx::InitContext()
 {
 	if (!TextInputMethodSystem)
 	{
@@ -61,7 +61,7 @@ void FCEFImeHandler::InitContext()
 	// Clean up any existing context
 	DestroyContext();
 
-	TextInputMethodContext = FCEFTextInputMethodContext::Create(SharedThis(this));
+	TextInputMethodContext = FCEFTextInputMethodContextEx::Create(SharedThis(this));
 	if (TextInputMethodSystem)
 	{
 		TextInputMethodChangeNotifier = TextInputMethodSystem->RegisterContext(TextInputMethodContext.ToSharedRef());
@@ -74,14 +74,14 @@ void FCEFImeHandler::InitContext()
 	TextInputMethodSystem->ActivateContext(TextInputMethodContext.ToSharedRef());
 }
 
-void FCEFImeHandler::DeactivateContext()
+void FCEFImeHandlerEx::DeactivateContext()
 {
 	if (!TextInputMethodSystem || !TextInputMethodContext.IsValid())
 	{
 		return;
 	}
 
-	TSharedRef<FCEFTextInputMethodContext> TextInputMethodContextRef = TextInputMethodContext.ToSharedRef();
+	TSharedRef<FCEFTextInputMethodContextEx> TextInputMethodContextRef = TextInputMethodContext.ToSharedRef();
 	if (TextInputMethodSystem->IsActiveContext(TextInputMethodContextRef))
 	{
 		// Make sure that the composition is aborted to avoid any IME calls to EndComposition from trying to mutate our dying owner widget
@@ -97,7 +97,7 @@ void FCEFImeHandler::DeactivateContext()
 	}
 }
 
-void FCEFImeHandler::DestroyContext()
+void FCEFImeHandlerEx::DestroyContext()
 {
 	if (!TextInputMethodContext.IsValid())
 	{
@@ -114,7 +114,7 @@ void FCEFImeHandler::DestroyContext()
 	TextInputMethodContext.Reset();
 }
 
-bool FCEFImeHandler::HandleFocusChangedMessage(CefRefPtr<CefListValue> MessageArguments)
+bool FCEFImeHandlerEx::HandleFocusChangedMessage(CefRefPtr<CefListValue> MessageArguments)
 {
 	if (MessageArguments->GetSize() == 1 &&
 		MessageArguments->GetType(0) == VTYPE_STRING)
@@ -152,7 +152,7 @@ bool FCEFImeHandler::HandleFocusChangedMessage(CefRefPtr<CefListValue> MessageAr
 	return false;
 }
 
-void FCEFImeHandler::UnbindCefBrowser()
+void FCEFImeHandlerEx::UnbindCefBrowser()
 {
 	if (TextInputMethodContext.IsValid())
 	{
@@ -162,12 +162,12 @@ void FCEFImeHandler::UnbindCefBrowser()
 }
 
 
-void FCEFImeHandler::CacheBrowserSlateInfo(const TSharedRef<SWidget>& Widget)
+void FCEFImeHandlerEx::CacheBrowserSlateInfo(const TSharedRef<SWidget>& Widget)
 {
 	InternalBrowserSlateWidget = Widget;
 }
 
-void FCEFImeHandler::SetFocus(bool bHasFocus)
+void FCEFImeHandlerEx::SetFocus(bool bHasFocus)
 {
 	if (!TextInputMethodSystem || !TextInputMethodContext.IsValid())
 	{
@@ -184,7 +184,7 @@ void FCEFImeHandler::SetFocus(bool bHasFocus)
 	}
 }
 
-void FCEFImeHandler::UpdateCachedGeometry(const FGeometry& AllottedGeometry)
+void FCEFImeHandlerEx::UpdateCachedGeometry(const FGeometry& AllottedGeometry)
 {
 	if (TextInputMethodContext.IsValid() &&
 		TextInputMethodContext->UpdateCachedGeometry(AllottedGeometry))
@@ -196,7 +196,7 @@ void FCEFImeHandler::UpdateCachedGeometry(const FGeometry& AllottedGeometry)
 	}
 }
 
-void FCEFImeHandler::CEFCompositionRangeChanged(const CefRange& SelectionRange, const CefRenderHandler::RectList& CharacterBounds)
+void FCEFImeHandlerEx::CEFCompositionRangeChanged(const CefRange& SelectionRange, const CefRenderHandler::RectList& CharacterBounds)
 {
 	if (TextInputMethodContext.IsValid() &&
 		TextInputMethodContext->CEFCompositionRangeChanged(SelectionRange, CharacterBounds))

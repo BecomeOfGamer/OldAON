@@ -29,16 +29,16 @@ THIRD_PARTY_INCLUDES_END
 
 #include "ITextInputMethodSystem.h"
 
-class FCEFWebBrowserWindow;
-class FCEFImeHandler;
+class FCEFWebBrowserWindowEx;
+class FCEFImeHandlerEx;
 
-class FCEFTextInputMethodContext : public ITextInputMethodContext
+class FCEFTextInputMethodContextEx : public ITextInputMethodContext
 {
 public:
 
-	virtual ~FCEFTextInputMethodContext() {}
+	virtual ~FCEFTextInputMethodContextEx() {}
 
-	static TSharedRef<FCEFTextInputMethodContext> Create(const TSharedRef<FCEFImeHandler>& InOwner);
+	static TSharedRef<FCEFTextInputMethodContextEx> Create(const TSharedRef<FCEFImeHandlerEx>& InOwner);
 
 	void AbortComposition();
 
@@ -70,8 +70,8 @@ private:
 	virtual void EndComposition() override;
 
 private:
-	FCEFTextInputMethodContext(const TSharedRef<FCEFImeHandler>& InOwner);
-	TSharedRef<FCEFImeHandler> Owner;
+	FCEFTextInputMethodContextEx(const TSharedRef<FCEFImeHandlerEx>& InOwner);
+	TSharedRef<FCEFImeHandlerEx> Owner;
 	TWeakPtr<SWindow> CachedSlateWindow;
 
 	FGeometry CachedGeometry;

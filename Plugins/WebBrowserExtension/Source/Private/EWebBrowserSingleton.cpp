@@ -147,8 +147,8 @@ public:
 	{ }
 
 	virtual TSharedPtr<IEWebBrowserWindow> Create(
-		TSharedPtr<FCEFWebBrowserWindow>& BrowserWindowParent,
-		TSharedPtr<FEWebBrowserWindowInfo>& BrowserWindowInfo) override
+		TSharedPtr<FCEFWebBrowserWindowEx>& BrowserWindowParent,
+		TSharedPtr<FEWebBrowserWindowInfoEx>& BrowserWindowInfo) override
 	{
 		return IEWebBrowserModule::Get().GetSingleton()->CreateBrowserWindow(
 			BrowserWindowParent,
@@ -185,8 +185,8 @@ public:
 	{ }
 
 	virtual TSharedPtr<IEWebBrowserWindow> Create(
-		TSharedPtr<FCEFWebBrowserWindow>& BrowserWindowParent,
-		TSharedPtr<FEWebBrowserWindowInfo>& BrowserWindowInfo) override
+		TSharedPtr<FCEFWebBrowserWindowEx>& BrowserWindowParent,
+		TSharedPtr<FEWebBrowserWindowInfoEx>& BrowserWindowInfo) override
 	{
 		return nullptr;
 	}
@@ -226,7 +226,7 @@ FEWebBrowserSingleton::FEWebBrowserSingleton(const FEWebBrowserInitSettings& Web
 
 	bool bVerboseLogging = FParse::Param(FCommandLine::Get(), TEXT("cefverbose")) || FParse::Param(FCommandLine::Get(), TEXT("debuglog"));
 	// CEFBrowserApp implements application-level callbacks.
-	CEFBrowserApp = new FCEFBrowserApp;
+	CEFBrowserApp = new FCEFBrowserAppEx;
 	CEFBrowserApp->OnRenderProcessThreadCreated().BindRaw(this, &FEWebBrowserSingleton::HandleRenderProcessCreated);
 
 	// Specify CEF global settings here.
@@ -306,7 +306,7 @@ void FEWebBrowserSingleton::HandleRenderProcessCreated(CefRefPtr<CefListValue> E
 	FScopeLock Lock(&WindowInterfacesCS);
 	for (int32 Index = WindowInterfaces.Num() - 1; Index >= 0; --Index)
 	{
-		TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = WindowInterfaces[Index].Pin();
+		TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = WindowInterfaces[Index].Pin();
 		if (BrowserWindow.IsValid())
 		{
 			CefRefPtr<CefDictionaryValue> Bindings = BrowserWindow->GetProcessInfo();
@@ -358,8 +358,8 @@ TSharedRef<IEWebBrowserWindowFactory> FEWebBrowserSingleton::GetWebBrowserWindow
 }
 
 TSharedPtr<IEWebBrowserWindow> FEWebBrowserSingleton::CreateBrowserWindow(
-	TSharedPtr<FCEFWebBrowserWindow>& BrowserWindowParent,
-	TSharedPtr<FEWebBrowserWindowInfo>& BrowserWindowInfo
+	TSharedPtr<FCEFWebBrowserWindowEx>& BrowserWindowParent,
+	TSharedPtr<FEWebBrowserWindowInfoEx>& BrowserWindowInfo
 	)
 {
 #if WITH_CEF3
@@ -370,7 +370,7 @@ TSharedPtr<IEWebBrowserWindow> FEWebBrowserSingleton::CreateBrowserWindow(
 	bool bThumbMouseButtonNavigation = BrowserWindowParent->IsThumbMouseButtonNavigationEnabled();
 	bool bUseTransparency = BrowserWindowParent->UseTransparency();
 	FString InitialURL = BrowserWindowInfo->Browser->GetMainFrame()->GetURL().ToWString().c_str();
-	TSharedPtr<FCEFWebBrowserWindow> NewBrowserWindow(new FCEFWebBrowserWindow(BrowserWindowInfo->Browser, BrowserWindowInfo->Handler, InitialURL, ContentsToLoad, bShowErrorMessage, bThumbMouseButtonNavigation, bUseTransparency, bJSBindingsToLoweringEnabled));
+	TSharedPtr<FCEFWebBrowserWindowEx> NewBrowserWindow(new FCEFWebBrowserWindowEx(BrowserWindowInfo->Browser, BrowserWindowInfo->Handler, InitialURL, ContentsToLoad, bShowErrorMessage, bThumbMouseButtonNavigation, bUseTransparency, bJSBindingsToLoweringEnabled));
 	BrowserWindowInfo->Handler->SetBrowserWindow(NewBrowserWindow);
 
 	WindowInterfaces.Add(NewBrowserWindow);
@@ -442,7 +442,7 @@ TSharedPtr<IEWebBrowserWindow> FEWebBrowserSingleton::CreateBrowserWindow(const 
 
 
 		// WebBrowserHandler implements browser-level callbacks.
-		CefRefPtr<FCEFBrowserHandler> NewHandler(new FCEFBrowserHandler(WindowSettings.bUseTransparency));
+		CefRefPtr<FCEFBrowserHandlerEx> NewHandler(new FCEFBrowserHandlerEx(WindowSettings.bUseTransparency));
 
 		CefRefPtr<CefRequestContext> RequestContext = nullptr;
 		if (WindowSettings.Context.IsSet())
@@ -474,7 +474,7 @@ TSharedPtr<IEWebBrowserWindow> FEWebBrowserSingleton::CreateBrowserWindow(const 
 		if (Browser.get())
 		{
 			// Create new window
-			TSharedPtr<FCEFWebBrowserWindow> NewBrowserWindow = MakeShareable(new FCEFWebBrowserWindow(
+			TSharedPtr<FCEFWebBrowserWindowEx> NewBrowserWindow = MakeShareable(new FCEFWebBrowserWindowEx(
 				Browser,
 				NewHandler,
 				WindowSettings.InitialURL,
@@ -530,7 +530,7 @@ bool FEWebBrowserSingleton::Tick(float DeltaTime)
 		}
 		else if (bIsSlateAwake) // only check for Tick activity if Slate is currently ticking
 		{
-			TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = WindowInterfaces[Index].Pin();
+			TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = WindowInterfaces[Index].Pin();
 			if(BrowserWindow.IsValid())
 			{
 				// Test if we've ticked recently. If not assume the browser window has become hidden.
@@ -545,7 +545,7 @@ bool FEWebBrowserSingleton::Tick(float DeltaTime)
 	{
 		if (WindowInterfaces[Index].IsValid())
 		{
-			TSharedPtr<FCEFWebBrowserWindow> BrowserWindow = WindowInterfaces[Index].Pin();
+			TSharedPtr<FCEFWebBrowserWindowEx> BrowserWindow = WindowInterfaces[Index].Pin();
 			if (BrowserWindow.IsValid())
 			{
 				BrowserWindow->UpdateVideoBuffering();

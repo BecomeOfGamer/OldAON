@@ -4,15 +4,15 @@
 
 #if WITH_CEF3
 
-FCEFBrowserApp::FCEFBrowserApp()
+FCEFBrowserAppEx::FCEFBrowserAppEx()
 {
 }
 
-void FCEFBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> CommandLine)
+void FCEFBrowserAppEx::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> CommandLine)
 {
 }
 
-void FCEFBrowserApp::OnBeforeCommandLineProcessing(const CefString& ProcessType, CefRefPtr< CefCommandLine > CommandLine)
+void FCEFBrowserAppEx::OnBeforeCommandLineProcessing(const CefString& ProcessType, CefRefPtr< CefCommandLine > CommandLine)
 {
 	CommandLine->AppendSwitch("disable-gpu");
 	CommandLine->AppendSwitch("disable-gpu-compositing");
@@ -21,7 +21,7 @@ void FCEFBrowserApp::OnBeforeCommandLineProcessing(const CefString& ProcessType,
 #endif
 }
 
-void FCEFBrowserApp::OnRenderProcessThreadCreated(CefRefPtr<CefListValue> ExtraInfo)
+void FCEFBrowserAppEx::OnRenderProcessThreadCreated(CefRefPtr<CefListValue> ExtraInfo)
 {
 	RenderProcessThreadCreatedDelegate.ExecuteIfBound(ExtraInfo);
 }

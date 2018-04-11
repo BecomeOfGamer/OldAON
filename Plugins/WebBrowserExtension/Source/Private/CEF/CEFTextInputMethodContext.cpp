@@ -9,12 +9,12 @@
 #include "SlateApplication.h"
 
 
-TSharedRef<FCEFTextInputMethodContext> FCEFTextInputMethodContext::Create(const TSharedRef<FCEFImeHandler>& InOwner)
+TSharedRef<FCEFTextInputMethodContextEx> FCEFTextInputMethodContextEx::Create(const TSharedRef<FCEFImeHandlerEx>& InOwner)
 {
-	return MakeShareable(new FCEFTextInputMethodContext(InOwner));
+	return MakeShareable(new FCEFTextInputMethodContextEx(InOwner));
 }
 
-FCEFTextInputMethodContext::FCEFTextInputMethodContext(const TSharedRef<FCEFImeHandler>& InOwner)
+FCEFTextInputMethodContextEx::FCEFTextInputMethodContextEx(const TSharedRef<FCEFImeHandlerEx>& InOwner)
 	: Owner(InOwner)
 	, bIsComposing(false)
 	, CompositionBeginIndex(0)
@@ -26,14 +26,14 @@ FCEFTextInputMethodContext::FCEFTextInputMethodContext(const TSharedRef<FCEFImeH
 
 }
 
-void FCEFTextInputMethodContext::AbortComposition()
+void FCEFTextInputMethodContextEx::AbortComposition()
 {
 	bIsComposing = false;
 	Owner->InternalCefBrowser->GetHost()->ImeCancelComposition();
 	ResetComposition();
 }
 
-bool FCEFTextInputMethodContext::UpdateCachedGeometry(const FGeometry& AllottedGeometry)
+bool FCEFTextInputMethodContextEx::UpdateCachedGeometry(const FGeometry& AllottedGeometry)
 {
 	bool bCachedGeometryUpdated = false;
 	if (CachedGeometry != AllottedGeometry)
@@ -45,7 +45,7 @@ bool FCEFTextInputMethodContext::UpdateCachedGeometry(const FGeometry& AllottedG
 	return bCachedGeometryUpdated;
 }
 
-bool FCEFTextInputMethodContext::CEFCompositionRangeChanged(const CefRange& SelectionRange, const CefRenderHandler::RectList& CharacterBounds)
+bool FCEFTextInputMethodContextEx::CEFCompositionRangeChanged(const CefRange& SelectionRange, const CefRenderHandler::RectList& CharacterBounds)
 {
 	if (bIsComposing)
 	{
@@ -58,29 +58,29 @@ bool FCEFTextInputMethodContext::CEFCompositionRangeChanged(const CefRange& Sele
 	return false;
 }
 
-bool FCEFTextInputMethodContext::IsComposing()
+bool FCEFTextInputMethodContextEx::IsComposing()
 {
 	return bIsComposing;
 }
 
-bool FCEFTextInputMethodContext::IsReadOnly()
+bool FCEFTextInputMethodContextEx::IsReadOnly()
 {
 	return false;
 }
 
-uint32 FCEFTextInputMethodContext::GetTextLength()
+uint32 FCEFTextInputMethodContextEx::GetTextLength()
 {
 	return CompositionString.Len();
 }
 
-void FCEFTextInputMethodContext::GetSelectionRange(uint32& BeginIndex, uint32& Length, ECaretPosition& CaretPosition)
+void FCEFTextInputMethodContextEx::GetSelectionRange(uint32& BeginIndex, uint32& Length, ECaretPosition& CaretPosition)
 {
 	BeginIndex = SelectionRangeBeginIndex;
 	Length = SelectionRangeLength;
 	CaretPosition = SelectionCaretPosition;
 }
 
-void FCEFTextInputMethodContext::SetSelectionRange(const uint32 BeginIndex, const uint32 Length, const ECaretPosition CaretPosition)
+void FCEFTextInputMethodContextEx::SetSelectionRange(const uint32 BeginIndex, const uint32 Length, const ECaretPosition CaretPosition)
 {
 	SelectionRangeBeginIndex = BeginIndex;
 	SelectionRangeLength = Length;
@@ -95,12 +95,12 @@ void FCEFTextInputMethodContext::SetSelectionRange(const uint32 BeginIndex, cons
 		CefRange(SelectionRangeBeginIndex, SelectionRangeLength));
 }
 
-void FCEFTextInputMethodContext::GetTextInRange(const uint32 BeginIndex, const uint32 Length, FString& OutString)
+void FCEFTextInputMethodContextEx::GetTextInRange(const uint32 BeginIndex, const uint32 Length, FString& OutString)
 {
 	OutString = CompositionString.Mid(BeginIndex, Length);
 }
 
-void FCEFTextInputMethodContext::SetTextInRange(const uint32 BeginIndex, const uint32 Length, const FString& InString)
+void FCEFTextInputMethodContextEx::SetTextInRange(const uint32 BeginIndex, const uint32 Length, const FString& InString)
 {
 	FString NewString;
 	if (BeginIndex > 0)
@@ -125,7 +125,7 @@ void FCEFTextInputMethodContext::SetTextInRange(const uint32 BeginIndex, const u
 		CefRange(0, Str.length()));
 }
 
-int32 FCEFTextInputMethodContext::GetCharacterIndexFromPoint(const FVector2D& Point)
+int32 FCEFTextInputMethodContextEx::GetCharacterIndexFromPoint(const FVector2D& Point)
 {
 	int32 ResultIdx = INDEX_NONE;
 
@@ -143,7 +143,7 @@ int32 FCEFTextInputMethodContext::GetCharacterIndexFromPoint(const FVector2D& Po
 	return ResultIdx;
 }
 
-bool FCEFTextInputMethodContext::GetTextBounds(const uint32 BeginIndex, const uint32 Length, FVector2D& Position, FVector2D& Size)
+bool FCEFTextInputMethodContextEx::GetTextBounds(const uint32 BeginIndex, const uint32 Length, FVector2D& Position, FVector2D& Size)
 {
 	if (CefCompositionBounds.size() < BeginIndex ||
 		CefCompositionBounds.size() < BeginIndex + Length)
@@ -195,13 +195,13 @@ bool FCEFTextInputMethodContext::GetTextBounds(const uint32 BeginIndex, const ui
 	return false; // false means "not clipped"
 }
 
-void FCEFTextInputMethodContext::GetScreenBounds(FVector2D& Position, FVector2D& Size)
+void FCEFTextInputMethodContextEx::GetScreenBounds(FVector2D& Position, FVector2D& Size)
 {
 	Position = CachedGeometry.GetAccumulatedRenderTransform().GetTranslation();
 	Size = TransformVector(CachedGeometry.GetAccumulatedRenderTransform(), CachedGeometry.GetLocalSize());
 }
 
-TSharedPtr<FGenericWindow> FCEFTextInputMethodContext::GetWindow()
+TSharedPtr<FGenericWindow> FCEFTextInputMethodContextEx::GetWindow()
 {
 	if (CachedSlateWindow.IsValid())
 	{
@@ -219,7 +219,7 @@ TSharedPtr<FGenericWindow> FCEFTextInputMethodContext::GetWindow()
 	return SlateWindow.IsValid() ? SlateWindow->GetNativeWindow() : nullptr;
 }
 
-void FCEFTextInputMethodContext::BeginComposition()
+void FCEFTextInputMethodContextEx::BeginComposition()
 {
 	if (!bIsComposing)
 	{
@@ -227,13 +227,13 @@ void FCEFTextInputMethodContext::BeginComposition()
 	}
 }
 
-void FCEFTextInputMethodContext::UpdateCompositionRange(const int32 InBeginIndex, const uint32 InLength)
+void FCEFTextInputMethodContextEx::UpdateCompositionRange(const int32 InBeginIndex, const uint32 InLength)
 {
 	CompositionBeginIndex = InBeginIndex;
 	CompositionLength = InLength;
 }
 
-void FCEFTextInputMethodContext::EndComposition()
+void FCEFTextInputMethodContextEx::EndComposition()
 {
 	if (bIsComposing)
 	{
@@ -252,7 +252,7 @@ void FCEFTextInputMethodContext::EndComposition()
 	}
 }
 
-void FCEFTextInputMethodContext::ResetComposition()
+void FCEFTextInputMethodContextEx::ResetComposition()
 {
 	CompositionString.Empty();
 	CefCompositionBounds.clear();
