@@ -46,6 +46,7 @@ public:
 
 	void SetMouseDownCallback(std::function< void(FKey) > _LButton);
 	void SetMouseUpCallback(std::function< void(FKey) > _LButton);
+	void SetMouseWheelCallback(std::function< void(FKey) > _LMutton);
 
 	// Called with ue.interface.broadcast(name, data) in the browser context.
 	UPROPERTY( BlueprintAssignable, Category = "Web UI|Events" )

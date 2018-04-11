@@ -254,7 +254,7 @@ private:
 public:
 	void SetMouseDownCallback(std::function< void(FKey) > _LButton);
 	void SetMouseUpCallback(std::function< void(FKey) > _LButton);
-
+	void SetMouseWheelCallback(std::function< void(FKey) > _LMutton);
 	
 private:
 

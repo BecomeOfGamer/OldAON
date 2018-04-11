@@ -20,6 +20,11 @@ void FEWebBrowserViewport::SetMouseUpCallback(std::function< void(FKey) > _LButt
 	LButton2 = _LButton;
 }
 
+void FEWebBrowserViewport::SetMouseWheelCallback(std::function< void(FKey) > _MButton)
+{
+	MButton1 = _MButton;
+}
+
 FIntPoint FEWebBrowserViewport::GetSize() const
 {
 	return (WebBrowserWindow->GetTexture(bIsPopup) != nullptr)
@@ -102,6 +107,14 @@ FReply FEWebBrowserViewport::OnMouseMove(const FGeometry& MyGeometry, const FPoi
 
 FReply FEWebBrowserViewport::OnMouseWheel(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
+	if (MouseEvent.GetGestureDelta().Y > 0)
+	{
+		MButton1(EKeys::MouseScrollUp);
+	}
+	else if (MouseEvent.GetGestureDelta().Y < 0)
+	{
+		MButton1(EKeys::MouseScrollDown);
+	}
 	return WebBrowserWindow->OnMouseWheel(MyGeometry, MouseEvent, bIsPopup);
 }
 

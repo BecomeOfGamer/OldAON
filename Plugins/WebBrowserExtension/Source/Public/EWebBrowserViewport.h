@@ -36,6 +36,7 @@ public:
 	}
 	void SetMouseDownCallback(std::function< void(FKey) > _LButton);
 	void SetMouseUpCallback(std::function< void(FKey) > _LButton);
+	void SetMouseWheelCallback(std::function< void(FKey) > _MButton);
 	
 	// ISlateViewport interface
 	virtual FIntPoint GetSize() const override;
@@ -64,4 +65,5 @@ private:
 
 	std::function< void(FKey) > LButton1;
 	std::function< void(FKey) > LButton2;
+	std::function< void(FKey) > MButton1;
 };

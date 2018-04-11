@@ -107,6 +107,7 @@ public:
 
 	void MouseDownCallback(FKey key);
 	void MouseUpCallback(FKey key);
+	void MouseWheelCallback(FKey key);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SetWebUICallback(UWebInterface* wi);

@@ -123,6 +123,11 @@ void UWebInterface::SetMouseUpCallback(std::function< void(FKey) > _LButton)
 	WebInterfaceWidget->SetMouseUpCallback(_LButton);
 }
 
+void UWebInterface::SetMouseWheelCallback(std::function< void(FKey) > _LMutton)
+{
+	WebInterfaceWidget->SetMouseWheelCallback(_LMutton);
+}
+
 void UWebInterface::ReleaseSlateResources( bool bReleaseChildren )
 {
 	Super::ReleaseSlateResources( bReleaseChildren );

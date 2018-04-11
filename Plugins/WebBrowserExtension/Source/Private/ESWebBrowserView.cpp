@@ -86,6 +86,11 @@ void ESWebBrowserView::SetMouseUpCallback(std::function< void(FKey) > _LButton)
 	BrowserViewport->SetMouseUpCallback(_LButton);
 }
 
+void ESWebBrowserView::SetMouseWheelCallback(std::function< void(FKey) > _MButton)
+{
+	BrowserViewport->SetMouseWheelCallback(_MButton);
+}
+
 void ESWebBrowserView::Construct(const FArguments& InArgs, const TSharedPtr<IEWebBrowserWindow>& InWebBrowserWindow)
 {
 	OnLoadCompleted = InArgs._OnLoadCompleted;

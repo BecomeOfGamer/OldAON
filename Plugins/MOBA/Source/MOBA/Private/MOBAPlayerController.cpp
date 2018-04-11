@@ -177,13 +177,7 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 		FHitResult HitResult;
 		bool bHit = false;
 
-		UGameViewportClient* ViewportClient = LocalPlayer->ViewportClient;
-		{
-			if (ViewportClient->GetMousePosition(MousePosition))
-			{
-				bHit = GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, /*out*/ HitResult);
-			}
-		}
+		bHit = GetHitResultAtScreenPosition(GetMouseScreenPosition(), CurrentClickTraceChannel, true, /*out*/ HitResult);
 
 		UPrimitiveComponent* PreviousComponent = CurrentClickablePrimitive.Get();
 		UPrimitiveComponent* CurrentComponent = (bHit ? HitResult.Component.Get() : NULL);
@@ -255,6 +249,7 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 			KeyMapping.Add(EKeys::S, EKeyBehavior::KEY_STOP);
 
 			KeyMapping.Add(EKeys::One, EKeyBehavior::KEY_SELECT_OWNED_HERO);
+			KeyMapping.Add(EKeys::F1, EKeyBehavior::KEY_SELECT_OWNED_HERO);
 			if (RoomActor)
 			{
 				RoomActor->m_pAMHUD = Hud;
@@ -365,12 +360,18 @@ void AMOBAPlayerController::MouseUpCallback(FKey key)
 	InputKey(key, EInputEvent::IE_Released, 0, false);
 }
 
+void AMOBAPlayerController::MouseWheelCallback(FKey key)
+{
+	InputKey(key, EInputEvent::IE_Pressed, 0, false);
+	InputKey(key, EInputEvent::IE_Released, 0, false);
+}
 
 void AMOBAPlayerController::SetWebUICallback(UWebInterface* wi)
 {
 	using namespace std::placeholders;
 	wi->SetMouseDownCallback(std::bind(&AMOBAPlayerController::MouseDownCallback, this, _1));
 	wi->SetMouseUpCallback(std::bind(&AMOBAPlayerController::MouseUpCallback, this, _1));
+	wi->SetMouseWheelCallback(std::bind(&AMOBAPlayerController::MouseWheelCallback, this, _1));
 }
 
 // network function

@@ -329,6 +329,11 @@ void ESWebBrowser::SetMouseUpCallback(std::function< void(FKey) > _LButton)
 	BrowserView->SetMouseUpCallback(_LButton);
 }
 
+void ESWebBrowser::SetMouseWheelCallback(std::function< void(FKey) > _MButton)
+{
+	BrowserView->SetMouseWheelCallback(_MButton);
+}
+
 void ESWebBrowser::ExecuteJavascript(const FString& ScriptText)
 {
 	if (BrowserView.IsValid())
