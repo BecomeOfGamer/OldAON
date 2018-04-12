@@ -515,6 +515,7 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), Skills[i]->MaxCD);
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentLevel"), i + 1), Skills[i]->CurrentLevel);
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), Skills[i]->MaxLevel);
+		wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), Skills[i]->Webpath);
 	}
 	return UWebInterfaceHelpers::ConvertObject(wjo);
 }

@@ -16,7 +16,6 @@ if (typeof ue == "object" && typeof ue.interface == "object") {
 
         ue4 = ue.interface.broadcast;
         
-        
         ue.interface.setFPS = function(fps)
         {
             // set element text
@@ -39,6 +38,9 @@ if (typeof ue4 == "function") {
     });
     $("#button1").click(function() {
       ue4("delete",{});
+    });
+    $('img').bind('click', function(){
+        ue4($(this).attr("id"),{});
     });
 }
 
@@ -69,4 +71,7 @@ function setCurrentHero(val) {
     $("#CurrentAttack").text(val.CurrentAttack);
     $("#CurrentArmor").text(val.CurrentArmor);
     $("#CurrentAttackRange").text(val.CurrentAttackRange);
+    for (var i=1;i<=4;++i){
+        $("#skill"+i).attr("src",val["Skill"+i+"_Webpath"]);
+    }
 }

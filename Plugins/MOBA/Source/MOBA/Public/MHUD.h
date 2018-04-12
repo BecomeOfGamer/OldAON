@@ -127,6 +127,7 @@ public:
 	AHeroCharacter* GetMouseTarget(float MinDistance);
 	
 	// use skill callback by localcontroller
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void KeyboardCallUseSkill(EKeyBehavior idx);
 
 	

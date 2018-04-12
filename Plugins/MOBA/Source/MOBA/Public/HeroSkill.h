@@ -143,6 +143,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float CastRange;
 
+	// 對應的網頁圖片路徑
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FString Webpath;
+
 	// 技能描述
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	FSkillDescription Description;

@@ -2,8 +2,6 @@
 #include "MOBAPrivatePCH.h"
 #include "MHUD.h"
 #include <algorithm>
-#undef max
-#undef min
 #include <cmath>
 #include "EngineUtils.h"
 // for GEngine

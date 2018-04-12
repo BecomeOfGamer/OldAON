@@ -11,7 +11,23 @@ body {
   width:40%;
 }
 
-.row {
+#status .row {
   height:20px;
+}
+
+#skill {
+  position:absolute;
+  top:80%;
+  right:0px;
+  width:400px;
+  height:500px;
+}
+
+#skill4 {
+}
+
+img {
+  width:64px;
+  height:60px;
 }
 
