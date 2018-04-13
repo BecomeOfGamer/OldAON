@@ -507,9 +507,12 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 	wjo->SetInteger(FString(TEXT("BaseMoveSpeed")), BaseMoveSpeed);
 	wjo->SetInteger(FString(TEXT("BaseAttackRange")), BaseAttackRange);
 
+	wjo->SetNumber(FString::Printf(TEXT("Skill_Amount")), Skills.Num());
+	wjo->SetNumber(FString::Printf(TEXT("Buff_Amount")), BuffQueue.Num());
 	for (int i=0;i < Skills.Num();++i)
 	{
 		wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), Skills[i]->Name);
+		wjo->SetString(FString::Printf(TEXT("Skill%d_Description"), i + 1), Skills[i]->Description.Description);
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CDPercent"),i+1), Skills[i]->GetSkillCDPercent());
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentCD"), i + 1), Skills[i]->CurrentCD);
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), Skills[i]->MaxCD);
@@ -517,6 +520,16 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), Skills[i]->MaxLevel);
 		wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), Skills[i]->Webpath);
 	}
+	for (int i = 0; i < BuffQueue.Num(); ++i)
+	{
+		wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), BuffQueue[i]->Name);
+		wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), BuffQueue[i]->Webpath);
+		wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), BuffQueue[i]->BuffTips);
+		wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), BuffQueue[i]->Stacks);
+		wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), BuffQueue[i]->Duration);
+		wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), BuffQueue[i]->CanStacks);
+	}
+	
 	return UWebInterfaceHelpers::ConvertObject(wjo);
 }
 

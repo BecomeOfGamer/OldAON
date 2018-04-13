@@ -296,6 +296,14 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	FString Name;
 
+	// Buff 說明，說明Buff的作用
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	FString BuffTips;
+
+	// 對應的網頁圖片路徑
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FString Webpath;
+
 	// 是否跟著英雄 如果是跟在身上的特效需要打勾
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	bool FollowActor;

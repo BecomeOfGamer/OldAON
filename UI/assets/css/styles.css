@@ -15,12 +15,20 @@ body {
   height:20px;
 }
 
-#skill {
+#skills {
   position:absolute;
   top:80%;
   right:0px;
   width:400px;
   height:500px;
+}
+
+#buffs {
+  position:absolute;
+  top:65%;
+  right:0px;
+  width:50%;
+  height:64px;
 }
 
 #skill4 {

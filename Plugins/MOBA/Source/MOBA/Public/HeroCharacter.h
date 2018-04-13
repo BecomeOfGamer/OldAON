@@ -257,6 +257,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	UTexture2D * Head;
 
+	// 對應的網頁圖片路徑
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FString Webpath;
+
 	// set by HUD
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FVector2D	ScreenPosition;

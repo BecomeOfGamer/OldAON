@@ -903,7 +903,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				if (HitBox.Contains(pos, ViewportScale))
 				{
 					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
-					if (selectHero->CurrentSkillPoints > 0 && selectHero->Skills[idx]->CanLevelUp())
+					if (selectHero->CurrentSkillPoints > 0 && selectHero->Skills.Num() > idx && selectHero->Skills[idx]->CanLevelUp())
 					{
 						LocalController->ServerHeroSkillLevelUp(selectHero, idx);
 					}
