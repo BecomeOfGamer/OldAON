@@ -527,6 +527,7 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 		wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), BuffQueue[i]->BuffTips);
 		wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), BuffQueue[i]->Stacks);
 		wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), BuffQueue[i]->Duration);
+		wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), BuffQueue[i]->MaxDuration);
 		wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), BuffQueue[i]->CanStacks);
 	}
 	

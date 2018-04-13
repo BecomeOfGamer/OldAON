@@ -42,6 +42,11 @@ AHeroBuff* AHeroBuff::Clone()
 	return data;
 }
 
+void AHeroBuff::BeginPlay()
+{
+	MaxDuration = Duration;
+}
+
 void AHeroBuff::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

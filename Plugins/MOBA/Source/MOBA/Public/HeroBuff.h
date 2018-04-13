@@ -225,6 +225,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "NewObject")
 	AHeroBuff* Clone();
 
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -341,9 +344,13 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	int32 Stacks;
 
-	// 每一層持續時間
+	// 當前持續時間
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Duration;
+
+	// 總共時間時間
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float MaxDuration;
 
 	// 每幾秒自動呼叫事件
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
