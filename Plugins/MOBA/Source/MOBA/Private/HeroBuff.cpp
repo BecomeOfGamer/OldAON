@@ -44,6 +44,7 @@ AHeroBuff* AHeroBuff::Clone()
 
 void AHeroBuff::BeginPlay()
 {
+	Super::BeginPlay();
 	MaxDuration = Duration;
 }
 

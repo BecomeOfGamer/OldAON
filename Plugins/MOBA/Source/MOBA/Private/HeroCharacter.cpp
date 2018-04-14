@@ -512,13 +512,22 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 	for (int i=0;i < Skills.Num();++i)
 	{
 		wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), Skills[i]->Name);
+		wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), Skills[i]->Webpath);
 		wjo->SetString(FString::Printf(TEXT("Skill%d_Description"), i + 1), Skills[i]->Description.Description);
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CDPercent"),i+1), Skills[i]->GetSkillCDPercent());
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentCD"), i + 1), Skills[i]->CurrentCD);
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), Skills[i]->MaxCD);
+		if (Skills[i]->CanLevelUp() && CurrentSkillPoints > 0)
+		{
+			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), true);
+		}
+		else
+		{
+			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), false);
+		}
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentLevel"), i + 1), Skills[i]->CurrentLevel);
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), Skills[i]->MaxLevel);
-		wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), Skills[i]->Webpath);
+		
 	}
 	for (int i = 0; i < BuffQueue.Num(); ++i)
 	{

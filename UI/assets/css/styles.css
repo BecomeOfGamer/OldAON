@@ -2,9 +2,6 @@ body {
   background-color:transparent;
 }
 
-body {
-}
-
 #status {
   position:absolute;
   top:70%;
@@ -15,27 +12,81 @@ body {
   height:20px;
 }
 
-#skills {
+#skillc {
   position:absolute;
-  top:80%;
-  right:0px;
-  width:400px;
-  height:500px;
+  top:85%;
+  right:40%;
+  width:50%;
+  height:64px;
 }
 
-#buffs {
+#buffc {
   position:absolute;
-  top:65%;
+  top:75%;
   right:0px;
   width:50%;
   height:64px;
 }
 
-#skill4 {
+.skillimg {
+  width:64px;
+  height:64px;
 }
 
-img {
+.skillupimg {
   width:64px;
-  height:60px;
+  height:20px;
+}
+
+.buffimg {
+  width:40px;
+  height:40px;
+}
+
+#m {
+  top:100px;
+  left:100px;
+  margin-left:50px;
+  position:absolute;
+  width:50px;
+  height:100px;
+  overflow:hidden;
+  border-radius:0 50px 50px 0;
+  -webkit-animation:a 5s infinite linear;
+}
+
+#m:before, #m:after {
+  content:"";
+  box-sizing:border-box;
+  position:absolute;
+  top:0;
+  right:0;
+  width:100px;
+  height:50px;
+  background:#0ce;
+  border-style:solid;
+  border-color:#000;
+  border-width:6px 6px 0;
+  border-radius:50px 50px 0 0;
+  transform-origin:50px 50px;
+}
+
+#m:before {
+  z-index:1;
+  -webkit-animation:a1 5s infinite linear;
+  transform:rotate(-90deg);
+}
+
+#m:after {
+  opacity:0;
+  z-index:2;
+  transform:rotate(90deg);
+  -webkit-animation:a2 5s infinite linear;
+}
+
+body {
+}
+
+body {
 }
 

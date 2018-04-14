@@ -240,7 +240,7 @@ void AMHUD::DrawHUD()
 			}
 		}
 	}
-	
+	/*
 	if(CurrentSelection.Num() > 0)
 	{
 		AHeroCharacter* selectHero = CurrentSelection[0];
@@ -254,7 +254,7 @@ void AMHUD::DrawHUD()
 			}
 
 			// 畫經驗條
-			/*
+			
 			{
 				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
 				DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale,
@@ -264,7 +264,6 @@ void AMHUD::DrawHUD()
 				DrawText(FString::Printf(TEXT("LV %d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1),
 					skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, LevelFont);
 			}
-			*/
 			// 畫技能圖
 			if (SkillMaterial)
 			{
@@ -317,6 +316,7 @@ void AMHUD::DrawHUD()
 			}
 		}
 	}
+	*/
 	// 畫滑鼠icon
 
 	if (MouseIcon.Contains(HUDStatus) && MouseIcon[HUDStatus].mat)
@@ -517,7 +517,7 @@ void AMHUD::HeroAttackSceneObject(ASceneObject* SceneObj)
 	}
 }
 
-void AMHUD::KeyboardCallUseSkill(EKeyBehavior kb)
+void AMHUD::CallUseSkill(EKeyBehavior kb)
 {
 	if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
@@ -547,6 +547,15 @@ void AMHUD::KeyboardCallUseSkill(EKeyBehavior kb)
 			F1Hero->SelectionOn();
 			CurrentSelectTarget = F1Hero;
 		}
+	}
+}
+
+void AMHUD::CallSkillUp(EKeyBehavior idx)
+{
+	if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
+	{
+		AHeroCharacter* selectHero = CurrentSelection[0];
+		LocalController->ServerHeroSkillLevelUp(selectHero, static_cast<int>(idx));
 	}
 }
 
@@ -880,6 +889,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 	}
 	
 	// 顯示技能提示
+	/*
 	if(CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
 		AHeroCharacter* selectHero = CurrentSelection[0];
@@ -928,6 +938,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 			}
 		}
 	}
+	*/
 }
 
 void AMHUD::OnLMouseReleased(FVector2D pos)

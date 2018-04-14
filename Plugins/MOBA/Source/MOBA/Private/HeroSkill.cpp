@@ -44,6 +44,8 @@ void AHeroSkill::Tick(float DeltaTime)
 
 bool AHeroSkill::ReadySpell()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
+		FString::Printf(TEXT("CurrentLevel %d Enable %d"), CurrentLevel, Enable));
 	if (Enable && CurrentLevel > 0 && CurrentCD >= MaxCD)
 	{
 		return true;

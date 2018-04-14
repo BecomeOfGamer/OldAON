@@ -128,8 +128,11 @@ public:
 	
 	// use skill callback by localcontroller
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void KeyboardCallUseSkill(EKeyBehavior idx);
+	void CallUseSkill(EKeyBehavior idx);
 
+	// use skill callback by localcontroller
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void CallSkillUp(EKeyBehavior idx);
 	
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	FVector GetCurrentDirection();

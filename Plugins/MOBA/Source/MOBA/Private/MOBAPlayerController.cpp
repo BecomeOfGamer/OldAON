@@ -64,7 +64,7 @@ bool AMOBAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amou
 	{
 		if (KeyMapping.Contains(Key))
 		{
-			Hud->KeyboardCallUseSkill(KeyMapping[Key]);
+			Hud->CallUseSkill(KeyMapping[Key]);
 		}
 	}
 	if (Key == EKeys::LeftShift && Hud)
