@@ -51,7 +51,10 @@ void AHeroBuff::BeginPlay()
 void AHeroBuff::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	Duration -= DeltaTime;
+	if (!Forever)
+	{
+		Duration -= DeltaTime;
+	}
 	if (Interval > 0)
 	{
 		IntervalCounting += DeltaTime;

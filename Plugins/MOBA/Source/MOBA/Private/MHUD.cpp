@@ -748,6 +748,7 @@ void AMHUD::OnRMouseReleased(FVector2D pos)
 		}
 	}
 	// 如果有點到物品
+	/*
 	if(CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
 		AHeroCharacter* Selection = CurrentSelection[0];
@@ -762,6 +763,7 @@ void AMHUD::OnRMouseReleased(FVector2D pos)
 			RButtonUpHitBox = RButtonDownHitBox = FString();
 		}
 	}
+	*/
 	bClickHero = false;
 }
 

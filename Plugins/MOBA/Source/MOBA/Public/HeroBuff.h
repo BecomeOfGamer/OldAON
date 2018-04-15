@@ -340,6 +340,11 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	bool CanStacks = false;
 
+	// 是否永久存在，如果為true則無視Duration存在著
+	// 值也不再更新但OnInterval一樣會發動
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	bool Forever = false;
+
 	// 疊加層數
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	int32 Stacks;
@@ -348,7 +353,7 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Duration;
 
-	// 總共時間時間
+	// 總共時間
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float MaxDuration;
 

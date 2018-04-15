@@ -353,7 +353,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 	for (int32 i = 0; i < BuffQueue.Num(); ++i)
 	{
 		// 移除時間到的Buff
-		if (BuffQueue[i]->Duration <= 0)
+		if (!BuffQueue[i]->Forever && BuffQueue[i]->Duration <= 0)
 		{
 			// 釋放記憶體
 			if (!BuffQueue[i]->IsPendingKillPending())
