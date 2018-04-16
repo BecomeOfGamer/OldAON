@@ -79,7 +79,7 @@ public:
 	float ElapsedTime = 0;
 
 	// 飛行方向
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
 	FVector Direction;
 
 	// 半徑 

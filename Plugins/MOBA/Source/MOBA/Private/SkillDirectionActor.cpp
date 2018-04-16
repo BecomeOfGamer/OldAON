@@ -20,6 +20,7 @@ ASkillDirectionActor::ASkillDirectionActor(const FObjectInitializer& ObjectIniti
 	CapsuleComponent->bCheckAsyncSceneOnMove = false;
 	CapsuleComponent->SetCanEverAffectNavigation(false);
 	CapsuleComponent->bDynamicObstacle = true;
+	
 
 	CapsuleComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 	CapsuleComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -29,6 +30,7 @@ ASkillDirectionActor::ASkillDirectionActor(const FObjectInitializer& ObjectIniti
 	CapsuleComponent->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
 	CapsuleComponent->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
 	CapsuleComponent->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
+	CapsuleComponent->SetIsReplicated(true);
 
 	RootComponent = CapsuleComponent;
 
@@ -36,6 +38,8 @@ ASkillDirectionActor::ASkillDirectionActor(const FObjectInitializer& ObjectIniti
 	BulletParticle->SetupAttachment(CapsuleComponent);
 	FlyParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FlyParticle0"));
 	FlyParticle->SetupAttachment(CapsuleComponent);
+	BulletParticle->SetIsReplicated(true);
+	FlyParticle->SetIsReplicated(true);
 	
 	FlyDistance = 1000;
 	MoveSpeed = 500;
@@ -66,7 +70,6 @@ void ASkillDirectionActor::BeginPlay()
 // Called every frame
 void ASkillDirectionActor::Tick(float DeltaTime)
 {
-
 	Super::Tick(DeltaTime);
 	if (!IsValid(Attacker))
 	{
@@ -100,7 +103,6 @@ void ASkillDirectionActor::Tick(float DeltaTime)
 		// TODO: 使用內建碰撞優化
 		if (!CollisionByCapsule)
 		{
-			
 			float dis2 = Radius*Radius;
 			for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 			{
@@ -140,7 +142,6 @@ void ASkillDirectionActor::Tick(float DeltaTime)
 	}
 }
 
-
 void ASkillDirectionActor::SetDirection(AHeroCharacter* attacker, FVector dir)
 {
 	Direction = dir;
@@ -149,13 +150,13 @@ void ASkillDirectionActor::SetDirection(AHeroCharacter* attacker, FVector dir)
 	Direction.Z = 0;
 	SetActorTransform(attacker->GetTransform());
 }
+
 void ASkillDirectionActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AHeroCharacter* hero = Cast<AHeroCharacter>(OtherActor);
 	if (IsValid(hero) && IsValid(Attacker) && hero->TeamId != Attacker->TeamId && !TargetActors.Contains(hero))
 	{
-		
 		AHeroCharacter::localPC->ServerAttackCompute(
 			Attacker, hero, DamageType, Damage, false);
 		TargetActors.Add(hero);
@@ -165,6 +166,7 @@ void ASkillDirectionActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 void ASkillDirectionActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASkillDirectionActor, Direction);
 	DOREPLIFETIME(ASkillDirectionActor, Attacker);
 	DOREPLIFETIME(ASkillDirectionActor, TargetActors);
 }

@@ -213,7 +213,7 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 		{
 			for (FHitResult Hit : Hits)
 			{
-				if (Hit.Actor.IsValid() && Hit.Actor->GetFName().GetPlainNameString() == FloorActorName)
+				//if (Hit.Actor.IsValid() && Hit.Actor->GetFName().GetPlainNameString() == FloorActorName)
 				{
 					HitPoint = Hit.ImpactPoint;
 				}

@@ -81,6 +81,7 @@ void ASkillSplineActor::Tick(float DeltaTime)
 	SetActorLocation(StartPos + 
 		GetActorRotation().RotateVector(
 			MoveSpline->GetLocationAtDistanceAlongSpline(ElapsedFlyDistance, ESplineCoordinateSpace::Type::Local)));
+	FVector fpos = GetActorLocation();
 	//SetActorRelativeRotation(MoveSpline->GetRotationAtSplineInputKey(ElapsedFlyDistance, ESplineCoordinateSpace::Type::Local));
 	float scale = 1;
 	if (IsValid(ScaleSize))
