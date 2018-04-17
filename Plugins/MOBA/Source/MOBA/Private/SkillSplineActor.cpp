@@ -53,6 +53,7 @@ ASkillSplineActor::ASkillSplineActor(const FObjectInitializer& ObjectInitializer
 void ASkillSplineActor::BeginPlay()
 {
 	Super::BeginPlay();
+	SetActorRelativeRotation(Attacker->GetActorRotation());
 	if (CollisionByCapsule)
 	{
 		CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ASkillSplineActor::OnBeginOverlap);
@@ -137,13 +138,6 @@ void ASkillSplineActor::Tick(float DeltaTime)
 	}
 }
 
-
-void ASkillSplineActor::SetAttacker(AHeroCharacter* attacker)
-{
-	Attacker = attacker;
-	SetActorTransform(attacker->GetTransform());
-}
-
 void ASkillSplineActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -160,5 +154,6 @@ void ASkillSplineActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASkillSplineActor, Attacker);
+	DOREPLIFETIME(ASkillSplineActor, Skill);
 	DOREPLIFETIME(ASkillSplineActor, TargetActors);
 }

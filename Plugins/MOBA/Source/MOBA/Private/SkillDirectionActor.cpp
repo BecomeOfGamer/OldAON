@@ -56,6 +56,8 @@ void ASkillDirectionActor::BeginPlay()
 {
 	Super::BeginPlay();
 	Direction.Normalize();
+	Direction.Z = 0;
+	SetActorRelativeRotation(Attacker->GetActorRotation());
 	if (CollisionByCapsule)
 	{
 		CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ASkillDirectionActor::OnBeginOverlap);
@@ -142,15 +144,6 @@ void ASkillDirectionActor::Tick(float DeltaTime)
 	}
 }
 
-void ASkillDirectionActor::SetDirection(AHeroCharacter* attacker, FVector dir)
-{
-	Direction = dir;
-	Attacker = attacker;
-	Direction.Normalize();
-	Direction.Z = 0;
-	SetActorTransform(attacker->GetTransform());
-}
-
 void ASkillDirectionActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -167,6 +160,7 @@ void ASkillDirectionActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASkillDirectionActor, Direction);
+	DOREPLIFETIME(ASkillDirectionActor, Skill);
 	DOREPLIFETIME(ASkillDirectionActor, Attacker);
 	DOREPLIFETIME(ASkillDirectionActor, TargetActors);
 }

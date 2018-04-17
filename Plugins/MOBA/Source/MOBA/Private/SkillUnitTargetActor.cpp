@@ -30,6 +30,7 @@ void ASkillUnitTargetActor::BeginPlay()
 {
 	Super::BeginPlay();
 	StartPos = GetActorLocation();
+	SetActorRelativeRotation(Attacker->GetActorRotation());
 }
 
 // Called every frame
@@ -117,22 +118,11 @@ void ASkillUnitTargetActor::Tick(float DeltaTime)
 	}
 }
 
-void ASkillUnitTargetActor::SetTargetActor(AHeroCharacter* attacker, AHeroCharacter* TActor)
-{
-	TargetActors.Add(TActor);
-	Attacker = attacker;
-}
-
-void ASkillUnitTargetActor::SetTargetActors(AHeroCharacter* attacker, TArray<AHeroCharacter*> TActors)
-{
-	TargetActors = TActors;
-	Attacker = attacker;
-}
-
 void ASkillUnitTargetActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASkillUnitTargetActor, Attacker);
+	DOREPLIFETIME(ASkillUnitTargetActor, Skill);
 	DOREPLIFETIME(ASkillUnitTargetActor, TargetActors);
 	DOREPLIFETIME(ASkillUnitTargetActor, CurrentTargetIndex);
 }

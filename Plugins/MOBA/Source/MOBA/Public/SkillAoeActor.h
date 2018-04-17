@@ -38,11 +38,7 @@ public:
 	// 擊中目標
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnHit(AHeroCharacter* caster, AHeroCharacter* target);
-
-	// 一般的投射物設定目標用
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void SetAttacker(AHeroCharacter* attacker);
-	
+		
 	UPROPERTY(Category = "MOBA", VisibleAnywhere, BlueprintReadWrite)
 	bool debugflag = true;
 
@@ -83,8 +79,13 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	uint32  PrepareDestory: 1;
 
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	// 設定攻擊者
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
 	AHeroCharacter* Attacker;
+
+	// 設定施法技能實體
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
+	AHeroSkill* Skill;
 
 	// 被擊中的人們
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)

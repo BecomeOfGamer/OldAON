@@ -27,7 +27,7 @@ ASkillAoeActor::ASkillAoeActor(const FObjectInitializer& ObjectInitializer)
 void ASkillAoeActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SetActorRelativeRotation(Attacker->GetActorRotation());
 }
 
 // Called every frame
@@ -67,6 +67,7 @@ void ASkillAoeActor::Tick(float DeltaTime)
 			{
 				if (FVector::DistSquaredXY(this->GetActorLocation(), hero->GetActorLocation()) < dis2)
 				{
+					OnHit(Attacker, hero);
 					AHeroCharacter::localPC->ServerAttackCompute(
 						Attacker, hero, DamageType, Damage, false);
 					TargetActors.Add(hero);
@@ -89,14 +90,10 @@ void ASkillAoeActor::Tick(float DeltaTime)
 	}
 }
 
-void ASkillAoeActor::SetAttacker(AHeroCharacter* attacker)
-{
-	Attacker = attacker;
-}
-
 void ASkillAoeActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASkillAoeActor, Attacker);
+	DOREPLIFETIME(ASkillAoeActor, Skill);
 	DOREPLIFETIME(ASkillAoeActor, TargetActors);
 }

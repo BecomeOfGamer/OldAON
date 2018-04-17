@@ -32,14 +32,6 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	UCurveFloat* ScaleSize;
 
-	// 一般的投射物設定目標用
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void SetTargetActor(AHeroCharacter* attacker, AHeroCharacter* TActor);
-
-	// 會連鎖的投射物設定目標用
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void SetTargetActors(AHeroCharacter* attacker, TArray<AHeroCharacter*> TActors);
-
 	// 剛被產生出來 或是要準備彈到下一個目標時會觸發
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnStart(AHeroCharacter* caster, AHeroCharacter* target);
@@ -88,10 +80,16 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	uint32  PrepareDestory: 1;
 
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	// 設定攻擊者
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
 	AHeroCharacter* Attacker;
+
+	// 設定施法技能實體
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
+	AHeroSkill* Skill;
 	
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	// 設定要擊中的目標，如果設定多個則產生連鎖彈跳效果
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<AHeroCharacter*> TargetActors;
 
 	AHeroCharacter* LastTarget = nullptr;
