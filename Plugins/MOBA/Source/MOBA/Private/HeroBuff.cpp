@@ -12,6 +12,8 @@ AHeroBuff::AHeroBuff(const FObjectInitializer& ObjectInitializer)
 	Interval = 0;
 	IntervalCounting = 0;
 	IntervalCount = 0;
+	Particle = ObjectInitializer.CreateDefaultSubobject<UParticleSystemComponent>(this, TEXT("Particle0"));
+	Particle->SetupAttachment(RootComponent);
 }
 
 AHeroBuff* AHeroBuff::NewHeroBuff()
@@ -54,8 +56,18 @@ void AHeroBuff::Tick(float DeltaTime)
 	if (!Forever)
 	{
 		Duration -= DeltaTime;
+		ParticleDuration -= DeltaTime;
+		RealDuration -= DeltaTime;
 	}
-	if (Interval > 0)
+	if (ParticleDuration <= 0)
+	{
+		Particle->Deactivate();
+	}
+	if (RealDuration <= 0 && !IsPendingKillPending())
+	{
+		this->Destroy();
+	}
+	if (Interval > 0 && Duration >= 0)
 	{
 		IntervalCounting += DeltaTime;
 		if (IntervalCounting >= Interval)

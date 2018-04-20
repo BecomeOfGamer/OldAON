@@ -311,8 +311,13 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	bool FollowActor;
 
+	// 跟著英雄的位置
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	EBuffPosition FollowPosition;
+
+	// Particle特效
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UParticleSystemComponent * Particle;
 
 	// logo
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
@@ -352,6 +357,14 @@ public:
 	// 當前持續時間
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Duration;
+
+	// Particle特效的存活時間
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float ParticleDuration;
+
+	// Actor真正的存活時間，設定的比Duration長來讓特效不要消失的太突然
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	float RealDuration;
 
 	// 總共時間
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)

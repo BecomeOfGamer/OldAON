@@ -230,13 +230,16 @@ void AHeroCharacter::Tick(float DeltaTime)
 		TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
 		for (int32 i = 0; i < BuffQueue.Num(); ++i)
 		{
-			for (auto& Elem : BuffQueue[i]->BuffPropertyMap)
+			if (IsValid(BuffQueue[i]))
 			{
-				SwapProperty[Elem.Key] += Elem.Value;
-			}
-			for (EHeroBuffState& Elem : BuffQueue[i]->BuffState)
-			{
-				SwapState[Elem] = true;
+				for (auto& Elem : BuffQueue[i]->BuffPropertyMap)
+				{
+					SwapProperty[Elem.Key] += Elem.Value;
+				}
+				for (EHeroBuffState& Elem : BuffQueue[i]->BuffState)
+				{
+					SwapState[Elem] = true;
+				}
 			}
 		}
 		BuffStateMap = SwapState;
@@ -353,14 +356,22 @@ void AHeroCharacter::Tick(float DeltaTime)
 	for (int32 i = 0; i < BuffQueue.Num(); ++i)
 	{
 		// 移除時間到的Buff
-		if (!BuffQueue[i]->Forever && BuffQueue[i]->Duration <= 0)
+		if (IsValid(BuffQueue[i]))
 		{
-			// 釋放記憶體
-			if (!BuffQueue[i]->IsPendingKillPending())
+			if (!BuffQueue[i]->Forever && BuffQueue[i]->Duration <= 0)
 			{
-				BuffQueue[i]->OnDestroy();
-				BuffQueue[i]->Destroy();
+				// 釋放記憶體
+				if (!BuffQueue[i]->IsPendingKillPending())
+				{
+					BuffQueue[i]->OnDestroy();
+					//BuffQueue[i]->Destroy();
+				}
+				BuffQueue.RemoveAt(i);
+				i--;
 			}
+		}
+		else
+		{
 			BuffQueue.RemoveAt(i);
 			i--;
 		}
@@ -2088,6 +2099,7 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AHeroCharacter, CurrentMP);
 	DOREPLIFETIME(AHeroCharacter, BodyStatus);
 	DOREPLIFETIME(AHeroCharacter, ActionQueue);
+	DOREPLIFETIME(AHeroCharacter, BuffQueue);
 	DOREPLIFETIME(AHeroCharacter, CurrentAction);
 	DOREPLIFETIME(AHeroCharacter, AttackingCounting);
 	DOREPLIFETIME(AHeroCharacter, CurrentSkillIndex);

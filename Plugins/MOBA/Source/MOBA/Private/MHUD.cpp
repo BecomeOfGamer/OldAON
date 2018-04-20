@@ -188,6 +188,11 @@ void AMHUD::DrawHUD()
 	}
 	for(AHeroCharacter* EachHero : HeroCanSelection)
 	{
+		if (!IsValid(EachHero))
+		{
+			EachHero->Destroy();
+			continue;
+		}
 		// 只畫活人的血條
 		if (!EachHero->IsAlive)
 		{
