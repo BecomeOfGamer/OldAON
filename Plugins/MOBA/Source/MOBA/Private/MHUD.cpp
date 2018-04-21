@@ -848,14 +848,27 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 		{
 			if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 			{
-				CurrentSelection[0]->HideSkillHint();
+				AHeroCharacter* hero = CurrentSelection[0];
+				hero->HideSkillHint();
 				FHeroAction act;
-				AHeroSkill* hs = CurrentSelection[0]->GetCurrentSkill();
+				AHeroSkill* hs = hero->GetCurrentSkill();
 				if (hs->SkillBehavior[HEROB::Directional])
 				{
 					act.ActionStatus = EHeroActionStatus::SpellToDirection;
 				}
 				else if (hs->SkillBehavior[HEROB::UnitTarget])
+				{
+					act.ActionStatus = EHeroActionStatus::SpellToActor;
+					act.TargetActor = CurrentSelectTarget;
+				}
+				else if (hs->SkillBehavior[HEROB::UnitTargetFriends] &&
+					CurrentSelectTarget->TeamId == hero->TeamId)
+				{
+					act.ActionStatus = EHeroActionStatus::SpellToActor;
+					act.TargetActor = CurrentSelectTarget;
+				}
+				else if (hs->SkillBehavior[HEROB::UnitTargetEnemy] &&
+					CurrentSelectTarget->TeamId != hero->TeamId)
 				{
 					act.ActionStatus = EHeroActionStatus::SpellToActor;
 					act.TargetActor = CurrentSelectTarget;

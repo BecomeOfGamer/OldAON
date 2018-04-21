@@ -1079,19 +1079,22 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 	case EHeroBodyStatus::Moving:
 	{
 		// 移動到夠接近就 Pop 掉
-		float Distance = FVector::Dist(CurrentAction.TargetVec1, this->GetActorLocation());
-		if (Distance < MinimumDontMoveDistance/* && this->GetVelocity().Size() < 5*/)
+		if (CurrentAction.ActionStatus == EHeroActionStatus::MoveToPosition)
 		{
-			StartFollowPosition = FVector::ZeroVector;
-			return true;
-		}
-		else
-		{
-			FVector dir = CurrentAction.TargetVec1 - this->GetActorLocation();
-			dir.Z = 0;
-			dir.Normalize();
-			// AddMovementInput will move actor with no rotation, no nav
-			//this->AddMovementInput(dir);
+			float Distance = FVector::Dist(CurrentAction.TargetVec1, this->GetActorLocation());
+			if (Distance < MinimumDontMoveDistance/* && this->GetVelocity().Size() < 5*/)
+			{
+				StartFollowPosition = FVector::ZeroVector;
+				return true;
+			}
+			else
+			{
+				FVector dir = CurrentAction.TargetVec1 - this->GetActorLocation();
+				dir.Z = 0;
+				dir.Normalize();
+				// AddMovementInput will move actor with no rotation, no nav
+				//this->AddMovementInput(dir);
+			}
 		}
 	}
 	break;

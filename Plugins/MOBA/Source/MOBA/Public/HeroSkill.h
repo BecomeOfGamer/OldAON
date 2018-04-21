@@ -17,8 +17,12 @@ enum class EHeroBehavior : uint8
 	Passive,
 	//不需目標，點擊後立即施法
 	NoTarget,
-	//指定目標
+	//指定目標所有人
 	UnitTarget,
+	//指定目標隊友
+	UnitTargetFriends,
+	//指定目標敵人
+	UnitTargetEnemy,
 	//範圍技
 	Aoe,
 	//不能學習

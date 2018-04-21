@@ -347,7 +347,7 @@ public:
 
 	// 是否永久存在，如果為true則無視Duration存在著
 	// 值也不再更新但OnInterval一樣會發動
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite)
 	bool Forever = false;
 
 	// 疊加層數
@@ -355,18 +355,18 @@ public:
 	int32 Stacks;
 
 	// 當前持續時間
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite)
 	float Duration;
 
 	// Particle特效的存活時間
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite)
 	float ParticleDuration;
 
 	// Actor真正的存活時間，設定的比Duration長來讓特效不要消失的太突然
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite)
 	float RealDuration;
 
-	// 總共時間
+	// 總共時間在beginplay時會變成當前持續時間
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float MaxDuration;
 
