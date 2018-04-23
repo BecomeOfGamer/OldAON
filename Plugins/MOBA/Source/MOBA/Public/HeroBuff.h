@@ -91,7 +91,7 @@ enum class EHeroBuffProperty : uint8
 	ManaRegenRatio,
 	//回血(固定值) EX. 10 每秒回血增加10
 	HealthRegenConstant,
-	//回血(百分比) EX. 0.01 每秒回魔增加總生命的1%
+	//回血(百分比) EX. 0.01 每秒回血增加總生命的1%
 	HealthRegenPercentage,
 	//回血(比例加成) EX. 2 回復血量+200%=300% 如果當前回血50就變成150
 	HealthRegenRatio,

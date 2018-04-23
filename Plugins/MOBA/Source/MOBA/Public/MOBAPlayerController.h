@@ -91,6 +91,9 @@ public:
 	void ServerAttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, 
 		float damage, bool AttackLanded);
 
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	void ServerHealCompute(AHeroCharacter* attacker, AHeroCharacter* victim, float amount);
+
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	TArray<AHeroCharacter*> FindRadiusActorByLocation(AHeroCharacter* hero, FVector Center,
 		float Radius, ETeamFlag flag, bool CheckAlive);

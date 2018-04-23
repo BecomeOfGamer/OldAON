@@ -512,6 +512,23 @@ void AMOBAPlayerController::ServerHeroAddExpCompute_Implementation(AHeroCharacte
 	}
 }
 
+bool AMOBAPlayerController::ServerHealCompute_Validate(AHeroCharacter* attacker, AHeroCharacter* victim, float amount)
+{
+	return true;
+}
+
+void AMOBAPlayerController::ServerHealCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, float amount)
+{
+	if (Role == ROLE_Authority && victim->IsAlive)
+	{
+		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+		{
+			victim->BuffQueue[i]->BeHeal(attacker, victim, amount);
+		}
+		victim->CurrentHP += amount;
+	}
+}
+
 bool AMOBAPlayerController::ServerAttackCompute_Validate(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
 {
 	return true;
