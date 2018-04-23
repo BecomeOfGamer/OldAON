@@ -3,6 +3,8 @@
 #include "MOBAPrivatePCH.h"
 #include "HeroBuff.h"
 #include "UnrealNetwork.h"
+#include "HeroCharacter.h"
+#include "MOBAPlayerController.h"
 
 AHeroBuff::AHeroBuff(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())
@@ -69,6 +71,33 @@ void AHeroBuff::Tick(float DeltaTime)
 	}
 	if (Interval > 0 && Duration >= 0)
 	{
+		AuraCount += DeltaTime;
+		if (AuraCount > 0.1)
+		{
+			AuraCount = 0;
+			TArray<AHeroCharacter*> tmp;
+			if (BuffUniqueMap.Contains(HEROU::AuraRadiusEnemy))
+			{
+				float range = BuffUniqueMap[HEROU::AuraRadiusEnemy];
+				TArray<AHeroCharacter*> Enemys = AHeroCharacter::localPC->FindRadiusActorByLocation(
+					BuffTarget[0], GetActorLocation(), range, ETeamFlag::TeamEnemy, true);
+				for (AHeroCharacter* EachHero : Enemys)
+				{
+					tmp.Add(EachHero);
+				}
+			}
+			if (BuffUniqueMap.Contains(HEROU::AuraRadiusFriends))
+			{
+				float range = BuffUniqueMap[HEROU::AuraRadiusFriends];
+				TArray<AHeroCharacter*> Enemys = AHeroCharacter::localPC->FindRadiusActorByLocation(
+					BuffTarget[0], GetActorLocation(), range, ETeamFlag::TeamFriends, true);
+				for (AHeroCharacter* EachHero : Enemys)
+				{
+					tmp.Add(EachHero);
+				}
+			}
+		}
+		
 		IntervalCounting += DeltaTime;
 		if (IntervalCounting >= Interval)
 		{

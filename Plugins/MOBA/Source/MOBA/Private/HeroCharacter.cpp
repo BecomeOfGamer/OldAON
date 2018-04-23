@@ -200,13 +200,22 @@ void AHeroCharacter::BeginPlay()
 	}
 
 	MinimumDontMoveDistance = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 30;
-
+	BaseMaterial = GetMesh()->GetMaterial(0);
 }
 
 // Called every frame
 void AHeroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (BlendingColor != LastBlendingColor)
+	{
+		LastBlendingColor = BlendingColor;
+		UMaterialInstanceDynamic* MILight = UMaterialInstanceDynamic::Create(
+			BaseMaterial, this); 
+		MILight->SetVectorParameterValue(FName(TEXT("BlendingColor")), BlendingColor);
+		GetMesh()->SetMaterial(0, MILight);
+	}
+	
 	// 如果沒有初始化成功就初始化 local AMOBAPlayerController
 	if (!IsValid(localPC))
 	{
@@ -226,6 +235,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 		LastAnimaStatus = AnimaStatus;
 	}
 	{ // 計算各種buff
+		BlendingColor = FLinearColor::White;
 		TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
 		TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
 		for (int32 i = 0; i < BuffQueue.Num(); ++i)
@@ -239,6 +249,10 @@ void AHeroCharacter::Tick(float DeltaTime)
 				for (EHeroBuffState& Elem : BuffQueue[i]->BuffState)
 				{
 					SwapState[Elem] = true;
+					if (Elem == HEROS::Blending)
+					{
+						BlendingColor = BuffQueue[i]->BlendingColor;
+					}
 				}
 			}
 		}
@@ -1624,6 +1638,11 @@ void AHeroCharacter::AddUniqueBuff(AHeroBuff* buff)
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 			FString::Printf(TEXT("AHeroCharacter::AddUniqueBuff Error")));
 		return;
+	}
+	// 判斷是否還在光環內
+	if (buff->BuffTarget.Contains(this))
+	{
+
 	}
 	buff->BuffTarget.Add(this);
 	if (buff->FollowActor)

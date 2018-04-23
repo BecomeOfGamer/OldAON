@@ -38,8 +38,12 @@ enum class EHeroBuffState : uint8
 	AttackUseMagic,
 	//普攻轉換為真實傷害
 	AttackUsePure,
+	//隱形
+	Invisible,
+	//混色
+	Blending,
 	//結束列舉
-	EndBuffKind
+	EndBuffKind,
 };
 #define HEROS EHeroBuffState
 
@@ -127,6 +131,12 @@ enum class EHeroBuffProperty : uint8
 	ManaBouns,
 	//閃避機率 EX 0.1 有10%的閃避機率
 	Dodge,
+	//力量
+	Strength,
+	//敏捷
+	Agile,
+	//智慧
+	Intelligence,
 	// 結束列舉
 	EndBuffProperty
 };
@@ -174,6 +184,12 @@ enum class EHeroBuffUnique : uint8
 	BlockingMagicalConstant,
 	//格檔固定真實傷害 EX. 50  任何真實傷害先格檔50
 	BlockingPureConstant,
+	//對第N個隊伍隱形無效
+	UnInvisibleTeam,
+	//對敵人的靈氣/光環半徑
+	AuraRadiusEnemy,
+	//對自己人的靈氣/光環半徑
+	AuraRadiusFriends,
 	// 結束列舉
 	EndBuffProperty
 };
@@ -303,6 +319,9 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	FString BuffTips;
 
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadOnly)
+	AHeroCharacter* caster;
+
 	// 對應的網頁圖片路徑
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FString Webpath;
@@ -377,6 +396,12 @@ public:
 	// 時間事件計數
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float IntervalCount;
+	// 光環更新計數
+	float AuraCount;
+
+	//當出現混色狀態時Blending，使用這個變數對英雄染色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	FLinearColor BlendingColor = FLinearColor::White;
 
 	float IntervalCounting;
 };

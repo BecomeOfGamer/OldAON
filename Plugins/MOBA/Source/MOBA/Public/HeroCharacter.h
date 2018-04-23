@@ -575,6 +575,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AEquipment*> Equipments;
 
+	UMaterialInterface* BaseMaterial;
+
+	// 當前模型混色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	FLinearColor BlendingColor = FLinearColor::White;
+
+	FLinearColor LastBlendingColor = FLinearColor::White;
+
 	// 裝備
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	int32 AnimaStatus;
