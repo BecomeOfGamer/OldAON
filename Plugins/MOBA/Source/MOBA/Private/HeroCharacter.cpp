@@ -14,6 +14,7 @@
 #include "PaperFlipbook.h"
 #include "SceneObject.h"
 #include "HeroSkill.h"
+#include "HeroBuff.h"
 #include "MOBAPlayerController.h"
 #include "Engine/World.h"
 #include "WebInterfaceJSON.h"
@@ -1593,6 +1594,10 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 void AHeroCharacter::AddBuff(AHeroBuff* buff)
 {
 	BuffQueue.Add(buff);
+	if (buff->BuffTargetOne == nullptr)
+	{
+		buff->BuffTargetOne = this;
+	}
 	buff->BuffTarget.Add(this);
 	if (buff->FollowActor)
 	{
@@ -1639,10 +1644,9 @@ void AHeroCharacter::AddUniqueBuff(AHeroBuff* buff)
 			FString::Printf(TEXT("AHeroCharacter::AddUniqueBuff Error")));
 		return;
 	}
-	// 判斷是否還在光環內
-	if (buff->BuffTarget.Contains(this))
+	if (buff->BuffTargetOne == nullptr)
 	{
-
+		buff->BuffTargetOne = this;
 	}
 	buff->BuffTarget.Add(this);
 	if (buff->FollowActor)
@@ -1694,6 +1698,11 @@ void AHeroCharacter::RemoveBuffByName(FString name)
 			i--;
 		}
 	}
+}
+
+void AHeroCharacter::RemoveBuff(AHeroBuff* buff)
+{
+	BuffQueue.Remove(buff);
 }
 
 bool AHeroCharacter::ServerShowDamageEffect_Validate(FVector pos, FVector dir, float Damage)

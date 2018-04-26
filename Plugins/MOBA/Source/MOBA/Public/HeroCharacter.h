@@ -157,6 +157,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void RemoveBuffByName(FString name);
 
+	// 移除Buff
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void RemoveBuff(AHeroBuff* buff);
+
 	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable)
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
 
@@ -212,6 +216,9 @@ public:
 	void DoAction_MoveToPickup(const FHeroAction& CurrentAction);
 	void DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction);
 
+	// Particle特效
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	TMap<FString, UParticleSystemComponent*> Particles;
 
 	// Debug information
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug")

@@ -783,10 +783,19 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(AHeroCharacter* a
 TArray<AHeroCharacter*> AMOBAPlayerController::FindRadiusActorByLocation(AHeroCharacter* hero, FVector Center,
 	float Radius, ETeamFlag flag, bool CheckAlive)
 {
-	if (FlannActor)
+	if (IsValid(hero))
 	{
-		std::vector<std::vector<float>> dists;
-		return FlannActor->FindRadiusActorByLocation(hero, Center, Radius, flag, CheckAlive, dists);
+		if (FlannActor)
+		{
+			std::vector<std::vector<float>> dists;
+			return FlannActor->FindRadiusActorByLocation(hero, Center, Radius, flag, CheckAlive, dists);
+		}
 	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan,
+		FString::Printf(TEXT("FindRadiusActorByLocation hero error")));
+	}
+	
 	return TArray<AHeroCharacter*>();
 }

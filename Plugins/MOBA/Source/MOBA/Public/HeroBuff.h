@@ -338,6 +338,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	UParticleSystemComponent * Particle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UParticleSystem* ParticleFX1;
+
 	// logo
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	UTexture2D * Head;
@@ -358,7 +361,10 @@ public:
 	TMap<EHeroBuffUnique, float> BuffUniqueMap;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
-	TArray<AHeroCharacter*> BuffTarget;
+	TSet<AHeroCharacter*> BuffTarget;
+
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	AHeroCharacter* BuffTargetOne = nullptr;
 
 	// 是否能疊加
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
