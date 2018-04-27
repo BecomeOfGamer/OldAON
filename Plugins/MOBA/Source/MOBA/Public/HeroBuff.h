@@ -335,11 +335,20 @@ public:
 	EBuffPosition FollowPosition;
 
 	// Particle特效
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	UParticleSystemComponent * Particle;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-	UParticleSystem* ParticleFX1;
+	// 光環特效
+	UPROPERTY(Category = "MOBA|Aura", EditAnywhere, BlueprintReadWrite)
+	UParticleSystem* AuraParticle;
+	
+	// 光環特效是否跟著英雄 如果是跟在身上的特效需要打勾
+	UPROPERTY(Category = "MOBA|Aura", EditAnywhere, BlueprintReadOnly)
+	bool AuraFollowActor;
+
+	// 光環特效跟著英雄的位置
+	UPROPERTY(Category = "MOBA|Aura", EditAnywhere, BlueprintReadWrite)
+	EBuffPosition AuraFollowPosition;
 
 	// logo
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)

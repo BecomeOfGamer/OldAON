@@ -50,31 +50,11 @@ void AHeroBuff::BeginPlay()
 {
 	Super::BeginPlay();
 	MaxDuration = Duration;
-	if (Forever)
-	{
-		Duration = 1;
-		ParticleDuration = 1;
-		RealDuration = 1;
-	}
 }
 
 void AHeroBuff::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!Forever)
-	{
-		Duration -= DeltaTime;
-		ParticleDuration -= DeltaTime;
-		RealDuration -= DeltaTime;
-	}
-	if (ParticleDuration <= 0)
-	{
-		Particle->Deactivate();
-	}
-	if (RealDuration <= 0 && !IsPendingKillPending())
-	{
-		this->Destroy();
-	}
 	if (Interval > 0 && Duration >= 0)
 	{	
 		IntervalCounting += DeltaTime;
@@ -85,19 +65,22 @@ void AHeroBuff::Tick(float DeltaTime)
 			OnInterval(IntervalCount);
 		}
 	}
-
-	if (Duration > 0)
+	// 光環
+	if (Duration >= 0 && IsValid(BuffTargetOne))
 	{
 		AuraCount += DeltaTime;
 		if (AuraCount > 0.1)
 		{
 			AuraCount = 0;
 			TSet<AHeroCharacter*> tmp;
+			bool hasaura = false;
 			if (BuffUniqueMap.Contains(HEROU::AuraRadiusEnemy))
 			{
+				hasaura = true;
 				float range = BuffUniqueMap[HEROU::AuraRadiusEnemy];
 				TArray<AHeroCharacter*> Enemys = AHeroCharacter::localPC->FindRadiusActorByLocation(
-					BuffTargetOne, GetActorLocation(), range, ETeamFlag::TeamEnemy, true);
+					BuffTargetOne, BuffTargetOne->GetActorLocation(), range, ETeamFlag::TeamEnemy, true);
+				range *= range;
 				for (AHeroCharacter* EachHero : Enemys)
 				{
 					tmp.Add(EachHero);
@@ -105,46 +88,88 @@ void AHeroBuff::Tick(float DeltaTime)
 			}
 			if (BuffUniqueMap.Contains(HEROU::AuraRadiusFriends))
 			{
+				hasaura = true;
 				float range = BuffUniqueMap[HEROU::AuraRadiusFriends];
 				TArray<AHeroCharacter*> Enemys = AHeroCharacter::localPC->FindRadiusActorByLocation(
-					BuffTargetOne, GetActorLocation(), range, ETeamFlag::TeamFriends, true);
+					BuffTargetOne, BuffTargetOne->GetActorLocation(), range, ETeamFlag::TeamFriends, true);
+				range *= range;
 				for (AHeroCharacter* EachHero : Enemys)
 				{
 					tmp.Add(EachHero);
 				}
 			}
-
-			// 拿到要得到光環的Actor
-			TSet<AHeroCharacter*> Result1;
-			Result1.Reserve(BuffTarget.Num()); // Worst case is no elements of this are in Other
-			for (AHeroCharacter* hero : tmp)
+			// 如果有光環
+			if (hasaura)
 			{
-				if (!BuffTarget.Contains(hero))
+				// 拿到要得到光環的Actor
+				for (AHeroCharacter* hero : tmp)
 				{
-					//Result1.Add(hero);
-					hero->AddUniqueBuff(this);
-					UParticleSystemComponent* CurrentEmitter = UGameplayStatics::SpawnEmitterAtLocation(
-						GetWorld(),
-						ParticleFX1,
-						hero->GetActorLocation(),
-						FRotator::ZeroRotator,
-						true);
-				}
-			}
+					if (!BuffTarget.Contains(hero))
+					{
+						//Result1.Add(hero);
+						hero->AddUniqueBuff(this);
+						if (IsValid(AuraParticle))
+						{
+							if (AuraFollowActor)
+							{
+								switch (AuraFollowPosition)
+								{
+								case EBuffPosition::Head:
+									UGameplayStatics::SpawnEmitterAttached(
+										AuraParticle, hero->PositionOnHead);
+									break;
+								case EBuffPosition::Foot:
+									UGameplayStatics::SpawnEmitterAttached(
+										AuraParticle, hero->PositionUnderFoot);
+									break;
+								case EBuffPosition::Root:
+									UGameplayStatics::SpawnEmitterAttached(
+										AuraParticle, hero->GetRootComponent());
+									break;
+								default:
+									break;
+								}
+							}
+							else
+							{
+								UParticleSystemComponent* emitter = UGameplayStatics::SpawnEmitterAtLocation(
+									GetWorld(), AuraParticle, hero->GetActorLocation(), FRotator::ZeroRotator, true);
+							}
+						}
 
-			// 拿到要被刪除光環的Actor
-			TSet<AHeroCharacter*> Result2;
-			Result2.Reserve(BuffTarget.Num()); // Worst case is no elements of this are in Other
-			for (AHeroCharacter* hero : BuffTarget)
-			{
-				if (!tmp.Contains(hero))
-				{
-					//Result2.Add(hero);
-					hero->RemoveBuff(this);
+					}
 				}
+
+				// 拿到要被刪除光環的Actor
+				for (AHeroCharacter* hero : BuffTarget)
+				{
+					if (!tmp.Contains(hero))
+					{
+						hero->RemoveBuff(this);
+					}
+				}
+				BuffTarget = tmp;
 			}
-			BuffTarget = tmp;
 		}
+	}
+	// 時間判斷
+	if (!Forever)
+	{
+		Duration -= DeltaTime;
+		ParticleDuration -= DeltaTime;
+		RealDuration -= DeltaTime;
+	}
+	else
+	{
+		return;
+	}
+	if (ParticleDuration <= 0)
+	{
+		Particle->Deactivate();
+	}
+	if (RealDuration <= 0 && !IsPendingKillPending())
+	{
+		this->Destroy();
 	}
 }
 
