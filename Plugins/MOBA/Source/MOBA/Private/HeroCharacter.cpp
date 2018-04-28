@@ -30,6 +30,7 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	HeroBullet = NULL;
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.1;
 	SelectionDecal = ObjectInitializer.CreateDefaultSubobject<UDecalComponent>(this, TEXT("SelectionDecal0"));
 	PositionOnHead = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionOnHead0"));
 	PositionUnderFoot = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionUnderFoot0"));
@@ -216,7 +217,11 @@ void AHeroCharacter::Tick(float DeltaTime)
 		MILight->SetVectorParameterValue(FName(TEXT("BlendingColor")), BlendingColor);
 		GetMesh()->SetMaterial(0, MILight);
 	}
-	
+	// 如果法球失效，移除法球
+	if (!IsValid(CurrentOrb))
+	{
+		CurrentOrb = nullptr;
+	}
 	// 如果沒有初始化成功就初始化 local AMOBAPlayerController
 	if (!IsValid(localPC))
 	{
@@ -239,20 +244,41 @@ void AHeroCharacter::Tick(float DeltaTime)
 		BlendingColor = FLinearColor::White;
 		TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
 		TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
-		for (int32 i = 0; i < BuffQueue.Num(); ++i)
+		for (AHeroBuff* Buff : BuffQueue)
 		{
-			if (IsValid(BuffQueue[i]))
+			if (IsValid(Buff))
 			{
-				for (auto& Elem : BuffQueue[i]->BuffPropertyMap)
+				for (auto& Elem : Buff->BuffPropertyMap)
 				{
 					SwapProperty[Elem.Key] += Elem.Value;
 				}
-				for (EHeroBuffState& Elem : BuffQueue[i]->BuffState)
+				for (EHeroBuffState& Elem : Buff->BuffState)
 				{
 					SwapState[Elem] = true;
 					if (Elem == HEROS::Blending)
 					{
-						BlendingColor = BuffQueue[i]->BlendingColor;
+						BlendingColor = Buff->BlendingColor;
+					}
+				}
+			}
+		}
+		// 如果沒法球時從自身狀態找一個法球裝
+		if (!IsValid(CurrentOrb))
+		{
+			for (AHeroBuff* Buff : BuffQueue)
+			{
+				if (Buff->IsOrb)
+				{
+					if (IsValid(CurrentOrb))
+					{
+						if (CurrentOrb->Priority < Buff->Priority)
+						{
+							CurrentOrb = Buff;
+						}
+					}
+					else
+					{
+						CurrentOrb = Buff;
 					}
 				}
 			}
@@ -521,7 +547,6 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 	wjo->SetInteger(FString(TEXT("AdditionStrength")), AdditionStrength);
 	wjo->SetInteger(FString(TEXT("AdditionAgility")), AdditionAgility);
 	wjo->SetInteger(FString(TEXT("AdditionIntelligence")), AdditionIntelligence);
-	wjo->SetInteger(FString(TEXT("AdditionAttackSpeed")), AdditionAttackSpeed);
 	wjo->SetInteger(FString(TEXT("DeadTime")), DeadTime);
 	wjo->SetInteger(FString(TEXT("BountyEXP")), BountyEXP);
 	wjo->SetInteger(FString(TEXT("BountyGold")), BountyGold);
@@ -676,13 +701,13 @@ bool AHeroCharacter::HealCompute_Validate(AHeroCharacter* caster, AHeroCharacter
 void AHeroCharacter::HealCompute_Implementation(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount)
 {
 	target->CurrentHP += heal_mount;
-	for (int32 i = 0; i < caster->BuffQueue.Num(); ++i)
+	for (AHeroBuff* Buff : caster->BuffQueue)
 	{
-		caster->BuffQueue[i]->OnHealLanded(caster, target, heal_mount);
+		Buff->OnHealLanded(caster, target, heal_mount);
 	}
-	for (int32 i = 0; i < target->BuffQueue.Num(); ++i)
+	for (AHeroBuff* Buff : target->BuffQueue)
 	{
-		target->BuffQueue[i]->BeHeal(caster, target, heal_mount);
+		Buff->BeHeal(caster, target, heal_mount);
 	}
 }
 
@@ -791,8 +816,9 @@ void AHeroCharacter::UpdateHPMPAS()
 		CurrentAttack = (((BaseAttack + BuffPropertyMap[HEROP::AttackBounsConstantWhite])*
 			(1+BuffPropertyMap[HEROP::AttackBounsPercentage]) + BuffPropertyMap[HEROP::AttackBounsConstantGreen])*
 			BuffPropertyMap[HEROP::PhysicalDamageOutputPercentage]);
-
-		CurrentAttackSpeed = (100 + (Agility * ags->AgilityToAttackSpeed + AdditionAttackSpeed)) *
+		
+		CurrentAttackSpeed = (100 + (Agility * ags->AgilityToAttackSpeed + 
+			100 * BuffPropertyMap[HEROP::AttackSpeedConstant])) *
 			BuffPropertyMap[HEROP::AttackSpeedRatio] * 0.01;
 		CurrentAttackSpeedSecond = BaseAttackSpeedSecond / (1 + CurrentAttackSpeed);
 		CurrentArmor = BaseArmor + Agility * ags->AgilityToDefense;
@@ -823,27 +849,27 @@ void AHeroCharacter::UpdateSAI()
 {
 	if(CurrentLevel <= LevelProperty_Strength.Num())
 	{
-		Strength = BaseStrength + LevelProperty_Strength[CurrentLevel - 1];
+		Strength = BaseStrength + LevelProperty_Strength[CurrentLevel - 1] + BuffPropertyMap[HEROP::Strength];
 	}
 	else if(LevelProperty_Strength.Num() > 0)
 	{
-		Strength = BaseStrength + LevelProperty_Strength.Last();
+		Strength = BaseStrength + LevelProperty_Strength.Last() + BuffPropertyMap[HEROP::Strength];
 	}
 	if(CurrentLevel <= LevelProperty_Agility.Num())
 	{
-		Agility = BaseAgility + LevelProperty_Agility[CurrentLevel - 1];
+		Agility = BaseAgility + LevelProperty_Agility[CurrentLevel - 1] + BuffPropertyMap[HEROP::Agile];
 	}
 	else if(LevelProperty_Intelligence.Num() > 0)
 	{
-		Agility = BaseAgility + LevelProperty_Agility.Last();
+		Agility = BaseAgility + LevelProperty_Agility.Last() + BuffPropertyMap[HEROP::Agile];
 	}
 	if(CurrentLevel <= LevelProperty_Intelligence.Num())
 	{
-		Intelligence = BaseIntelligence + LevelProperty_Intelligence[CurrentLevel - 1];
+		Intelligence = BaseIntelligence + LevelProperty_Intelligence[CurrentLevel - 1] + BuffPropertyMap[HEROP::Intelligence];
 	}
 	else if(LevelProperty_Intelligence.Num() > 0)
 	{
-		Intelligence = BaseIntelligence + LevelProperty_Intelligence.Last();
+		Intelligence = BaseIntelligence + LevelProperty_Intelligence.Last() + BuffPropertyMap[HEROP::Intelligence];
 	}
 }
 
@@ -1537,6 +1563,14 @@ void AHeroCharacter::DoAction_AttackActor(const FHeroAction& CurrentAction)
 		{
 			AttackingCounting = 0;
 			BodyStatus = EHeroBodyStatus::AttackBegining;
+			if (IsValid(CurrentOrb))
+			{
+				CurrentOrb->OnAttackStart(this, TargetActor);
+			}
+			for (AHeroBuff* Buff : BuffQueue)
+			{
+				Buff->OnAttackStart(this, TargetActor);
+			}
 			ServerPlayAttack(CurrentSpellingAnimationTimeLength, CurrentAttackingAnimationRate);
 			PlayAttack = true;
 		}
@@ -1598,10 +1632,23 @@ void AHeroCharacter::AddBuff(AHeroBuff* buff)
 	{
 		buff->BuffTargetOne = this;
 	}
+	if (buff->IsOrb)
+	{
+		if (IsValid(CurrentOrb))
+		{
+			if (CurrentOrb->Priority < buff->Priority)
+			{
+				CurrentOrb = buff;
+			}
+		}
+		else
+		{
+			CurrentOrb = buff;
+		}
+	}
 	buff->BuffTarget.Add(this);
 	if (buff->FollowActor)
 	{
-		
 		switch (buff->FollowPosition)
 		{
 		case EBuffPosition::Head:
@@ -1643,6 +1690,20 @@ void AHeroCharacter::AddUniqueBuff(AHeroBuff* buff)
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 			FString::Printf(TEXT("AHeroCharacter::AddUniqueBuff Error")));
 		return;
+	}
+	if (buff->IsOrb)
+	{
+		if (IsValid(CurrentOrb))
+		{
+			if (CurrentOrb->Priority < buff->Priority)
+			{
+				CurrentOrb = buff;
+			}
+		}
+		else
+		{
+			CurrentOrb = buff;
+		}
 	}
 	if (buff->BuffTargetOne == nullptr)
 	{

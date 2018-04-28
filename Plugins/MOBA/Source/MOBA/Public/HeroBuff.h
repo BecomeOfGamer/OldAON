@@ -131,11 +131,11 @@ enum class EHeroBuffProperty : uint8
 	ManaBouns,
 	//閃避機率 EX 0.1 有10%的閃避機率
 	Dodge,
-	//力量
+	//力量 EX. 1.5 就加1.5的力量
 	Strength,
-	//敏捷
+	//敏捷 EX. 2.5 就加2.5的敏捷
 	Agile,
-	//智慧
+	//智慧 EX. 3.5 就加3.5的智慧
 	Intelligence,
 	// 結束列舉
 	EndBuffProperty
@@ -271,7 +271,7 @@ public:
 
 	//準備攻擊，但攻擊還沒打出去
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnAttackStart(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
+	void OnAttackStart(AHeroCharacter* attacker, AHeroCharacter* target);
 	//攻擊打出傷害後的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAttackLanded(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
@@ -302,6 +302,15 @@ public:
 	//吸收敵人生命的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnStealLife(AHeroCharacter* caster, AHeroCharacter* target, EDamageType dtype, float damage, float heal_mount);
+	
+	//法球就是會跟其它同樣是法球的Buff衝突
+	//衝突時以Priority值較大的優先，如果是相同的值則不變化
+	//法球版 準備攻擊，但攻擊還沒打出去
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnOrbAttackStart(AHeroCharacter* attacker, AHeroCharacter* target);
+	//法球版 攻擊打出傷害後的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnOrbAttackLanded(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
 
 	// 時間事件觸發
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
@@ -309,7 +318,11 @@ public:
 
 	// Buff 優先權
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
-	int32 Priority;
+	int32 Priority = 0;
+
+	// 是否是法球
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
+	bool IsOrb = false;
 
 	// Buff 名字
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)

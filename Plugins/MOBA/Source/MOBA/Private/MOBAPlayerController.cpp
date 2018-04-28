@@ -747,7 +747,10 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(AHeroCharacter* a
 		{
 			attacker->CurrentHP += attacker->BuffPropertyMap[HEROP::StealHealth] * FDamage;
 		}
-
+		if (IsValid(attacker->CurrentOrb))
+		{
+			attacker->CurrentOrb->OnAttackLanded(attacker, victim, dtype, damage, RDamage);
+		}
 		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
 		{
 			attacker->BuffQueue[i]->CreateDamage(attacker, victim, dtype, damage, RDamage);

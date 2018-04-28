@@ -294,9 +294,7 @@ public:
 	// 基礎攻擊距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAttackRange;
-	// 攻速加乘
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float AdditionAttackSpeed;
+
 	// 原始攻擊秒數
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float BaseAttackSpeedSecond;
@@ -581,7 +579,7 @@ public:
 	// 裝備
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AEquipment*> Equipments;
-
+	// 暫存mesh材質的地方
 	UMaterialInterface* BaseMaterial;
 
 	// 當前模型混色
@@ -606,23 +604,34 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	EHeroBodyStatus BodyStatus;
 
+	// 所有的buff
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AHeroBuff*> BuffQueue;
 
+	// 當前法球
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	AHeroBuff* CurrentOrb;
+
+	// 當前狀態
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TMap<EHeroBuffState, bool> BuffStateMap;
 
+	// 預設狀態
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	TMap<EHeroBuffState, bool> DefaultBuffState;
 
+	// 當前加成 可能可以用TArray替代
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TMap<EHeroBuffProperty, float> BuffPropertyMap;
-
+	
+	// 預設加成
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	TMap<EHeroBuffProperty, float> DefaultBuffProperty;
 	
+	// 最後一次移動的位置
 	FVector LastMoveTarget;
 
+	// 最後一次要使用的技能
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	FHeroAction LastUseSkill;
 
