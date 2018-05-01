@@ -209,6 +209,10 @@ void AHeroCharacter::BeginPlay()
 void AHeroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	CurrentMoveSpeed = (BaseMoveSpeed + BuffPropertyMap[HEROP::MoveSpeedConstant]) * BuffPropertyMap[HEROP::MoveSpeedRatio];
+	UCharacterMovementComponent* mc = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	mc->MaxWalkSpeed = CurrentMoveSpeed;
+	mc->MaxWalkSpeedCrouched = CurrentMoveSpeed;
 	if (BlendingColor != LastBlendingColor)
 	{
 		LastBlendingColor = BlendingColor;
