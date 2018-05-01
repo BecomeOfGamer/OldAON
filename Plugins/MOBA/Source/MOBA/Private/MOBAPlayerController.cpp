@@ -525,7 +525,7 @@ void AMOBAPlayerController::ServerHealCompute_Implementation(AHeroCharacter* att
 		{
 			victim->BuffQueue[i]->BeHeal(attacker, victim, amount);
 		}
-		victim->CurrentHP += amount;
+		victim->CurrentHP += amount * victim->BuffPropertyMap[HEROP::HealPercentage];
 	}
 }
 

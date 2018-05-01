@@ -190,8 +190,10 @@ enum class EHeroBuffUnique : uint8
 	AuraRadiusEnemy,
 	//對自己人的靈氣/光環半徑
 	AuraRadiusFriends,
+	// 重生 後要等持的秒數
+	Rebirth,
 	// 結束列舉
-	EndBuffProperty
+	EndBuffProperty,
 };
 #define HEROU EHeroBuffUnique
 
