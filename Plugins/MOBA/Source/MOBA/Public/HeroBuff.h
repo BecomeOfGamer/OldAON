@@ -42,6 +42,8 @@ enum class EHeroBuffState : uint8
 	Invisible,
 	//混色
 	Blending,
+	//可重生
+	Rebirth,
 	//結束列舉
 	EndBuffKind,
 };
@@ -190,8 +192,6 @@ enum class EHeroBuffUnique : uint8
 	AuraRadiusEnemy,
 	//對自己人的靈氣/光環半徑
 	AuraRadiusFriends,
-	// 重生 後要等持的秒數
-	Rebirth,
 	// 結束列舉
 	EndBuffProperty,
 };
@@ -256,6 +256,10 @@ public:
 	//升級的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnUpgrade(AHeroCharacter* caster, int32 Level);
+
+	//重生的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnRebirth(AHeroCharacter* caster);
 
 	//be damage by someone
 	//受到傷害的瞬間
@@ -384,10 +388,10 @@ public:
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	TMap<EHeroBuffUnique, float> BuffUniqueMap;
 
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	TSet<AHeroCharacter*> BuffTarget;
 
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	AHeroCharacter* BuffTargetOne = nullptr;
 
 	// 是否能疊加

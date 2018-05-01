@@ -55,6 +55,10 @@ void AHeroBuff::BeginPlay()
 void AHeroBuff::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (Role != ROLE_Authority)
+	{
+		return;
+	}
 	if (Interval > 0 && Duration >= 0)
 	{	
 		IntervalCounting += DeltaTime;
@@ -136,10 +140,8 @@ void AHeroBuff::Tick(float DeltaTime)
 									GetWorld(), AuraParticle, hero->GetActorLocation(), FRotator::ZeroRotator, true);
 							}
 						}
-
 					}
 				}
-
 				// 拿到要被刪除光環的Actor
 				for (AHeroCharacter* hero : BuffTarget)
 				{
@@ -177,6 +179,4 @@ void AHeroBuff::Tick(float DeltaTime)
 void AHeroBuff::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AHeroBuff, BuffTarget);
-	DOREPLIFETIME(AHeroBuff, BuffTargetOne);
 }

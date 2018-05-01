@@ -209,10 +209,13 @@ void AHeroCharacter::BeginPlay()
 void AHeroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CurrentMoveSpeed = (BaseMoveSpeed + BuffPropertyMap[HEROP::MoveSpeedConstant]) * BuffPropertyMap[HEROP::MoveSpeedRatio];
-	UCharacterMovementComponent* mc = Cast<UCharacterMovementComponent>(GetMovementComponent());
-	mc->MaxWalkSpeed = CurrentMoveSpeed;
-	mc->MaxWalkSpeedCrouched = CurrentMoveSpeed;
+	// 移動速度更新
+	{
+		CurrentMoveSpeed = (BaseMoveSpeed + BuffPropertyMap[HEROP::MoveSpeedConstant]) * BuffPropertyMap[HEROP::MoveSpeedRatio];
+		UCharacterMovementComponent* mc = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		mc->MaxWalkSpeed = CurrentMoveSpeed;
+		mc->MaxWalkSpeedCrouched = CurrentMoveSpeed;
+	}
 	if (BlendingColor != LastBlendingColor)
 	{
 		LastBlendingColor = BlendingColor;
@@ -365,30 +368,47 @@ void AHeroCharacter::Tick(float DeltaTime)
 	// 死了
 	if(CurrentHP <= 0 && IsAlive)
 	{
-		// 死了還想跑，給我停下
-		if (GetVelocity().Size() > 5 && IsValid(localPC))
+		bool hasRebirth = false;
+		// 看有沒有重生狀態
+		for (int32 i = 0; i < BuffQueue.Num(); ++i)
 		{
-			localPC->ServerCharacterStopMove(this);
-		}
-		IsAlive = false;
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
-		CurrentHP = 0;
-		// TODO: event dead
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags && IsValid(localPC))
-		{
-			TArray<AHeroCharacter*> EnemyGetExp = FindRadiusActorByLocation(this->GetActorLocation(), ags->EXPGetRange, ETeamFlag::TeamEnemy, true);
-			float exp = this->BountyEXP / EnemyGetExp.Num();
-			for (AHeroCharacter* hero : EnemyGetExp)
+			AHeroBuff* Buff = BuffQueue[i];
+			if (IsValid(Buff) && Buff->BuffState.Contains(HEROS::Rebirth))
 			{
-				localPC->ServerHeroAddExpCompute(hero, exp);
+				CurrentHP = CurrentMaxHP;
+				Buff->OnRebirth(this);
+				hasRebirth = true;
+				BuffQueue.RemoveAt(i);
+				break;
+			}
+		}
+		if (!hasRebirth)
+		{
+			// 死了還想跑，給我停下
+			if (GetVelocity().Size() > 5 && IsValid(localPC))
+			{
+				localPC->ServerCharacterStopMove(this);
+			}
+			IsAlive = false;
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
+			CurrentHP = 0;
+			// TODO: event dead
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags && IsValid(localPC))
+			{
+				TArray<AHeroCharacter*> EnemyGetExp = FindRadiusActorByLocation(this->GetActorLocation(), ags->EXPGetRange, ETeamFlag::TeamEnemy, true);
+				float exp = this->BountyEXP / EnemyGetExp.Num();
+				for (AHeroCharacter* hero : EnemyGetExp)
+				{
+					localPC->ServerHeroAddExpCompute(hero, exp);
+				}
 			}
 		}
 	}

@@ -259,7 +259,7 @@ public:
 	// 血條長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float HPBarLength;
-	
+		
 	// 大頭貼
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	UTexture2D * Head;
