@@ -225,6 +225,7 @@ struct FLevelVariable
 
 
 class AHeroCharacter;
+class AHeroSkill;
 /**
  * 
  */
@@ -340,6 +341,9 @@ public:
 
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadOnly)
 	AHeroCharacter* caster;
+
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadOnly)
+	AHeroSkill* skill;
 
 	// 對應的網頁圖片路徑
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

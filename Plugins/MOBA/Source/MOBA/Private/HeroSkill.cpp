@@ -82,7 +82,10 @@ void AHeroSkill::LevelUp()
 		{
 			CurrentCD = MaxCD;
 		}
-		BP_SpellPassive();
+		if (!CDing)
+		{
+			BP_SpellPassive();
+		}
 	}
 }
 
@@ -98,6 +101,7 @@ void AHeroSkill::CheckCD(float DeltaTime)
 		CurrentCD += DeltaTime;
 		if (CurrentCD >= MaxCD)
 		{
+			BP_SpellPassive();
 			CurrentCD = MaxCD;
 			CDing = false;
 		}
