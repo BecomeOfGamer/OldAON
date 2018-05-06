@@ -33,13 +33,7 @@ void AHeroSkill::BeginPlay()
 		CurrentCD = MaxCD;
 	}
 	MaxLevel = LevelCD.Num();
-}
-
-// Called every frame
-void AHeroSkill::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	ChannellingCounting = ChannellingTime;
 }
 
 bool AHeroSkill::ReadySpell()
@@ -57,6 +51,7 @@ void AHeroSkill::StartCD()
 {
 	CDing = true;
 	CurrentCD = 0;
+	ChannellingCounting = 0;
 }
 
 void AHeroSkill::EndCD()
@@ -96,6 +91,23 @@ bool AHeroSkill::CanLevelUp()
 
 void AHeroSkill::CheckCD(float DeltaTime)
 {
+	if (SkillBehavior[HEROB::Channelled] && ChannellingCounting < ChannellingTime)
+	{
+		ChannellingCounting += DeltaTime;
+		IntervalCounting += DeltaTime;
+		if (IntervalCounting > ChannellingInterval)
+		{
+			IntervalCounting -= ChannellingInterval;
+			if (SkillBehavior[HEROB::UnitTarget] || SkillBehavior[HEROB::UnitTargetFriends] || SkillBehavior[HEROB::UnitTargetEnemy])
+			{
+				BP_ChannellingActorInterval(Victim);
+			}
+			if (SkillBehavior[HEROB::NoTarget] || SkillBehavior[HEROB::Aoe] || SkillBehavior[HEROB::Directional])
+			{
+				BP_ChannellingInterval(CastPoint);
+			}
+		}
+	}
 	if (CDing)
 	{
 		CurrentCD += DeltaTime;

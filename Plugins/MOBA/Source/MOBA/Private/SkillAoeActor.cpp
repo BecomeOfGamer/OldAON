@@ -27,7 +27,10 @@ ASkillAoeActor::ASkillAoeActor(const FObjectInitializer& ObjectInitializer)
 void ASkillAoeActor::BeginPlay()
 {
 	Super::BeginPlay();
-	SetActorRelativeRotation(Attacker->GetActorRotation());
+	if (IsValid(Attacker))
+	{
+		SetActorRelativeRotation(Attacker->GetActorRotation());
+	}
 }
 
 // Called every frame

@@ -153,7 +153,7 @@ void AHeroCharacter::PostInitializeComponents()
 void AHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCapsuleComponent()->OnClicked.AddDynamic(this, &AHeroCharacter::OnMouseClicked);
+	GetCapsuleComponent()->OnClicked.AddUniqueDynamic(this, &AHeroCharacter::OnMouseClicked);
 
 	localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
 
@@ -274,7 +274,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 		{
 			for (AHeroBuff* Buff : BuffQueue)
 			{
-				if (Buff->IsOrb)
+				if (IsValid(Buff) && Buff->IsOrb)
 				{
 					if (IsValid(CurrentOrb))
 					{
@@ -1010,29 +1010,43 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 	{
 		VFaceTo.Z = 0;
 		VFaceTo.Normalize();
-		if (Skills[index]->FaceSkill)
+		AHeroSkill* hs = Skills[index];
+		if (hs->FaceSkill)
 		{
 			SetActorRotation(VFaceTo.Rotation());
 		}
 		switch (SpellType)
 		{
 		case EHeroActionStatus::SpellNow:
-			Skills[index]->BP_SpellNow(VFaceTo, Pos);
+			hs->CastPoint = Pos;
+			hs->BP_SpellNow(VFaceTo, Pos);
 			break;
 		case EHeroActionStatus::SpellToPosition:
-			Skills[index]->BP_SpellToPosition(VFaceTo, Pos);
+			hs->CastPoint = Pos;
+			hs->BP_SpellToPosition(VFaceTo, Pos);
 			break;
 		case EHeroActionStatus::SpellToDirection:
-			Skills[index]->BP_SpellToDirection(VFaceTo, Pos);
+			hs->CastPoint = Pos;
+			hs->BP_SpellToDirection(VFaceTo, Pos);
 			break;
 		case EHeroActionStatus::SpellToActor:
-			Skills[index]->BP_SpellToActor(VFaceTo, Pos, victim);
+			hs->Victim = victim;
+			hs->BP_SpellToActor(VFaceTo, Pos, victim);
 			break;
 		default:
 			break;
 		}
-		Skills[index]->StartCD();
-		CurrentMP -= Skills[index]->CurrnetManaCost;
+		if (hs->SkillBehavior[HEROB::Channelled])
+		{
+			BP_PlayChannelling(hs->ChannellingTime, 1);
+		}
+		hs->StartCD();
+		CurrentMP -= hs->CurrnetManaCost;
+		if (hs->SkillBehavior[HEROB::Channelled])
+		{
+			BodyStatus = EHeroBodyStatus::SpellBegining;
+			ChannellingTime = hs->ChannellingTime;
+		}
 	}
 	return true;
 }
@@ -1107,17 +1121,57 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 		case EHeroActionStatus::MovingAttackActor:
 			break;
 		case EHeroActionStatus::SpellNow:
-			return CurrentAction == LastUseSkill;
-			break;
+		{
+			AHeroSkill* hs = Skills[LastUseSkill.TargetIndex1];
+			if (hs->IsChannelling)
+			{
+				return false;
+			}
+			else
+			{
+				return CurrentAction == LastUseSkill;
+			}
+		}	
+		break;
 		case EHeroActionStatus::SpellToPosition:
-			return CurrentAction == LastUseSkill;
-			break;
+		{
+			AHeroSkill* hs = Skills[LastUseSkill.TargetIndex1];
+			if (hs->IsChannelling)
+			{
+				return false;
+			}
+			else
+			{
+				return CurrentAction == LastUseSkill;
+			}
+		}
+		break;
 		case EHeroActionStatus::SpellToActor:
-			return CurrentAction == LastUseSkill;
-			break;
+		{
+			AHeroSkill* hs = Skills[LastUseSkill.TargetIndex1];
+			if (hs->IsChannelling)
+			{
+				return false;
+			}
+			else
+			{
+				return CurrentAction == LastUseSkill;
+			}
+		}
+		break;
 		case EHeroActionStatus::SpellToDirection:
-			return CurrentAction == LastUseSkill;
-			break;
+		{
+			AHeroSkill* hs = Skills[LastUseSkill.TargetIndex1];
+			if (hs->IsChannelling)
+			{
+				return false;
+			}
+			else
+			{
+				return CurrentAction == LastUseSkill;
+			}
+		}
+		break;
 		case EHeroActionStatus::MoveToPickup:
 		{
 			if (HasEquipment(TargetEquipment))
@@ -2112,6 +2166,11 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 				}
 				BodyStatus = EHeroBodyStatus::SpellEnding;
 				LastUseSkill = CurrentAction;
+				AHeroSkill* hs = Skills[CurrentAction.TargetIndex1];
+				if (hs->SkillBehavior[HEROB::Channelled])
+				{
+					BodyStatus = EHeroBodyStatus::SpellChannellingActor;
+				}
 			}
 		}
 	}
@@ -2124,6 +2183,22 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 		}
 	}
 	break;
+	case EHeroBodyStatus::SpellChannellingActor:
+	{
+		AHeroSkill* hs = Skills[CurrentAction.TargetIndex1];
+		//當持續施法時間到的時候就放下圖刀
+		if (IsValid(hs))
+		{
+			PopAction();
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+	}
+	break;
+	// 不可能的狀態
+	case EHeroBodyStatus::SpellChannelling:
+	{
+		BodyStatus = EHeroBodyStatus::Standing;
+	}
 	default:
 	{
 		BodyStatus = EHeroBodyStatus::Moving;
@@ -2181,6 +2256,11 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 							CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
 					}
 					LastUseSkill = CurrentAction;
+					AHeroSkill* hs = Skills[CurrentAction.TargetIndex1];
+					if (hs->SkillBehavior[HEROB::Channelled])
+					{
+						BodyStatus = EHeroBodyStatus::SpellChannelling;
+					}
 				}
 			}
 		}
@@ -2190,6 +2270,24 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 	{
 		if (SpellingCounting > CurrentSpellingBeginingTimeLength)
 		{
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+	}
+	break;
+	// 不可能的狀態
+	case EHeroBodyStatus::SpellChannellingActor:
+	{
+		BodyStatus = EHeroBodyStatus::Standing;
+	}
+	break;
+	case EHeroBodyStatus::SpellChannelling:
+	{
+		AHeroSkill* hs = Skills[CurrentAction.TargetIndex1];
+		//當持續施法時間到的時候就放下圖刀
+		if (IsValid(hs) && hs->ChannellingCounting > hs->ChannellingTime)
+		{
+			hs->BP_ChannellingEnd(hs->CastPoint);
+			PopAction();
 			BodyStatus = EHeroBodyStatus::Standing;
 		}
 	}
@@ -2205,7 +2303,6 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 	break;
 	}
 }
-
 
 void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {

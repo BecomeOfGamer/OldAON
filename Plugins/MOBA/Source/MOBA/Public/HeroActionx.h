@@ -74,7 +74,7 @@ enum class EHeroActionStatus : uint8
 	//丟裝給人
 	ThrowEquToActor,
 	// 破壞場景物件
-	AttackSceneObject
+	AttackSceneObject,
 };
 
 /**

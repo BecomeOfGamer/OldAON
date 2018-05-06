@@ -34,6 +34,10 @@ enum class EHeroBodyStatus : uint8
 	SpellBegining,
 	//施法後搖
 	SpellEnding,
+	//持續對某人施法中
+	SpellChannellingActor,
+	//持續施法中
+	SpellChannelling,
 };
 
 
@@ -143,6 +147,9 @@ public:
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void ServerPlayAttack(float duraction, float rate);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_PlayChannelling(float duraction, float rate);
+
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void AddBuff(AHeroBuff* buff);
 
@@ -187,7 +194,7 @@ public:
 
 	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable, Category = "MOBA")
 	void ServerPlayAttackLandedSFX();
-		
+
 	// 確定當前動作做完了沒
 	bool CheckCurrentActionFinish();
 
@@ -212,6 +219,8 @@ public:
 	void DoAction_SpellToActor(const FHeroAction& CurrentAction);
 	// 使用指向技
 	void DoAction_SpellToDirection(const FHeroAction& CurrentAction);
+	//持續施法中
+	void DoAction_SpellChannelling(const FHeroAction& CurrentAction);
 	void DoAction_AttackSceneObject(const FHeroAction& CurrentAction);
 	void DoAction_MoveToPickup(const FHeroAction& CurrentAction);
 	void DoAction_MoveToThrowEqu(const FHeroAction& CurrentAction);
@@ -513,6 +522,9 @@ public:
 	// 目前施法後搖時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
 	float CurrentSpellingEndingTimeLength;
+	//當前剩餘持續施法時間
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	float ChannellingTime = 0;
 
 	// 目前攻擊計時器
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
