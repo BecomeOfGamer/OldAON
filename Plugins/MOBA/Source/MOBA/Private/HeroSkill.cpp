@@ -26,9 +26,9 @@ void AHeroSkill::BeginPlay()
 		{
 			MaxCD = CDRatio*LevelCD[CurrentLevel - 1];
 		}
-		if (LevelManaCost.Num() > CurrentLevel - 1)
+		if (ManaCost.Num() > CurrentLevel - 1)
 		{
-			CurrnetManaCost = LevelManaCost[CurrentLevel];
+			CurrnetManaCost = ManaCost[CurrentLevel];
 		}
 		CurrentCD = MaxCD;
 	}
@@ -69,9 +69,9 @@ void AHeroSkill::LevelUp()
 		{
 			MaxCD = CDRatio = LevelCD[CurrentLevel - 1];
 		}
-		if (LevelManaCost.Num() >= CurrentLevel)
+		if (ManaCost.Num() >= CurrentLevel)
 		{
-			CurrnetManaCost = LevelManaCost[CurrentLevel - 1];
+			CurrnetManaCost = ManaCost[CurrentLevel - 1];
 		}
 		if (CurrentLevel == 1)
 		{
@@ -141,6 +141,66 @@ float AHeroSkill::GetSkillCDPercent()
 	}
 }
 
+float AHeroSkill::GetCastRange()
+{
+	if (CurrentLevel == 0)
+	{
+		return 0;
+	}
+	if (CastRange.Num() > CurrentLevel - 1)
+	{
+		return CastRange[CurrentLevel - 1];
+	}
+	return 0;
+}
+
+float AHeroSkill::GetManaCost()
+{
+	if (CurrentLevel == 0)
+	{
+		return 50000;
+	}
+	if (ManaCost.Num() > CurrentLevel - 1)
+	{
+		return ManaCost[CurrentLevel - 1];
+	}
+	return 50000;
+}
+
+float AHeroSkill::GetHpCost()
+{
+	if (CurrentLevel == 0)
+	{
+		return 50000;
+	}
+	if (HpCost.Num() > CurrentLevel - 1)
+	{
+		return HpCost[CurrentLevel - 1];
+	}
+	return 50000;
+}
+
+float AHeroSkill::GetVariable(FString name)
+{
+	if (CurrentLevel == 0)
+	{
+		return 0;
+	}
+	if (VariableMap.Contains(name))
+	{
+		if (VariableMap[name].Values.Num() > CurrentLevel - 1)
+		{
+			return VariableMap[name][CurrentLevel-1];
+		}
+	}
+	return 0;
+}
+
+FString AHeroSkill::GetDescription()
+{
+	return Description;
+}
+
 #if WITH_EDITOR
 void AHeroSkill::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -150,9 +210,9 @@ void AHeroSkill::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 		{
 			MaxCD = CDRatio = LevelCD[CurrentLevel - 1];
 		}
-		if (LevelManaCost.Num() >= CurrentLevel)
+		if (ManaCost.Num() >= CurrentLevel)
 		{
-			CurrnetManaCost = LevelManaCost[CurrentLevel - 1];
+			CurrnetManaCost = ManaCost[CurrentLevel - 1];
 		}
 		CurrentCD = MaxCD;
 	}

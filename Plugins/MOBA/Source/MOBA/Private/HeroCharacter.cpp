@@ -30,7 +30,7 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	HeroBullet = NULL;
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickInterval = 0.1;
+	PrimaryActorTick.TickInterval = 0.05;
 	SelectionDecal = ObjectInitializer.CreateDefaultSubobject<UDecalComponent>(this, TEXT("SelectionDecal0"));
 	PositionOnHead = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionOnHead0"));
 	PositionUnderFoot = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionUnderFoot0"));
@@ -588,7 +588,7 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 	{
 		wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), Skills[i]->Name);
 		wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), Skills[i]->Webpath);
-		wjo->SetString(FString::Printf(TEXT("Skill%d_Description"), i + 1), Skills[i]->Description.Description);
+		wjo->SetString(FString::Printf(TEXT("Skill%d_Description"), i + 1), Skills[i]->GetDescription());
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CDPercent"),i+1), Skills[i]->GetSkillCDPercent());
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentCD"), i + 1), Skills[i]->CurrentCD);
 		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), Skills[i]->MaxCD);
@@ -957,6 +957,7 @@ bool AHeroCharacter::ShowSkillHint(int32 index)
 	if(index < Skills.Num())
 	{
 		CurrentSkillHint = GetWorld()->SpawnActor<ASkillHintActor>(Skills[index]->HintActor);
+		CurrentSkillHint->SkillCastRadius = Skills[index]->GetCastRange();
 		CurrentSkillIndex = index;
 		return true;
 	}
@@ -1011,6 +1012,13 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 		VFaceTo.Z = 0;
 		VFaceTo.Normalize();
 		AHeroSkill* hs = Skills[index];
+		FVector dir = Pos - GetActorLocation();
+		float len = dir.Size();
+		if (len > hs->GetCastRange())
+		{
+			len = hs->GetCastRange();
+		}
+		Pos = dir * len + this->GetActorLocation();
 		if (hs->FaceSkill)
 		{
 			SetActorRotation(VFaceTo.Rotation());
@@ -2119,7 +2127,7 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Moving:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (Skills[CurrentAction.TargetIndex1]->CastRange > DistanceToTargetActor)
+		if (Skills[CurrentAction.TargetIndex1]->GetCastRange() > DistanceToTargetActor)
 		{
 			if (IsValid(localPC))
 			{

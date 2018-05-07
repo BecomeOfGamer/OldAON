@@ -46,23 +46,6 @@ enum class EHeroBehavior : uint8
 };
 #define HEROB EHeroBehavior
 
-USTRUCT(BlueprintType)
-struct FSkillDescription
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Description;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> DescriptionLevel;
-
-	FString& operator[](int32 n)
-	{
-		return DescriptionLevel[n];
-	}
-};
-
 UCLASS()
 class MOBA_API AHeroSkill : public AActor
 {
@@ -133,23 +116,23 @@ public:
 	void BP_ChannellingEnd(FVector Pos);
 
 	//技能準備好可以施放了
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	bool ReadySpell();
 
 	//技能強制開始CD
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	void StartCD();
 
 	//技能強制結束CD
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	void EndCD();
 
 	//技能強制升級
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	void LevelUp();
 
 	//確認技能還能不能升級
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	bool CanLevelUp();
 
 	//累積技能CD時間
@@ -157,6 +140,26 @@ public:
 
 	//得到當前CD百分比
 	float GetSkillCDPercent();
+
+	//得到格式化之後的描述
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	FString GetDescription();
+
+	//得到格式化之後的描述
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	float GetCastRange();
+
+	//得到當前耗魔
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	float GetManaCost();
+	
+	//得到當前耗血
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	float GetHpCost();
+
+	//得到當前變數
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	float GetVariable(FString name);
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -195,15 +198,18 @@ public:
 
 	//施法距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float CastRange;
+	TArray<float>  CastRange;
 
 	//對應的網頁圖片路徑
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FString Webpath;
 
 	//技能描述
+	//與指定部隊交換位置並且造成(50/100/150/200)點傷害，並且讓敵人暈頭轉向暈眩(1/1.5/2/2.5)秒，施展距離(600/700/800/900)。
+	//與指定部隊交換位置並且造成{Damage}點傷害，並且讓敵人暈頭轉向暈眩{Duration}秒，施展距離{CastRange}。
+	//然後像是CD跟法力消耗有固定的，沒有固定的就從Variable Map中去找，抓不到值就填 -999
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	FSkillDescription Description;
+	FString Description;
 
 	//技能圖片
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
@@ -219,7 +225,11 @@ public:
 
 	//儲存每個等級的魔力消耗
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
-	TArray<float> LevelManaCost;
+	TArray<float> ManaCost;
+
+	//儲存每個等級的生命消耗
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	TArray<float> HpCost;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
 	float CurrnetManaCost;
