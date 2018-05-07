@@ -1018,6 +1018,7 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 		{
 			len = hs->GetCastRange();
 		}
+		dir.Normalize();
 		Pos = dir * len + this->GetActorLocation();
 		if (hs->FaceSkill)
 		{
