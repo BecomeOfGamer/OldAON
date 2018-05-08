@@ -30,7 +30,7 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	HeroBullet = NULL;
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickInterval = 0.05;
+	//PrimaryActorTick.TickInterval = 0.1;
 	SelectionDecal = ObjectInitializer.CreateDefaultSubobject<UDecalComponent>(this, TEXT("SelectionDecal0"));
 	PositionOnHead = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionOnHead0"));
 	PositionUnderFoot = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionUnderFoot0"));
@@ -209,64 +209,36 @@ void AHeroCharacter::BeginPlay()
 void AHeroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	// 移動速度更新
+	Frame++;
+	// 慢慢更新就好
+	if (Frame % 7 == 0)
 	{
-		CurrentMoveSpeed = (BaseMoveSpeed + BuffPropertyMap[HEROP::MoveSpeedConstant]) * BuffPropertyMap[HEROP::MoveSpeedRatio];
-		UCharacterMovementComponent* mc = Cast<UCharacterMovementComponent>(GetMovementComponent());
-		mc->MaxWalkSpeed = CurrentMoveSpeed;
-		mc->MaxWalkSpeedCrouched = CurrentMoveSpeed;
-	}
-	if (BlendingColor != LastBlendingColor)
-	{
-		LastBlendingColor = BlendingColor;
-		UMaterialInstanceDynamic* MILight = UMaterialInstanceDynamic::Create(
-			BaseMaterial, this); 
-		MILight->SetVectorParameterValue(FName(TEXT("BlendingColor")), BlendingColor);
-		GetMesh()->SetMaterial(0, MILight);
-	}
-	// 如果法球失效，移除法球
-	if (!IsValid(CurrentOrb))
-	{
-		CurrentOrb = nullptr;
-	}
-	// 如果沒有初始化成功就初始化 local AMOBAPlayerController
-	if (!IsValid(localPC))
-	{
-		localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
-	}
-	if (EXPIncreaseArray.Num() == 0)
-	{
-		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (ags)
+		// 移動速度更新
 		{
-			EXPIncreaseArray = ags->GetEXPIncreaseArray();
+			CurrentMoveSpeed = (BaseMoveSpeed + BuffPropertyMap[HEROP::MoveSpeedConstant]) * BuffPropertyMap[HEROP::MoveSpeedRatio];
+			UCharacterMovementComponent* mc = Cast<UCharacterMovementComponent>(GetMovementComponent());
+			mc->MaxWalkSpeed = CurrentMoveSpeed;
+			mc->MaxWalkSpeedCrouched = CurrentMoveSpeed;
 		}
-	}
-	if (LastAnimaStatus != AnimaStatus)
-	{
-		OnAnimaStatusChanged(LastAnimaStatus, AnimaStatus);
-		LastAnimaStatus = AnimaStatus;
-	}
-	{ // 計算各種buff
-		BlendingColor = FLinearColor::White;
-		TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
-		TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
-		for (AHeroBuff* Buff : BuffQueue)
+		if (BlendingColor != LastBlendingColor)
 		{
-			if (IsValid(Buff))
+			LastBlendingColor = BlendingColor;
+			UMaterialInstanceDynamic* MILight = UMaterialInstanceDynamic::Create(
+				BaseMaterial, this);
+			MILight->SetVectorParameterValue(FName(TEXT("BlendingColor")), BlendingColor);
+			GetMesh()->SetMaterial(0, MILight);
+		}
+		// 如果沒有初始化成功就初始化 local AMOBAPlayerController
+		if (!IsValid(localPC))
+		{
+			localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
+		}
+		if (EXPIncreaseArray.Num() == 0)
+		{
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (ags)
 			{
-				for (auto& Elem : Buff->BuffPropertyMap)
-				{
-					SwapProperty[Elem.Key] += Elem.Value;
-				}
-				for (EHeroBuffState& Elem : Buff->BuffState)
-				{
-					SwapState[Elem] = true;
-					if (Elem == HEROS::Blending)
-					{
-						BlendingColor = Buff->BlendingColor;
-					}
-				}
+				EXPIncreaseArray = ags->GetEXPIncreaseArray();
 			}
 		}
 		// 如果沒法球時從自身狀態找一個法球裝
@@ -290,51 +262,141 @@ void AHeroCharacter::Tick(float DeltaTime)
 				}
 			}
 		}
-		BuffStateMap = SwapState;
-		BuffPropertyMap = SwapProperty;
-	}
-	// 更新血魔攻速
-	UpdateHPMPAS();
-	if (BuffStateMap[HEROS::Stunning])
-	{
-		BodyStatus = EHeroBodyStatus::Stunning;
-		LastMoveTarget = FVector::ZeroVector;
-	}
-	else if (EHeroBodyStatus::Stunning == BodyStatus)
-	{
-		if (!BuffStateMap[HEROS::Stunning])
+		// 如果法球失效，移除法球
+		if (!IsValid(CurrentOrb))
 		{
-			BodyStatus = EHeroBodyStatus::Standing;
+			CurrentOrb = nullptr;
 		}
-	}
-	{// 計算各種自然回復
-		if (IsAlive)
-		{
-			CurrentHP += DeltaTime * CurrentRegenHP;
-			CurrentMP += DeltaTime * CurrentRegenMP;
-			if (CurrentHP > CurrentMaxHP)
+		// 計算各種buff
+		{ 
+			BlendingColor = FLinearColor::White;
+			TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
+			TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
+			for (AHeroBuff* Buff : BuffQueue)
 			{
-				CurrentHP = CurrentMaxHP;
+				if (IsValid(Buff))
+				{
+					for (auto& Elem : Buff->BuffPropertyMap)
+					{
+						SwapProperty[Elem.Key] += Elem.Value;
+					}
+					for (EHeroBuffState& Elem : Buff->BuffState)
+					{
+						SwapState[Elem] = true;
+						if (Elem == HEROS::Blending)
+						{
+							BlendingColor = Buff->BlendingColor;
+						}
+					}
+				}
 			}
-			if (CurrentMP > CurrentMaxMP)
+
+			BuffStateMap = SwapState;
+			BuffPropertyMap = SwapProperty;
+		}
+		// 更新血魔攻速
+		UpdateHPMPAS();
+		//計算暈眩狀態
+		if (BuffStateMap[HEROS::Stunning])
+		{
+			//如果在持續施法中
+			switch (BodyStatus)
 			{
-				CurrentMP = CurrentMaxMP;
+			case EHeroBodyStatus::SpellChannellingActor:
+			{
+				//強制斷招
+				AHeroSkill* hs = LastUseSkill;
+				hs->IsChannelling = false;
+				hs->BP_ChannellingActorBreak(hs->Victim);
+			}
+			break;
+			case EHeroBodyStatus::SpellChannelling:
+			{
+				//強制斷招
+				AHeroSkill* hs = LastUseSkill;
+				hs->IsChannelling = false;
+				hs->BP_ChannellingBreak(hs->CastPoint);
+			}
+			break;
+			default:
+				break;
+			}
+			
+			BodyStatus = EHeroBodyStatus::Stunning;
+			LastMoveTarget = FVector::ZeroVector;
+		}
+		else if (EHeroBodyStatus::Stunning == BodyStatus)
+		{
+			if (!BuffStateMap[HEROS::Stunning])
+			{
+				BodyStatus = EHeroBodyStatus::Standing;
 			}
 		}
-		else
-		{
-			DeadTime += DeltaTime;
-		}
-		// 修正小於0的值為0
-		if (CurrentHP < 0)
-		{
-			CurrentHP = 0;
-		}
-		if (CurrentMP < 0)
-		{
-			CurrentMP = 0;
+		{// 計算各種自然回復
+			if (IsAlive)
+			{
+				CurrentHP += DeltaTime * CurrentRegenHP;
+				CurrentMP += DeltaTime * CurrentRegenMP;
+				if (CurrentHP > CurrentMaxHP)
+				{
+					CurrentHP = CurrentMaxHP;
+				}
+				if (CurrentMP > CurrentMaxMP)
+				{
+					CurrentMP = CurrentMaxMP;
+				}
+			}
+			else
+			{
+				DeadTime += DeltaTime;
+			}
+			// 修正小於0的值為0
+			if (CurrentHP < 0)
+			{
+				CurrentHP = 0;
+			}
+			if (CurrentMP < 0)
+			{
+				CurrentMP = 0;
+			}
 		}
 	}
+	//更新再快一點但不用到每個Frame
+	if (Frame % 3 == 0)
+	{
+		// 更新 Buff 持續時間
+		bool isLastFrameStunning = (0 == StunningLeftCounting);
+		StunningLeftCounting = 0;
+		for (int32 i = 0; i < BuffQueue.Num(); ++i)
+		{
+			// 移除時間到的Buff
+			if (IsValid(BuffQueue[i]))
+			{
+				if (!BuffQueue[i]->Forever && BuffQueue[i]->Duration <= 0)
+				{
+					// 釋放記憶體
+					if (!BuffQueue[i]->IsPendingKillPending())
+					{
+						BuffQueue[i]->OnDestroy();
+						//BuffQueue[i]->Destroy();
+					}
+					BuffQueue.RemoveAt(i);
+					i--;
+				}
+			}
+			else
+			{
+				BuffQueue.RemoveAt(i);
+				i--;
+			}
+		}
+	}
+	if (LastAnimaStatus != AnimaStatus)
+	{
+		OnAnimaStatusChanged(LastAnimaStatus, AnimaStatus);
+		LastAnimaStatus = AnimaStatus;
+	}
+	
 	if (CurrentSkillHint)
 	{
 		AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
@@ -415,32 +477,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 	AttackingCounting += DeltaTime;
 	FollowActorUpdateCounting += DeltaTime;
 	SpellingCounting += DeltaTime;
-	// 更新 Buff 持續時間
-	bool isLastFrameStunning = (0 == StunningLeftCounting);
-	StunningLeftCounting = 0;
-	for (int32 i = 0; i < BuffQueue.Num(); ++i)
-	{
-		// 移除時間到的Buff
-		if (IsValid(BuffQueue[i]))
-		{
-			if (!BuffQueue[i]->Forever && BuffQueue[i]->Duration <= 0)
-			{
-				// 釋放記憶體
-				if (!BuffQueue[i]->IsPendingKillPending())
-				{
-					BuffQueue[i]->OnDestroy();
-					//BuffQueue[i]->Destroy();
-				}
-				BuffQueue.RemoveAt(i);
-				i--;
-			}
-		}
-		else
-		{
-			BuffQueue.RemoveAt(i);
-			i--;
-		}
-	}
+	
 	// 算CD
 	for(int32 i = 0; i < Skills.Num(); ++i)
 	{
@@ -1050,15 +1087,28 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 		default:
 			break;
 		}
-		if (hs->SkillBehavior[HEROB::Channelled])
-		{
-			BP_PlayChannelling(hs->ChannellingTime, 1);
-		}
 		hs->StartCD();
 		CurrentMP -= hs->CurrnetManaCost;
 		if (hs->SkillBehavior[HEROB::Channelled])
 		{
-			BodyStatus = EHeroBodyStatus::SpellBegining;
+			BP_PlayChannelling(hs->ChannellingTime, 1);
+			switch (SpellType)
+			{
+			case EHeroActionStatus::SpellNow:
+				BodyStatus = EHeroBodyStatus::SpellChannelling;
+				break;
+			case EHeroActionStatus::SpellToPosition:
+				BodyStatus = EHeroBodyStatus::SpellChannelling;
+				break;
+			case EHeroActionStatus::SpellToDirection:
+				BodyStatus = EHeroBodyStatus::SpellChannelling;
+				break;
+			case EHeroActionStatus::SpellToActor:
+				BodyStatus = EHeroBodyStatus::SpellChannellingActor;
+				break;
+			default:
+				break;
+			}
 			ChannellingTime = hs->ChannellingTime;
 		}
 	}
@@ -1136,53 +1186,53 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 			break;
 		case EHeroActionStatus::SpellNow:
 		{
-			AHeroSkill* hs = Skills[LastUseSkill.TargetIndex1];
+			AHeroSkill* hs = LastUseSkill;
 			if (hs->IsChannelling)
 			{
 				return false;
 			}
 			else
 			{
-				return CurrentAction == LastUseSkill;
+				return CurrentAction == LastUseSkillAction;
 			}
 		}	
 		break;
 		case EHeroActionStatus::SpellToPosition:
 		{
-			AHeroSkill* hs = Skills[LastUseSkill.TargetIndex1];
+			AHeroSkill* hs = LastUseSkill;
 			if (hs->IsChannelling)
 			{
 				return false;
 			}
 			else
 			{
-				return CurrentAction == LastUseSkill;
+				return CurrentAction == LastUseSkillAction;
 			}
 		}
 		break;
 		case EHeroActionStatus::SpellToActor:
 		{
-			AHeroSkill* hs = Skills[LastUseSkill.TargetIndex1];
+			AHeroSkill* hs = LastUseSkill;
 			if (hs->IsChannelling)
 			{
 				return false;
 			}
 			else
 			{
-				return CurrentAction == LastUseSkill;
+				return CurrentAction == LastUseSkillAction;
 			}
 		}
 		break;
 		case EHeroActionStatus::SpellToDirection:
 		{
-			AHeroSkill* hs = Skills[LastUseSkill.TargetIndex1];
+			AHeroSkill* hs = LastUseSkill;
 			if (hs->IsChannelling)
 			{
 				return false;
 			}
 			else
 			{
-				return CurrentAction == LastUseSkill;
+				return CurrentAction == LastUseSkillAction;
 			}
 		}
 		break;
@@ -1462,6 +1512,24 @@ void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentA
 			}
 		}
 		break;
+		case EHeroBodyStatus::SpellChannellingActor:
+		{
+			//強制斷招
+			AHeroSkill* hs = LastUseSkill;
+			hs->IsChannelling = false;
+			hs->BP_ChannellingActorBreak(hs->Victim);
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+		break;
+		case EHeroBodyStatus::SpellChannelling:
+		{
+			//強制斷招
+			AHeroSkill* hs = LastUseSkill;
+			hs->IsChannelling = false;
+			hs->BP_ChannellingBreak(hs->CastPoint);
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+		break;
 		case EHeroBodyStatus::SpellWating:
 		case EHeroBodyStatus::SpellBegining:
 		case EHeroBodyStatus::SpellEnding:
@@ -1515,6 +1583,24 @@ void AHeroCharacter::DoAction_MovingAttackToPosition(const FHeroAction& CurrentA
 		break;
 		case EHeroBodyStatus::Stunning:
 			break;
+		case EHeroBodyStatus::SpellChannellingActor:
+		{
+			//強制斷招
+			AHeroSkill* hs = LastUseSkill;
+			hs->IsChannelling = false;
+			hs->BP_ChannellingActorBreak(hs->Victim);
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+		break;
+		case EHeroBodyStatus::SpellChannelling:
+		{
+			//強制斷招
+			AHeroSkill* hs = LastUseSkill;
+			hs->IsChannelling = false;
+			hs->BP_ChannellingBreak(hs->CastPoint);
+			BodyStatus = EHeroBodyStatus::Standing;
+		}
+		break;
 		case EHeroBodyStatus::SpellWating:
 		case EHeroBodyStatus::SpellBegining:
 		case EHeroBodyStatus::SpellEnding:
@@ -1573,6 +1659,24 @@ void AHeroCharacter::DoAction_MoveToPositionImpl(const FHeroAction& CurrentActio
 		break;
 	case EHeroBodyStatus::Stunning:
 		break;
+	case EHeroBodyStatus::SpellChannellingActor:
+	{
+		//強制斷招
+		AHeroSkill* hs = LastUseSkill;
+		hs->IsChannelling = false;
+		hs->BP_ChannellingActorBreak(hs->Victim);
+		BodyStatus = EHeroBodyStatus::Standing;
+	}
+	break;
+	case EHeroBodyStatus::SpellChannelling:
+	{
+		//強制斷招
+		AHeroSkill* hs = LastUseSkill;
+		hs->IsChannelling = false;
+		hs->BP_ChannellingBreak(hs->CastPoint);
+		BodyStatus = EHeroBodyStatus::Standing;
+	}
+	break;
 	case EHeroBodyStatus::SpellWating:
 	case EHeroBodyStatus::SpellBegining:
 	case EHeroBodyStatus::SpellEnding:
@@ -2171,7 +2275,7 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	{
 		if (SpellingCounting > CurrentSpellingBeginingTimeLength)
 		{
-			if (LastUseSkill != CurrentAction)
+			if (LastUseSkillAction != CurrentAction)
 			{
 				if (IsValid(localPC))
 				{
@@ -2179,12 +2283,8 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 						CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
 				}
 				BodyStatus = EHeroBodyStatus::SpellEnding;
-				LastUseSkill = CurrentAction;
-				AHeroSkill* hs = Skills[CurrentAction.TargetIndex1];
-				if (hs->SkillBehavior[HEROB::Channelled])
-				{
-					BodyStatus = EHeroBodyStatus::SpellChannellingActor;
-				}
+				LastUseSkillAction = CurrentAction;
+				LastUseSkill = Skills[CurrentAction.TargetIndex1];
 			}
 		}
 	}
@@ -2199,20 +2299,26 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	break;
 	case EHeroBodyStatus::SpellChannellingActor:
 	{
-		AHeroSkill* hs = Skills[CurrentAction.TargetIndex1];
+		AHeroSkill* hs = LastUseSkill;
 		//當持續施法時間到的時候就放下圖刀
-		if (IsValid(hs))
+		if (IsValid(hs) && !hs->IsChannelling)
 		{
+			hs->IsChannelling = false;
+			hs->BP_ChannellingActorEnd(hs->Victim);
 			PopAction();
 			BodyStatus = EHeroBodyStatus::Standing;
 		}
 	}
 	break;
-	// 不可能的狀態
 	case EHeroBodyStatus::SpellChannelling:
 	{
+		//強制斷招
+		AHeroSkill* hs = LastUseSkill;
+		hs->IsChannelling = false;
+		hs->BP_ChannellingBreak(hs->CastPoint);
 		BodyStatus = EHeroBodyStatus::Standing;
 	}
+	break;
 	default:
 	{
 		BodyStatus = EHeroBodyStatus::Moving;
@@ -2260,7 +2366,7 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 		{
 			if (SpellingCounting >= CurrentSpellingBeginingTimeLength)
 			{
-				if (LastUseSkill != CurrentAction)
+				if (LastUseSkillAction != CurrentAction)
 				{
 					BodyStatus = EHeroBodyStatus::SpellEnding;
 					SpellingCounting = 0;
@@ -2269,12 +2375,8 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 						localPC->ServerHeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
 							CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
 					}
-					LastUseSkill = CurrentAction;
-					AHeroSkill* hs = Skills[CurrentAction.TargetIndex1];
-					if (hs->SkillBehavior[HEROB::Channelled])
-					{
-						BodyStatus = EHeroBodyStatus::SpellChannelling;
-					}
+					LastUseSkillAction = CurrentAction;
+					LastUseSkill = Skills[CurrentAction.TargetIndex1];
 				}
 			}
 		}
@@ -2288,18 +2390,22 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 		}
 	}
 	break;
-	// 不可能的狀態
 	case EHeroBodyStatus::SpellChannellingActor:
 	{
+		//強制斷招
+		AHeroSkill* hs = LastUseSkill;
+		hs->IsChannelling = false;
+		hs->BP_ChannellingActorBreak(hs->Victim);
 		BodyStatus = EHeroBodyStatus::Standing;
 	}
 	break;
 	case EHeroBodyStatus::SpellChannelling:
 	{
-		AHeroSkill* hs = Skills[CurrentAction.TargetIndex1];
+		AHeroSkill* hs = LastUseSkill;
 		//當持續施法時間到的時候就放下圖刀
-		if (IsValid(hs) && hs->ChannellingCounting > hs->ChannellingTime)
+		if (IsValid(hs) && !hs->IsChannelling)
 		{
+			hs->IsChannelling = false;
 			hs->BP_ChannellingEnd(hs->CastPoint);
 			PopAction();
 			BodyStatus = EHeroBodyStatus::Standing;
@@ -2333,7 +2439,7 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AHeroCharacter, Skills);
 	DOREPLIFETIME(AHeroCharacter, CurrentAttackSpeedSecond);
 	DOREPLIFETIME(AHeroCharacter, CurrentAttackingAnimationRate);
-	DOREPLIFETIME(AHeroCharacter, LastUseSkill);
+	DOREPLIFETIME(AHeroCharacter, LastUseSkillAction);
 	DOREPLIFETIME(AHeroCharacter, CurrentSkillPoints);
 	DOREPLIFETIME(AHeroCharacter, CurrentLevel);
 	DOREPLIFETIME(AHeroCharacter, AnimaStatus);

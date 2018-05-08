@@ -52,6 +52,11 @@ void AHeroSkill::StartCD()
 	CDing = true;
 	CurrentCD = 0;
 	ChannellingCounting = 0;
+	if (SkillBehavior[HEROB::Channelled])
+	{
+		IsChannelling = true;
+	}
+	
 }
 
 void AHeroSkill::EndCD()
@@ -91,21 +96,28 @@ bool AHeroSkill::CanLevelUp()
 
 void AHeroSkill::CheckCD(float DeltaTime)
 {
-	if (SkillBehavior[HEROB::Channelled] && ChannellingCounting < ChannellingTime)
+	if (SkillBehavior[HEROB::Channelled] && IsChannelling)
 	{
-		ChannellingCounting += DeltaTime;
-		IntervalCounting += DeltaTime;
-		if (IntervalCounting > ChannellingInterval)
+		if (ChannellingCounting < ChannellingTime)
 		{
-			IntervalCounting -= ChannellingInterval;
-			if (SkillBehavior[HEROB::UnitTarget] || SkillBehavior[HEROB::UnitTargetFriends] || SkillBehavior[HEROB::UnitTargetEnemy])
+			ChannellingCounting += DeltaTime;
+			IntervalCounting += DeltaTime;
+			if (IntervalCounting > ChannellingInterval)
 			{
-				BP_ChannellingActorInterval(Victim);
+				IntervalCounting -= ChannellingInterval;
+				if (SkillBehavior[HEROB::UnitTarget] || SkillBehavior[HEROB::UnitTargetFriends] || SkillBehavior[HEROB::UnitTargetEnemy])
+				{
+					BP_ChannellingActorInterval(Victim);
+				}
+				if (SkillBehavior[HEROB::NoTarget] || SkillBehavior[HEROB::Aoe] || SkillBehavior[HEROB::Directional])
+				{
+					BP_ChannellingInterval(CastPoint);
+				}
 			}
-			if (SkillBehavior[HEROB::NoTarget] || SkillBehavior[HEROB::Aoe] || SkillBehavior[HEROB::Directional])
-			{
-				BP_ChannellingInterval(CastPoint);
-			}
+		}
+		else
+		{
+			IsChannelling = false;
 		}
 	}
 	if (CDing)

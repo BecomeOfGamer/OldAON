@@ -402,6 +402,9 @@ public:
 	// 每個等級提升的智力
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
 	TArray<float> LevelProperty_Intelligence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	int32 Frame = 0;
 	
 	// 當前技能提示
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
@@ -645,7 +648,9 @@ public:
 
 	// 最後一次要使用的技能
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	FHeroAction LastUseSkill;
+	FHeroAction LastUseSkillAction;
+
+	AHeroSkill* LastUseSkill;
 
 	static AMOBAPlayerController* localPC;
 
