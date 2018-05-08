@@ -141,15 +141,28 @@ float AHeroSkill::GetSkillCDPercent()
 	}
 }
 
-float AHeroSkill::GetCastRange()
+float AHeroSkill::GetMaxCastRange()
 {
 	if (CurrentLevel == 0)
 	{
 		return 0;
 	}
-	if (CastRange.Num() > CurrentLevel - 1)
+	if (MaxCastRange.Num() > CurrentLevel - 1)
 	{
-		return CastRange[CurrentLevel - 1];
+		return MaxCastRange[CurrentLevel - 1];
+	}
+	return 0;
+}
+
+float AHeroSkill::GetMinCastRange()
+{
+	if (CurrentLevel == 0)
+	{
+		return 0;
+	}
+	if (MinCastRange.Num() > CurrentLevel - 1)
+	{
+		return MinCastRange[CurrentLevel - 1];
 	}
 	return 0;
 }

@@ -145,9 +145,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	FString GetDescription();
 
-	//得到格式化之後的描述
+	//得到當前最大施法距離
 	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
-	float GetCastRange();
+	float GetMaxCastRange();
+
+	//得到當前最小施法距離
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	float GetMinCastRange();
 
 	//得到當前耗魔
 	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
@@ -196,9 +200,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
 	bool Enable;
 
-	//施法距離
+	//最大施法距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	TArray<float>  CastRange;
+	TArray<float>  MaxCastRange;
+
+	//最小施法距離
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	TArray<float>  MinCastRange;
 
 	//對應的網頁圖片路徑
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

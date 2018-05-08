@@ -71,24 +71,16 @@ public:
 	// 是否固定長度
 	UPROPERTY(Category = "FlySkill", EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "UseDirectionSkill"))
 	uint32 IsFixdLength: 1;
-
-	// 技能最遠距離
-	UPROPERTY(Category = "FlySkill", EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "UseDirectionSkill"))
-	float SkillLength;
-
-	// 技能最短距離
-	UPROPERTY(Category = "FlySkill", EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "UseDirectionSkill"))
-	float MinimalLength;
-
-	// 法術直徑
+	
+	//範圍技直徑
 	UPROPERTY(Category = "FlySkill", EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "UseRangeSkill"))
 	float SkillDiameter;
 
-	// 施法距離
+	//最大施法距離
 	UPROPERTY(Category = "FlySkill", EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "UseRangeSkill"))
-	float SkillCastRadius;
+	float MaxCastRange;
 
-	// 技能最小施法距離
+	//最小施法距離
 	UPROPERTY(Category = "FlySkill", EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "UseRangeSkill"))
-	float MinimalCastRadius;
+	float MinCastRange;
 };

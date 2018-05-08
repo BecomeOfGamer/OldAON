@@ -75,8 +75,8 @@ ASkillHintActor::ASkillHintActor(const FObjectInitializer& ObjectInitializer)
         FootSprite->SetWorldRotation(FQuat(FRotator(0, -90, -90)));
     }
 
-    MinimalLength = 100;
-    SkillLength = 500;
+    MinCastRange = 100;
+    MaxCastRange = 500;
     IsFixdLength = true;
     SkillType = ESkillHintEnum::NoneHint;
     UseDirectionSkill = false;
@@ -85,9 +85,9 @@ ASkillHintActor::ASkillHintActor(const FObjectInitializer& ObjectInitializer)
 #if WITH_EDITOR
 void ASkillHintActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-    if(SkillLength < MinimalLength)
+    if(MaxCastRange < MinCastRange)
     {
-        SkillLength = MinimalLength;
+        MaxCastRange = MinCastRange;
     }
 	UseDirectionSkill = false;
 	UseRangeSkill = false;
@@ -117,7 +117,7 @@ void ASkillHintActor::PostInitProperties()
 #endif
 void ASkillHintActor::SetLength(float len)
 {
-    SkillLength = len;
+    MaxCastRange = len;
     UpdateLength();
 }
 
@@ -134,23 +134,23 @@ void ASkillHintActor::UpdateLength()
             float footwidth = FootSprite->GetSprite()->GetSourceSize().Y;
             float headwidth = HeadSprite->GetSprite()->GetSourceSize().Y;
             FVector2D size = BodySprite->GetSprite()->GetSourceSize();
-            float scale = (SkillLength - headwidth - footwidth) / size.Y;
+            float scale = (MaxCastRange - headwidth - footwidth) / size.Y;
             BodySprite->SetWorldScale3D(FVector(1, 1, scale));
             BodySprite->SetRelativeLocation(FVector(footwidth, 0, 0));
-            HeadSprite->SetRelativeLocation(FVector(SkillLength - headwidth, 0, 0));
+            HeadSprite->SetRelativeLocation(FVector(MaxCastRange - headwidth, 0, 0));
         }
         else if(BodySprite->GetSprite() && HeadSprite->GetSprite())
         {
             float headwidth = HeadSprite->GetSprite()->GetSourceSize().Y;
             FVector2D size = BodySprite->GetSprite()->GetSourceSize();
-            float scale = (SkillLength - headwidth) / size.Y;
+            float scale = (MaxCastRange - headwidth) / size.Y;
             BodySprite->SetWorldScale3D(FVector(1, 1, scale));
-            HeadSprite->SetRelativeLocation(FVector(SkillLength - headwidth, 0, 0));
+            HeadSprite->SetRelativeLocation(FVector(MaxCastRange - headwidth, 0, 0));
         }
         else if(BodySprite->GetSprite())
         {
             FVector2D size = BodySprite->GetSprite()->GetSourceSize();
-            float scale = (SkillLength) / size.Y;
+            float scale = (MaxCastRange) / size.Y;
             BodySprite->SetWorldScale3D(FVector(1, 1, scale));
         }
     }
@@ -186,30 +186,31 @@ void ASkillHintActor::UpdatePos(FVector PlayerPos, FVector MousePos)
     {
         SetActorRotation(dir.Rotation());
         SetActorLocation(PlayerPos);
-		if (len < MinimalLength)
+		if (len < MinCastRange)
 		{
-			len = MinimalLength;
+			len = MinCastRange;
 		}
-		else if (len > SkillLength)
+		else if (len > MaxCastRange)
 		{
-			len = SkillLength;
+			len = MaxCastRange;
 		}
         if(!IsFixdLength)
         {
-            SkillLength = len;
+            MaxCastRange = len;
             SkillPos = MousePos;
         }
+		SkillPos = dir * len + PlayerPos;
     }
     break;
 	case ESkillHintEnum::RangeSkill:
 	{
-		if (len < MinimalCastRadius)
+		if (len < MinCastRange)
 		{
-			len = MinimalCastRadius;
+			len = MinCastRange;
 		}
-		else if (len > SkillCastRadius)
+		else if (len > MaxCastRange)
 		{
-			len = SkillCastRadius;
+			len = MaxCastRange;
 		}
 		FVector pos = dir*len + PlayerPos;
 		SetActorLocation(pos);

@@ -957,7 +957,8 @@ bool AHeroCharacter::ShowSkillHint(int32 index)
 	if(index < Skills.Num())
 	{
 		CurrentSkillHint = GetWorld()->SpawnActor<ASkillHintActor>(Skills[index]->HintActor);
-		CurrentSkillHint->SkillCastRadius = Skills[index]->GetCastRange();
+		CurrentSkillHint->MaxCastRange = Skills[index]->GetMaxCastRange();
+		CurrentSkillHint->MinCastRange = Skills[index]->GetMinCastRange();
 		CurrentSkillIndex = index;
 		return true;
 	}
@@ -1014,9 +1015,13 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 		AHeroSkill* hs = Skills[index];
 		FVector dir = Pos - GetActorLocation();
 		float len = dir.Size();
-		if (len > hs->GetCastRange())
+		if (len < hs->GetMinCastRange())
 		{
-			len = hs->GetCastRange();
+			len = hs->GetMinCastRange();
+		}
+		if (len > hs->GetMaxCastRange())
+		{
+			len = hs->GetMaxCastRange();
 		}
 		dir.Normalize();
 		Pos = dir * len + this->GetActorLocation();
@@ -2128,7 +2133,7 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Moving:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (Skills[CurrentAction.TargetIndex1]->GetCastRange() > DistanceToTargetActor)
+		if (Skills[CurrentAction.TargetIndex1]->GetMaxCastRange() > DistanceToTargetActor)
 		{
 			if (IsValid(localPC))
 			{
