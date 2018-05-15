@@ -753,25 +753,6 @@ bool AHeroCharacter::HasEquipment(AEquipment* equ)
 	return false;
 }
 
-
-bool AHeroCharacter::HealCompute_Validate(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount)
-{
-	return true;
-}
-
-void AHeroCharacter::HealCompute_Implementation(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount)
-{
-	target->CurrentHP += heal_mount;
-	for (AHeroBuff* Buff : caster->BuffQueue)
-	{
-		Buff->OnHealLanded(caster, target, heal_mount);
-	}
-	for (AHeroBuff* Buff : target->BuffQueue)
-	{
-		Buff->BeHeal(caster, target, heal_mount);
-	}
-}
-
 void AHeroCharacter::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
 {
 	AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());

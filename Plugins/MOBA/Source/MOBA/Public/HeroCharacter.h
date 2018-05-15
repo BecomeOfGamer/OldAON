@@ -6,55 +6,10 @@
 #include "GameFramework/Character.h"
 #include "AIController.h"
 #include "Components/ArrowComponent.h"
-#include "HeroActionx.h"
-#include "HeroBuff.h"
+#include "MobaEnum.h"
 #include "DamageEffect.h"
+#include "HeroAction.h"
 #include "HeroCharacter.generated.h"
-
-
-
-UENUM(BlueprintType)
-enum class EHeroBodyStatus : uint8
-{
-	//站著發呆
-	Standing,
-	//移動中
-	Moving,
-	//暈眩中
-	Stunning,
-	//攻擊等待
-	AttackWating,
-	//攻擊前搖
-	AttackBegining,
-	//攻擊後搖
-	AttackEnding,
-	//施法前等待
-	SpellWating,
-	//施法前搖
-	SpellBegining,
-	//施法後搖
-	SpellEnding,
-	//持續對某人施法中
-	SpellChannellingActor,
-	//持續施法中
-	SpellChannelling,
-};
-
-
-UENUM(BlueprintType)
-enum class ETeamFlag : uint8
-{
-	// 織田軍
-	Team1 = 1,
-	// 聯合軍
-	Team2 = 2,
-	// 敵隊
-	TeamEnemy,
-	// 友軍
-	TeamFriends,
-	// 全部
-	TeamAll,
-};
 
 class AEquipment;
 class ABulletActor;
@@ -90,9 +45,6 @@ public:
 
 	bool HasEquipment(AEquipment* equ);
 	
-	UFUNCTION(NetMulticast, Unreliable, WithValidation, BlueprintCallable)
-	void HealCompute(AHeroCharacter* attacker, AHeroCharacter* victim, float HealMount);
-
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	TArray<AHeroCharacter*> FindRadiusActorByLocation(FVector Center, float Radius, ETeamFlag flag, bool CheckAlive);
 
@@ -622,6 +574,9 @@ public:
 	// 所有的buff
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	TArray<AHeroBuff*> BuffQueue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	TArray<float> BuffDuration;
 
 	// 當前法球
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

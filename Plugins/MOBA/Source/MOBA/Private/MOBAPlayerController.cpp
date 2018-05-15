@@ -525,6 +525,10 @@ void AMOBAPlayerController::ServerHealCompute_Implementation(AHeroCharacter* att
 		{
 			victim->BuffQueue[i]->BeHeal(attacker, victim, amount);
 		}
+		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+		{
+			attacker->BuffQueue[i]->OnHealLanded(attacker, victim, amount);
+		}
 		victim->CurrentHP += amount * victim->BuffPropertyMap[HEROP::HealPercentage];
 	}
 }

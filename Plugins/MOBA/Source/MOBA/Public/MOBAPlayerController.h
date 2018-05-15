@@ -2,7 +2,7 @@
 #pragma once
 #include "GameFramework/PlayerController.h"
 #include "Engine/EngineBaseTypes.h"
-#include "HeroActionx.h"
+#include "HeroAction.h"
 #include "FlannActor.h"
 #include "MOBAPlayerController.generated.h"
 
@@ -87,7 +87,7 @@ public:
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerHeroAddExpCompute(AHeroCharacter* hero, float exp);
 
-	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	UFUNCTION(Server, WithValidation, UnReliable, BlueprintCallable, Category = "MOBA")
 	void ServerAttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, 
 		float damage, bool AttackLanded);
 

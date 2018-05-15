@@ -6,16 +6,6 @@
 #include "GameFramework/Character.h"
 #include "BasicCharacter.generated.h"
 
-UENUM(BlueprintType)
-enum class EDamageType : uint8
-{
-	//物理傷害
-	DAMAGE_PHYSICAL,
-	//魔法傷害
-	DAMAGE_MAGICAL,
-	//真實傷害
-	DAMAGE_PURE
-};
 
 UCLASS()
 class MOBA_API ABasicCharacter : public ACharacter

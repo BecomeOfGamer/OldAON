@@ -3,7 +3,6 @@
 #pragma once
 
 #include "GameFramework/GameState.h"
-#include "HeroActionx.h"
 #include "MOBAGameState.generated.h"
 
 /**
