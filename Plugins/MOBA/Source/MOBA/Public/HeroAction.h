@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Object.h"
+#include "MobaEnum.h"
 #include "HeroAction.generated.h"
 
 

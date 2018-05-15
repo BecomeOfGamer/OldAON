@@ -2,13 +2,14 @@
 #include "MOBAPrivatePCH.h"
 #include "MOBA.h"
 #include "BasicCharacter.h"
+#include "UnrealNetwork.h"
 
+AMOBAPlayerController* ABasicCharacter::localPC = 0;
 
-// Sets default values
-ABasicCharacter::ABasicCharacter()
+ABasicCharacter::ABasicCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(FObjectInitializer::Get())
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+
 
 }
 
@@ -33,3 +34,27 @@ void ABasicCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 }
 
+
+void ABasicCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABasicCharacter, Equipments);
+	DOREPLIFETIME(ABasicCharacter, CurrentHP);
+	DOREPLIFETIME(ABasicCharacter, CurrentMP);
+	DOREPLIFETIME(ABasicCharacter, BodyStatus);
+	DOREPLIFETIME(ABasicCharacter, ActionQueue);
+	DOREPLIFETIME(ABasicCharacter, BuffQueue);
+	DOREPLIFETIME(ABasicCharacter, CurrentAction);
+	DOREPLIFETIME(ABasicCharacter, AttackingCounting);
+	DOREPLIFETIME(ABasicCharacter, CurrentSkillIndex);
+	DOREPLIFETIME(ABasicCharacter, Skills);
+	DOREPLIFETIME(ABasicCharacter, CurrentAttackSpeedSecond);
+	DOREPLIFETIME(ABasicCharacter, CurrentAttackingAnimationRate);
+	DOREPLIFETIME(ABasicCharacter, LastUseSkillAction);
+	
+	DOREPLIFETIME(ABasicCharacter, AnimaStatus);
+	DOREPLIFETIME(ABasicCharacter, IsAlive);
+	DOREPLIFETIME(ABasicCharacter, CurrentEXP);
+	DOREPLIFETIME(ABasicCharacter, CurrentAttackingBeginingTimeLength);
+	DOREPLIFETIME(ABasicCharacter, CurrentAttackingEndingTimeLength);
+}

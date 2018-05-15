@@ -223,7 +223,7 @@ void AMHUD::DrawHUD()
 				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, HPBarBackColor);
 			}
 		}
-		DrawText(EachHero->HeroName, FLinearColor(1, 1, 1), footpos.X - EachHero->HeroName.Len()*.5f * 15, footpos.Y);
+		DrawText(EachHero->UnitName, FLinearColor(1, 1, 1), footpos.X - EachHero->UnitName.Len()*.5f * 15, footpos.Y);
 		headpos.Y += HPBarHeight + 1;
 		DrawRect(MPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
 		DrawRect(MPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetMPPercent(), HPBarHeight);
@@ -862,13 +862,13 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 					act.TargetActor = CurrentSelectTarget;
 				}
 				else if (hs->SkillBehavior[HEROB::UnitTargetFriends] &&
-					CurrentSelectTarget->TeamId == hero->TeamId)
+					IsValid(CurrentSelectTarget) && CurrentSelectTarget->TeamId == hero->TeamId)
 				{
 					act.ActionStatus = EHeroActionStatus::SpellToActor;
 					act.TargetActor = CurrentSelectTarget;
 				}
 				else if (hs->SkillBehavior[HEROB::UnitTargetEnemy] &&
-					CurrentSelectTarget->TeamId != hero->TeamId)
+					IsValid(CurrentSelectTarget) && CurrentSelectTarget->TeamId != hero->TeamId)
 				{
 					act.ActionStatus = EHeroActionStatus::SpellToActor;
 					act.TargetActor = CurrentSelectTarget;

@@ -179,7 +179,7 @@ void AMqttRoomActor::NewHero(TSharedPtr<FJsonObject> In_JsonObj)
 		{
 			pAHeroCharacter->ClientID = In_JsonObj->GetStringField("id");
 			pAHeroCharacter->CustomName = In_JsonObj->GetStringField("name");
-			pAHeroCharacter->HeroName = In_JsonObj->GetStringField("id");
+			pAHeroCharacter->UnitName = In_JsonObj->GetStringField("id");
 			pAHeroCharacter->CurrentHP = In_JsonObj->GetNumberField("hp");
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "NewHero:" + In_JsonObj->GetStringField("id"));
 			//if (IsValid(m_pAMHUD))

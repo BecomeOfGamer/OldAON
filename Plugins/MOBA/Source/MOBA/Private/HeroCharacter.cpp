@@ -21,8 +21,6 @@
 #include "WebInterfaceObject.h"
 #include "WebInterfaceHelpers.h"
 
-AMOBAPlayerController* AHeroCharacter::localPC = 0;
-
 AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())
 {
@@ -190,9 +188,9 @@ void AHeroCharacter::BeginPlay()
 	{
 		for (auto& Elem : Skill_Classes)
 		{
-			Skills.Add(GetWorld()->SpawnActor<AHeroSkill>(Elem));
+			this->Skills.Add(GetWorld()->SpawnActor<AHeroSkill>(Elem));
 		}
-		for (AHeroSkill*& Elem : Skills)
+		for (AHeroSkill*& Elem : this->Skills)
 		{
 			if (Elem)
 			{
@@ -479,11 +477,11 @@ void AHeroCharacter::Tick(float DeltaTime)
 	SpellingCounting += DeltaTime;
 	
 	// 算CD
-	for(int32 i = 0; i < Skills.Num(); ++i)
+	for(int32 i = 0; i < this->Skills.Num(); ++i)
 	{
-		if (Skills[i])
+		if (this->Skills[i])
 		{
-			Skills[i]->CheckCD(DeltaTime);
+			this->Skills[i]->CheckCD(DeltaTime);
 		}
 	}
 	// 是否有動作？
@@ -570,9 +568,9 @@ TArray<AHeroCharacter*> AHeroCharacter::FindRadiusActorByLocation(FVector Center
 UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 {
 	bool initok = true;
-	for (int i = 0; i < Skills.Num(); ++i)
+	for (int i = 0; i < this->Skills.Num(); ++i)
 	{
-		if (!IsValid(Skills[i]))
+		if (!IsValid(this->Skills[i]))
 		{
 			initok = false;
 			break;
@@ -583,7 +581,7 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 		return 0;
 	}
 	UWebInterfaceJsonObject* wjo = UWebInterfaceHelpers::ConstructObject();
-	wjo->SetString(FString(TEXT("HeroName")), HeroName);
+	wjo->SetString(FString(TEXT("HeroName")), UnitName);
 	wjo->SetInteger(FString(TEXT("TeamId")), TeamId);
 	wjo->SetBoolean(FString(TEXT("IsAlive")), IsAlive);
 	wjo->SetInteger(FString(TEXT("CurrentMoveSpeed")), CurrentMoveSpeed);
@@ -619,37 +617,42 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 	wjo->SetInteger(FString(TEXT("BaseMoveSpeed")), BaseMoveSpeed);
 	wjo->SetInteger(FString(TEXT("BaseAttackRange")), BaseAttackRange);
 
-	wjo->SetNumber(FString::Printf(TEXT("Skill_Amount")), Skills.Num());
+	wjo->SetNumber(FString::Printf(TEXT("Skill_Amount")), this->Skills.Num());
 	wjo->SetNumber(FString::Printf(TEXT("Buff_Amount")), BuffQueue.Num());
-	for (int i=0;i < Skills.Num();++i)
+	for (int i=0;i < this->Skills.Num();++i)
 	{
-		wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), Skills[i]->Name);
-		wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), Skills[i]->Webpath);
-		wjo->SetString(FString::Printf(TEXT("Skill%d_Description"), i + 1), Skills[i]->GetDescription());
-		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CDPercent"),i+1), Skills[i]->GetSkillCDPercent());
-		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentCD"), i + 1), Skills[i]->CurrentCD);
-		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), Skills[i]->MaxCD);
-		if (Skills[i]->CanLevelUp() && CurrentSkillPoints > 0)
+		if (IsValid(this->Skills[i]))
 		{
-			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), true);
+			wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), this->Skills[i]->Name);
+			wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), this->Skills[i]->Webpath);
+			wjo->SetString(FString::Printf(TEXT("Skill%d_Description"), i + 1), this->Skills[i]->GetDescription());
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CDPercent"), i + 1), this->Skills[i]->GetSkillCDPercent());
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentCD"), i + 1), this->Skills[i]->CurrentCD);
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), this->Skills[i]->MaxCD);
+			if (this->Skills[i]->CanLevelUp() && CurrentSkillPoints > 0)
+			{
+				wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), true);
+			}
+			else
+			{
+				wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), false);
+			}
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentLevel"), i + 1), this->Skills[i]->CurrentLevel);
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), this->Skills[i]->MaxLevel);
 		}
-		else
-		{
-			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), false);
-		}
-		wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentLevel"), i + 1), Skills[i]->CurrentLevel);
-		wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), Skills[i]->MaxLevel);
-		
 	}
 	for (int i = 0; i < BuffQueue.Num(); ++i)
 	{
-		wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), BuffQueue[i]->Name);
-		wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), BuffQueue[i]->Webpath);
-		wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), BuffQueue[i]->BuffTips);
-		wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), BuffQueue[i]->Stacks);
-		wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), BuffQueue[i]->Duration);
-		wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), BuffQueue[i]->MaxDuration);
-		wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), BuffQueue[i]->CanStacks);
+		if (IsValid(BuffQueue[i]))
+		{
+			wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), BuffQueue[i]->Name);
+			wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), BuffQueue[i]->Webpath);
+			wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), BuffQueue[i]->BuffTips);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), BuffQueue[i]->Stacks);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), BuffQueue[i]->Duration);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), BuffQueue[i]->MaxDuration);
+			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), BuffQueue[i]->CanStacks);
+		}
 	}
 	
 	return UWebInterfaceHelpers::ConvertObject(wjo);
@@ -823,15 +826,15 @@ void AHeroCharacter::CheckSelf(bool res, FString msg)
 {
 	if(!res)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, HeroName + TEXT(" ") + msg);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, UnitName + TEXT(" ") + msg);
 	}
 }
 
 float AHeroCharacter::GetSkillCDPercent(int32 n)
 {
-	if(n > 0 && n < Skills.Num())
+	if(n > 0 && n < this->Skills.Num())
 	{
-		return Skills[n]->GetSkillCDPercent();
+		return this->Skills[n]->GetSkillCDPercent();
 	}
 	return 1.f;
 }
@@ -918,10 +921,10 @@ void AHeroCharacter::UpdateSAI()
 bool AHeroCharacter::TriggerSkill(int32 index, FVector Pos, AHeroCharacter* CurrentTarget)
 {
 	// Check NoTarget or SmartCast
-	if (index < Skills.Num())
+	if (index < this->Skills.Num())
 	{
 		CurrentSkillIndex = index;
-		AHeroSkill* hs = Skills[index];
+		AHeroSkill* hs = this->Skills[index];
 		// 被動技
 		if (hs->SkillBehavior[EHeroBehavior::Passive] || !hs->ReadySpell())
 		{
@@ -972,13 +975,17 @@ bool AHeroCharacter::ShowSkillHint(int32 index)
 	{
 		CurrentSkillHint->Destroy();
 	}
-	if(index < Skills.Num())
+	if(index < this->Skills.Num())
 	{
-		CurrentSkillHint = GetWorld()->SpawnActor<ASkillHintActor>(Skills[index]->HintActor);
-		CurrentSkillHint->MaxCastRange = Skills[index]->GetMaxCastRange();
-		CurrentSkillHint->MinCastRange = Skills[index]->GetMinCastRange();
-		CurrentSkillIndex = index;
-		return true;
+		CurrentSkillHint = GetWorld()->SpawnActor<ASkillHintActor>(this->Skills[index]->HintActor);
+		if (IsValid(CurrentSkillHint))
+		{
+			CurrentSkillHint->MaxCastRange = this->Skills[index]->GetMaxCastRange();
+			CurrentSkillHint->MinCastRange = this->Skills[index]->GetMinCastRange();
+			CurrentSkillIndex = index;
+			return true;
+		}
+		return false;
 	}
 	return false;
 }
@@ -1026,11 +1033,11 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 		index = CurrentSkillIndex;
 	}
 	// 設定面對施法的位置，而且沒在cd
-	if (Skills.Num() > index && Skills[index]->ReadySpell())
+	if (this->Skills.Num() > index && this->Skills[index]->ReadySpell())
 	{
 		VFaceTo.Z = 0;
 		VFaceTo.Normalize();
-		AHeroSkill* hs = Skills[index];
+		AHeroSkill* hs = this->Skills[index];
 		FVector dir = Pos - GetActorLocation();
 		float len = dir.Size();
 		if (len < hs->GetMinCastRange())
@@ -1137,7 +1144,7 @@ void AHeroCharacter::AddExpCompute(float exp)
 
 AHeroSkill* AHeroCharacter::GetCurrentSkill()
 {
-	return Skills[CurrentSkillIndex];
+	return this->Skills[CurrentSkillIndex];
 }
 
 bool AHeroCharacter::CheckCurrentActionFinish()
@@ -2218,7 +2225,7 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Moving:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (Skills[CurrentAction.TargetIndex1]->GetMaxCastRange() > DistanceToTargetActor)
+		if (this->Skills[CurrentAction.TargetIndex1]->GetMaxCastRange() > DistanceToTargetActor)
 		{
 			if (IsValid(localPC))
 			{
@@ -2265,7 +2272,7 @@ void AHeroCharacter::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 				}
 				BodyStatus = EHeroBodyStatus::SpellEnding;
 				LastUseSkillAction = CurrentAction;
-				LastUseSkill = Skills[CurrentAction.TargetIndex1];
+				LastUseSkill = this->Skills[CurrentAction.TargetIndex1];
 			}
 		}
 	}
@@ -2357,7 +2364,7 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 							CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
 					}
 					LastUseSkillAction = CurrentAction;
-					LastUseSkill = Skills[CurrentAction.TargetIndex1];
+					LastUseSkill = this->Skills[CurrentAction.TargetIndex1];
 				}
 			}
 		}
@@ -2408,24 +2415,6 @@ void AHeroCharacter::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AHeroCharacter, Equipments);
-	DOREPLIFETIME(AHeroCharacter, CurrentHP);
-	DOREPLIFETIME(AHeroCharacter, CurrentMP);
-	DOREPLIFETIME(AHeroCharacter, BodyStatus);
-	DOREPLIFETIME(AHeroCharacter, ActionQueue);
-	DOREPLIFETIME(AHeroCharacter, BuffQueue);
-	DOREPLIFETIME(AHeroCharacter, CurrentAction);
-	DOREPLIFETIME(AHeroCharacter, AttackingCounting);
-	DOREPLIFETIME(AHeroCharacter, CurrentSkillIndex);
-	DOREPLIFETIME(AHeroCharacter, Skills);
-	DOREPLIFETIME(AHeroCharacter, CurrentAttackSpeedSecond);
-	DOREPLIFETIME(AHeroCharacter, CurrentAttackingAnimationRate);
-	DOREPLIFETIME(AHeroCharacter, LastUseSkillAction);
 	DOREPLIFETIME(AHeroCharacter, CurrentSkillPoints);
 	DOREPLIFETIME(AHeroCharacter, CurrentLevel);
-	DOREPLIFETIME(AHeroCharacter, AnimaStatus);
-	DOREPLIFETIME(AHeroCharacter, IsAlive);
-	DOREPLIFETIME(AHeroCharacter, CurrentEXP);
-	DOREPLIFETIME(AHeroCharacter, CurrentAttackingBeginingTimeLength);
-	DOREPLIFETIME(AHeroCharacter, CurrentAttackingEndingTimeLength);
 }
