@@ -56,7 +56,7 @@ void ABulletActor::Tick(float DeltaTime)
 			// 在client不要呼叫不然會產生2個子彈
 			if (Role == ROLE_Authority)
 			{
-				AHeroCharacter::localPC->ServerAttackCompute(
+				ABasicUnit::localPC->ServerAttackCompute(
 					Attacker, TargetActor, EDamageType::DAMAGE_PHYSICAL, Damage, true);
 			}
             PrepareDestory = true;

@@ -24,7 +24,6 @@ public:
 	UFUNCTION()
 	void OnMouseClicked(UPrimitiveComponent* TouchComp, FKey ButtonPressed);
 
-
 	UPROPERTY(Category = "Equipment", VisibleAnywhere, BlueprintReadOnly)
 	class UCapsuleComponent* CapsuleComponent;
 

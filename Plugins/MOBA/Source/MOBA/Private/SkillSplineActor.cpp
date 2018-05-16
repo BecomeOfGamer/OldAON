@@ -144,7 +144,7 @@ void ASkillSplineActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 	AHeroCharacter* hero = Cast<AHeroCharacter>(OtherActor);
 	if (IsValid(hero) && IsValid(Attacker) && hero->TeamId != Attacker->TeamId && !TargetActors.Contains(hero))
 	{
-		AHeroCharacter::localPC->ServerAttackCompute(
+		ABasicUnit::localPC->ServerAttackCompute(
 			Attacker, hero, DamageType, Damage, false);
 		TargetActors.Add(hero);
 	}

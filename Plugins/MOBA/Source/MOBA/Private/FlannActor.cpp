@@ -2,6 +2,7 @@
 #include "MOBAPrivatePCH.h"
 #include "MOBA.h"
 #include "FlannActor.h"
+#include "BasicUnit.h"
 #include "Algo/Reverse.h"
 
 // Sets default values

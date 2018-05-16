@@ -4,7 +4,7 @@
 
 #include "SkillHintActor.h"
 #include "MobaEnum.h"
-#include "BasicCharacter.h"
+#include "BasicUnit.h"
 #include "HeroCharacter.generated.h"
 
 class AEquipment;
@@ -14,7 +14,7 @@ class AMOBAPlayerController;
 class UWebInterfaceJsonValue;
 
 UCLASS()
-class MOBA_API AHeroCharacter : public ABasicCharacter
+class MOBA_API AHeroCharacter : public ABasicUnit
 {
 	GENERATED_UCLASS_BODY()
 public:
@@ -61,15 +61,6 @@ public:
 
 	void CheckSelf(bool res, FString msg);
 
-	// for Game Logic
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	float GetSkillCDPercent(int32 n);
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	float GetHPPercent();
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	float GetMPPercent();
 
 	// 依等級更新血魔攻速
 	UFUNCTION(BlueprintCallable, Category = "MOBA")

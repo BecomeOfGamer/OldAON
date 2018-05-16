@@ -4,7 +4,7 @@
 #include "GameFramework/Character.h"
 // for GEngine
 #include "Engine.h"
-
+#include "BasicUnit.h"
 #include "MOBAGameState.h"
 #include "MHUD.h"
 #include "Equipment.h"
@@ -830,32 +830,13 @@ void AHeroCharacter::CheckSelf(bool res, FString msg)
 	}
 }
 
-float AHeroCharacter::GetSkillCDPercent(int32 n)
-{
-	if(n > 0 && n < this->Skills.Num())
-	{
-		return this->Skills[n]->GetSkillCDPercent();
-	}
-	return 1.f;
-}
-
-float AHeroCharacter::GetHPPercent()
-{
-	return CurrentHP / CurrentMaxHP;
-}
-
-float AHeroCharacter::GetMPPercent()
-{
-	return CurrentMP / CurrentMaxMP;
-}
-
 void AHeroCharacter::UpdateHPMPAS()
 {
 	AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	if (ags) 
 	{
 		CurrentMaxHP = BaseHP + Strength * ags->StrengthToHP;
-		CurrentRegenHP = BaseRegenHP + Strength * ags->StrengthToHealingHP * BuffPropertyMap[HEROP::HealPercentage];
+		CurrentRegenHP = (BaseRegenHP + Strength * ags->StrengthToHealingHP) * BuffPropertyMap[HEROP::HealPercentage];
 		CurrentMaxMP = BaseMP + Intelligence * ags->IntelligenceToMP;
 		CurrentRegenMP = BaseRegenMP + Intelligence * ags->IntelligenceToHealingMP;
 		CurrentAttack = (((BaseAttack + BuffPropertyMap[HEROP::AttackBounsConstantWhite])*
@@ -1175,7 +1156,7 @@ bool AHeroCharacter::CheckCurrentActionFinish()
 		case EHeroActionStatus::SpellNow:
 		{
 			AHeroSkill* hs = LastUseSkill;
-			if (hs->IsChannelling)
+			if (IsValid(hs) && hs->IsChannelling)
 			{
 				return false;
 			}

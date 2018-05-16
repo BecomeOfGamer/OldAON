@@ -326,3 +326,14 @@ enum class ETeamFlag : uint8
 	// 全部
 	TeamAll,
 };
+
+UENUM(BlueprintType)
+enum class EMOBAType : uint8
+{
+	// 小兵
+	BasicUnit,
+	// 建築物
+	BuildingUnit,
+	// 英雄
+	HeroUnit,
+};

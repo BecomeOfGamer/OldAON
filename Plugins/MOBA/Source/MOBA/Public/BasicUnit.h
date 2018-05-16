@@ -7,7 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "AIController.h"
 #include "HeroAction.h"
-#include "BasicCharacter.generated.h"
+#include "BasicUnit.generated.h"
 
 class ABulletActor;
 class ADamageEffect;
@@ -19,13 +19,13 @@ class AMOBAPlayerController;
 class UWebInterfaceJsonValue;
 
 UCLASS()
-class MOBA_API ABasicCharacter : public ACharacter
+class MOBA_API ABasicUnit : public ACharacter
 {
 	GENERATED_UCLASS_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ABasicCharacter();
+	ABasicUnit();
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,6 +38,22 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// for Game Logic
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	float GetSkillCDPercent(int32 n);
+
+	//得到HP百分比
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	float GetHPPercent();
+
+	//得到MP百分比
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	float GetMPPercent();
+
+	// 依等級更新血魔攻速
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void UpdateHPMPAS();
+
 	// Particle特效
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TMap<FString, UParticleSystemComponent*> Particles;
@@ -45,6 +61,9 @@ public:
 	// Debug information
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug")
 	bool IsDebug;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	EMOBAType UnitType = EMOBAType::BasicUnit;
 
 	// 選人的地版光環
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
@@ -400,6 +419,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	FHeroAction LastUseSkillAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	AHeroSkill* LastUseSkill;
 
 	static AMOBAPlayerController* localPC;
