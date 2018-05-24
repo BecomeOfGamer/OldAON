@@ -176,7 +176,26 @@ void AHeroBuff::Tick(float DeltaTime)
 }
 
 
+void AHeroBuff::AddStack(int32 amount)
+{
+	int32 laststack = Stacks;
+	Stacks += amount;
+	if (Stacks < 1)
+	{
+		this->Destroy();
+	}
+	else if (Stacks > MaxStacks)
+	{
+		Stacks = MaxStacks;
+	}
+	if (laststack != Stacks)
+	{
+		OnStackModify(laststack, Stacks);
+	}
+}
+
 void AHeroBuff::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AHeroBuff, Stacks);
 }

@@ -76,12 +76,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAttackStart(AHeroCharacter* attacker, AHeroCharacter* target);
 	//攻擊打出傷害後的瞬間
+	//不能在這個事件中呼叫ServerAttackCompute時AttackLanded帶true
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAttackLanded(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
-	//攻擊打出傷害後的瞬間
-	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnAttackLandedLocal(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage);
 	//攻擊打出但被閃避
+	//不能在這個事件中呼叫ServerAttackCompute時AttackLanded帶true
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAttackMiss(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
 	//造成傷害的瞬間
@@ -105,6 +104,10 @@ public:
 	//吸收敵人生命的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnStealLife(AHeroCharacter* caster, AHeroCharacter* target, EDamageType dtype, float damage, float heal_mount);
+	//當buff層數增加或減少時呼叫
+	//不能在這個事件中呼叫AddStack
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnStackModify(int32 lastStack, int32 CurrentStack);
 	
 	//法球就是會跟其它同樣是法球的Buff衝突
 	//衝突時以Priority值較大的優先，如果是相同的值則不變化
@@ -112,12 +115,17 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnOrbAttackStart(AHeroCharacter* attacker, AHeroCharacter* target);
 	//法球版 攻擊打出傷害後的瞬間
+	//不能在這個事件中呼叫ServerAttackCompute時AttackLanded帶true
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnOrbAttackLanded(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
 
 	// 時間事件觸發
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnInterval(int32 count);
+
+	//增加Buff層數，可以是負數
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void AddStack(int32 amount);
 
 	// Buff 優先權
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
@@ -195,7 +203,7 @@ public:
 	AHeroCharacter* BuffTargetOne = nullptr;
 
 	// 是否能疊加
-	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)
 	bool CanStacks = false;
 
 	// 是否永久存在，如果為true則無視Duration存在著
@@ -204,8 +212,11 @@ public:
 	bool Forever = false;
 
 	// 疊加層數
+	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly, Replicated)
+	int32 Stacks = 1;
+
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
-	int32 Stacks;
+	int32 MaxStacks = 100;
 
 	// 當前持續時間
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite)
