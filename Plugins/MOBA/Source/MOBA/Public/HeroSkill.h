@@ -41,6 +41,13 @@ enum class EHeroBehavior : uint8
 	BanMoveDisables,
 	//取消後搖
 	NoBackswing,
+	//CD手動發動 類似LOL的普攻附加技能，像 JAX 的 W 在BUFF消失或是打擊出去之前是不CD的
+	//但開始CD的條件太多變化，所以讓玩家自定義
+	CustomStartCD,
+	//當被被禁止移動時無法使用的技能
+	NoMoveNoCast,
+	//當滿足特定條件才可以使用的技能 像枒宿的R要身邊有英雄被擊飛 跟吸血鬼的W要身邊有小兵
+	SpecificConditionCast,
 	//結束列舉
 	EndBuffKind
 };
@@ -165,6 +172,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	float GetVariable(FString name);
 
+	//目前是否可以使用技能
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	bool IsEnable();
+	
+	//目前是否可以使用技能
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	void SetEnable(bool value);
+
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
@@ -177,7 +192,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
 	AHeroCharacter* Victim;
 
-	//最後一個被指定的敵人
+	//最後一個被指定點
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
 	FVector CastPoint;
 
@@ -198,7 +213,7 @@ public:
 
 	//是否啟用
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
-	bool Enable;
+	bool Enable = true;
 
 	//最大施法距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

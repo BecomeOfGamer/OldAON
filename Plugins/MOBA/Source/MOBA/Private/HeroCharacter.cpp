@@ -1056,7 +1056,10 @@ bool AHeroCharacter::UseSkill(EHeroActionStatus SpellType, int32 index, FVector 
 		default:
 			break;
 		}
-		hs->StartCD();
+		if (!hs->SkillBehavior[HEROB::CustomStartCD])
+		{
+			hs->StartCD();
+		}
 		CurrentMP -= hs->CurrnetManaCost;
 		if (hs->SkillBehavior[HEROB::Channelled])
 		{

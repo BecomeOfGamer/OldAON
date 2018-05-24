@@ -40,7 +40,7 @@ bool AHeroSkill::ReadySpell()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 		FString::Printf(TEXT("CurrentLevel %d Enable %d"), CurrentLevel, Enable));
-	if (Enable && CurrentLevel > 0 && CurrentCD >= MaxCD)
+	if (IsEnable() && CurrentLevel > 0 && CurrentCD >= MaxCD)
 	{
 		return true;
 	}
@@ -219,6 +219,16 @@ float AHeroSkill::GetVariable(FString name)
 		}
 	}
 	return 0;
+}
+
+bool AHeroSkill::IsEnable()
+{
+	return Enable;
+}
+
+void AHeroSkill::SetEnable(bool value)
+{
+	Enable = value;
 }
 
 FString AHeroSkill::GetDescription()
