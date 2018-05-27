@@ -55,7 +55,7 @@ void ASkillUnitTargetActor::Tick(float DeltaTime)
 				CurrentTargetIndex++;
 			}
 		}
-		AHeroCharacter * TargetActor = TargetActors[CurrentTargetIndex];
+		ABasicUnit * TargetActor = TargetActors[CurrentTargetIndex];
 		LastTarget = TargetActor;
 		if (CheckLastTarget != LastTarget)
 		{
@@ -86,7 +86,7 @@ void ASkillUnitTargetActor::Tick(float DeltaTime)
 		if (BreakDistance > dis)
 		{
 			OnHit(Attacker, TargetActor);
-			AHeroCharacter::localPC->ServerAttackCompute(
+			ABasicUnit::localPC->ServerAttackCompute(
 				Attacker, TargetActor, DamageType, Damage, true);
 			CurrentTargetIndex++;
 		}

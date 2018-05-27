@@ -34,15 +34,7 @@ public:
 
 	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
 #endif // WITH_EDITOR
-	bool Pickup(AEquipment* equ);
-
-	bool ThrowEquipment(AEquipment* equ, FVector pos);
-
-	bool HasEquipment(AEquipment* equ);
 	
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	TArray<AHeroCharacter*> FindRadiusActorByLocation(FVector Center, float Radius, ETeamFlag flag, bool CheckAlive);
-
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	UWebInterfaceJsonValue* BuildJsonValue();
 
@@ -53,11 +45,7 @@ public:
 	UFUNCTION()
 	void OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
 
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void SelectionOn();
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void SelectionOff();
+	
 
 	void CheckSelf(bool res, FString msg);
 
@@ -69,99 +57,17 @@ public:
 	// 依等級更新力敏智
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void UpdateSAI();
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	bool TriggerSkill(int32 index, FVector Pos, AHeroCharacter* CurrentTarget);
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	bool ShowSkillHint(int32 index);
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void HideSkillHint();
-
+	
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void ForceLevelUp();
-	
-	UFUNCTION(NetMulticast, Unreliable, WithValidation)
-	void ServerPlayAttack(float duraction, float rate);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void BP_PlayChannelling(float duraction, float rate);
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void AddBuff(AHeroBuff* buff);
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	AHeroBuff* GetBuffByName(FString name);
-
-	// 加入Buff時取代同名的Buff
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void AddUniqueBuff(AHeroBuff* buff);
-	
-	// 移除所有同名的Buff
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void RemoveBuffByName(FString name);
-
-	// 移除Buff
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void RemoveBuff(AHeroBuff* buff);
-
-	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable)
-	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void BP_PlayAttack(float duraction, float rate);
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	bool UseSkill(EHeroActionStatus SpellType, int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
-
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	int32 GetCurrentSkillIndex();
-
+		
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	float GetCurrentExpPercent();
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void AddExpCompute(float exp);
 
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	AHeroSkill* GetCurrentSkill();
-
-	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable, Category = "MOBA")
-	void ServerPlayAttackStartSFX();
-
-	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable, Category = "MOBA")
-	void ServerPlayAttackLandedSFX();
-
-	// 確定當前動作做完了沒
-	bool CheckCurrentActionFinish();
-
-	// 做動作
-	UFUNCTION(Server, WithValidation, Reliable, Category = "MOBA")
-	void DoAction(const FHeroAction& _CurrentAction);
-
-	// 停止目前所有動作
-	void DoNothing();
-
-	// 做移動攻擊到指定位置
-	void DoAction_MovingAttackToPosition(const FHeroAction& _CurrentAction);
-	// 做移動到指定位置
-	void DoAction_MoveToPosition(const FHeroAction& _CurrentAction);
-	void DoAction_MoveToPositionImpl(const FHeroAction& _CurrentAction);
 	
-	// 推出做完的動作
-	void PopAction();
-	// 使用打人
-	void DoAction_AttackActor(const FHeroAction& _CurrentAction);
-	// 使用指定技
-	void DoAction_SpellToActor(const FHeroAction& _CurrentAction);
-	// 使用指向技
-	void DoAction_SpellToDirection(const FHeroAction& _CurrentAction);
-	//持續施法中
-	void DoAction_SpellChannelling(const FHeroAction& _CurrentAction);
-	void DoAction_AttackSceneObject(const FHeroAction& _CurrentAction);
-	void DoAction_MoveToPickup(const FHeroAction& _CurrentAction);
-	void DoAction_MoveToThrowEqu(const FHeroAction& _CurrentAction);
 	
 	// 歷史說明
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

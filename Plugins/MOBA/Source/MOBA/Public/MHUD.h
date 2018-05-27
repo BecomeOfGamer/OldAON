@@ -100,7 +100,7 @@ public:
 	void MOBA_MouseRButtonPressed();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateHeroData(AHeroCharacter* hero);
+	void UpdateHeroData(ABasicUnit* hero);
 
 	// 加入一個可以被點選的按鈕
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
@@ -117,13 +117,13 @@ public:
 	void AssignSelectionHeroPickup(AEquipment* equ);
 	
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void HeroAttackHero(AHeroCharacter* hero);
+	void HeroAttackHero(ABasicUnit* hero);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void HeroAttackSceneObject(ASceneObject* SceneObj);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	AHeroCharacter* GetMouseTarget(float MinDistance);
+	ABasicUnit* GetMouseTarget(float MinDistance);
 	
 	// use skill callback by localcontroller
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
@@ -150,10 +150,10 @@ public:
 	void OnLMousePressed1(FVector2D pos);
 	void OnLMousePressed2(FVector2D pos);
 	void OnLMouseReleased(FVector2D pos);
-	void OnSelectedHero(AHeroCharacter* hero);
+	void OnSelectedHero(ABasicUnit* hero);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void SelectedHero(AHeroCharacter* hero);
+	void SelectedHero(ABasicUnit* hero);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void UnSelectHero();
@@ -171,16 +171,16 @@ public:
 	AHeroCharacter* F1Hero;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	TArray<AHeroCharacter*> HeroCanSelection;
+	TArray<ABasicUnit*> HeroCanSelection;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	TArray<AHeroCharacter*> CurrentSelection;
+	TArray<ABasicUnit*> CurrentSelection;
 
 	// 準備要用的技能索引
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	int32 CurrentSkillIndex;
 
-	TArray<AHeroCharacter*> RemoveSelection;
+	TArray<ABasicUnit*> RemoveSelection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	AHeroCharacter* CurrentSelectTarget;

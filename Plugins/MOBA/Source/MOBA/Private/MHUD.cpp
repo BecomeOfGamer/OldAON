@@ -40,7 +40,7 @@ void AMHUD::BeginPlay()
 	ClickedSelected = false;
 	WantPickup = NULL;
 	ThrowTexture = NULL;
-	for(TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	for(TActorIterator<ABasicUnit> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		HeroCanSelection.Add(*ActorItr);
 	}
@@ -93,7 +93,7 @@ void AMHUD::Tick(float DeltaSeconds)
 	if(RemoveSelection.Num() > 0)
 	{
 		HUDStatus = EMHUDStatus::ToNormal;
-		for(AHeroCharacter* EachHero : RemoveSelection)
+		for(ABasicUnit* EachHero : RemoveSelection)
 		{
 			EachHero->SelectionOff();
 			CurrentSelection.Remove(EachHero);
@@ -114,12 +114,12 @@ void AMHUD::Tick(float DeltaSeconds)
 	OnSize();
 }
 
-AHeroCharacter* AMHUD::GetMouseTarget(float MinDistance)
+ABasicUnit* AMHUD::GetMouseTarget(float MinDistance)
 {
 	MinDistance = MinDistance*MinDistance;
-	AHeroCharacter* res = nullptr;
+	ABasicUnit* res = nullptr;
 	float mindis = MinDistance;
-	for (AHeroCharacter* EachHero : HeroCanSelection)
+	for (ABasicUnit* EachHero : HeroCanSelection)
 	{
 		FVector pos = this->Project(EachHero->GetActorLocation());
 		EachHero->ScreenPosition.X = pos.X;
@@ -144,7 +144,7 @@ void AMHUD::DrawHUD()
 		// selection box
 		if(FVector2D::DistSquared(InitialMouseXY, CurrentMouseXY) > 25)
 		{
-			for(AHeroCharacter* EachHero : HeroCanSelection)
+			for(ABasicUnit* EachHero : HeroCanSelection)
 			{
 				// 只選活人
 				if (EachHero->IsAlive)
@@ -186,7 +186,7 @@ void AMHUD::DrawHUD()
 			i--;
 		}
 	}
-	for(AHeroCharacter* EachHero : HeroCanSelection)
+	for(ABasicUnit* EachHero : HeroCanSelection)
 	{
 		if (!IsValid(EachHero))
 		{
@@ -361,7 +361,7 @@ bool AMHUD::CheckInSelectionBox(FVector2D pos)
 
 void AMHUD::ClearAllSelection()
 {
-	for(AHeroCharacter* EachHero : CurrentSelection)
+	for(ABasicUnit* EachHero : CurrentSelection)
 	{
 		if (IsValid(EachHero))
 		{
@@ -427,7 +427,7 @@ void AMHUD::AssignSelectionHeroPickup(AEquipment* equ)
 		act.ActionStatus = EHeroActionStatus::MoveToPickup;
 		act.TargetEquipment = equ;
 		act.SequenceNumber = SequenceNumber++;
-		for (AHeroCharacter* EachHero : CurrentSelection)
+		for (ABasicUnit* EachHero : CurrentSelection)
 		{
 			if (IsValid(EachHero))
 			{
@@ -444,13 +444,13 @@ void AMHUD::AssignSelectionHeroPickup(AEquipment* equ)
 	}
 }
 
-void AMHUD::HeroAttackHero(AHeroCharacter* hero)
+void AMHUD::HeroAttackHero(ABasicUnit* hero)
 {
 	bClickHero = true;
 	if(LocalController)
 	{
-		TArray<AHeroCharacter*> HeroGoAttack;
-		for(AHeroCharacter* EachHero : CurrentSelection)
+		TArray<ABasicUnit*> HeroGoAttack;
+		for(ABasicUnit* EachHero : CurrentSelection)
 		{
 			if (IsValid(EachHero))
 			{
@@ -476,7 +476,7 @@ void AMHUD::HeroAttackHero(AHeroCharacter* hero)
 				LastAttackParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AttackParticle,
 					FTransform(CurrentMouseHit), false);
 			}
-			for (AHeroCharacter* EachHero : HeroGoAttack)
+			for (ABasicUnit* EachHero : HeroGoAttack)
 			{
 				if (bLeftShiftDown)
 				{
@@ -504,7 +504,7 @@ void AMHUD::HeroAttackSceneObject(ASceneObject* SceneObj)
 			//act.TargetActor = SceneObj;
 			act.SequenceNumber = SequenceNumber++;
 
-			for (AHeroCharacter* EachHero : CurrentSelection)
+			for (ABasicUnit* EachHero : CurrentSelection)
 			{
 				if (IsValid(EachHero))
 				{
@@ -559,8 +559,11 @@ void AMHUD::CallSkillUp(EKeyBehavior idx)
 {
 	if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 	{
-		AHeroCharacter* selectHero = CurrentSelection[0];
-		LocalController->ServerHeroSkillLevelUp(selectHero, static_cast<int>(idx));
+		AHeroCharacter* selectHero = Cast<AHeroCharacter>(CurrentSelection[0]);
+		if (IsValid(selectHero))
+		{
+			LocalController->ServerHeroSkillLevelUp(selectHero, static_cast<int>(idx));
+		}
 	}
 }
 
@@ -637,7 +640,7 @@ void AMHUD::OnRMouseDown(FVector2D pos)
 					act.TargetVec1 = CurrentMouseHit;
 					act.SequenceNumber = SequenceNumber++;
 										
-					for (AHeroCharacter* EachHero : CurrentSelection)
+					for (ABasicUnit* EachHero : CurrentSelection)
 					{
 						if (IsValid(EachHero))
 						{
@@ -848,7 +851,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 		{
 			if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 			{
-				AHeroCharacter* hero = CurrentSelection[0];
+				ABasicUnit* hero = CurrentSelection[0];
 				hero->HideSkillHint();
 				FHeroAction act;
 				AHeroSkill* hs = hero->GetCurrentSkill();
@@ -1000,7 +1003,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 			act.TargetIndex1 = EquipmentIndex;
 			act.SequenceNumber = SequenceNumber++;
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			for (AHeroCharacter* EachHero : CurrentSelection)
+			for (ABasicUnit* EachHero : CurrentSelection)
 			{
 				if (bLeftShiftDown)
 				{
@@ -1033,7 +1036,7 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 	}
 }
 
-void AMHUD::OnSelectedHero(AHeroCharacter* hero)
+void AMHUD::OnSelectedHero(ABasicUnit* hero)
 {
 	if (CurrentSelection.Num() > 0 && CurrentSelection[0] == hero && IsValid(hero))
 	{
@@ -1041,7 +1044,7 @@ void AMHUD::OnSelectedHero(AHeroCharacter* hero)
 	}
 	else
 	{
-		for (AHeroCharacter* EachHero : CurrentSelection)
+		for (ABasicUnit* EachHero : CurrentSelection)
 		{
 			if (hero != EachHero || !IsValid(EachHero))
 			{

@@ -60,7 +60,7 @@ void AHeroBuff::Tick(float DeltaTime)
 		return;
 	}
 	if (Interval > 0 && Duration >= 0)
-	{	
+	{
 		IntervalCounting += DeltaTime;
 		if (IntervalCounting >= Interval)
 		{
@@ -76,16 +76,16 @@ void AHeroBuff::Tick(float DeltaTime)
 		if (AuraCount > 0.1)
 		{
 			AuraCount = 0;
-			TSet<AHeroCharacter*> tmp;
+			TSet<ABasicUnit*> tmp;
 			bool hasaura = false;
 			if (BuffUniqueMap.Contains(HEROU::AuraRadiusEnemy))
 			{
 				hasaura = true;
 				float range = BuffUniqueMap[HEROU::AuraRadiusEnemy];
-				TArray<AHeroCharacter*> Enemys = AHeroCharacter::localPC->FindRadiusActorByLocation(
+				TArray<ABasicUnit*> Enemys = ABasicUnit::localPC->FindRadiusActorByLocation(
 					BuffTargetOne, BuffTargetOne->GetActorLocation(), range, ETeamFlag::TeamEnemy, true);
 				range *= range;
-				for (AHeroCharacter* EachHero : Enemys)
+				for (ABasicUnit* EachHero : Enemys)
 				{
 					tmp.Add(EachHero);
 				}
@@ -94,10 +94,10 @@ void AHeroBuff::Tick(float DeltaTime)
 			{
 				hasaura = true;
 				float range = BuffUniqueMap[HEROU::AuraRadiusFriends];
-				TArray<AHeroCharacter*> Enemys = AHeroCharacter::localPC->FindRadiusActorByLocation(
+				TArray<ABasicUnit*> Enemys = ABasicUnit::localPC->FindRadiusActorByLocation(
 					BuffTargetOne, BuffTargetOne->GetActorLocation(), range, ETeamFlag::TeamFriends, true);
 				range *= range;
-				for (AHeroCharacter* EachHero : Enemys)
+				for (ABasicUnit* EachHero : Enemys)
 				{
 					tmp.Add(EachHero);
 				}
@@ -106,7 +106,7 @@ void AHeroBuff::Tick(float DeltaTime)
 			if (hasaura)
 			{
 				// 拿到要得到光環的Actor
-				for (AHeroCharacter* hero : tmp)
+				for (ABasicUnit* hero : tmp)
 				{
 					if (!BuffTarget.Contains(hero))
 					{
@@ -143,7 +143,7 @@ void AHeroBuff::Tick(float DeltaTime)
 					}
 				}
 				// 拿到要被刪除光環的Actor
-				for (AHeroCharacter* hero : BuffTarget)
+				for (ABasicUnit* hero : BuffTarget)
 				{
 					if (!tmp.Contains(hero))
 					{

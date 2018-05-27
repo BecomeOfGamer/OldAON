@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "BulletActor.generated.h"
 
+class ABasicUnit;
+
 UCLASS()
 class MOBA_API ABulletActor : public AActor
 {
@@ -27,7 +29,7 @@ public:
 	UParticleSystemComponent* FlyParticle;
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void SetTargetActor(AHeroCharacter* attacker, AHeroCharacter* TActor);
+	void SetTargetActor(ABasicUnit* attacker, ABasicUnit* TActor);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
@@ -55,10 +57,10 @@ public:
 	uint32  PrepareDestory: 1;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
-	AHeroCharacter* Attacker;
+	ABasicUnit* Attacker;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
-	AHeroCharacter* TargetActor;
+	ABasicUnit* TargetActor;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	float Damage;

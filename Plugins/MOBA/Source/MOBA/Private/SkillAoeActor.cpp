@@ -62,16 +62,16 @@ void ASkillAoeActor::Tick(float DeltaTime)
 	else if (!PrepareDestory)
 	{
 		float dis2 = Radius*Radius;
-		for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		for (TActorIterator<ABasicUnit> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
 			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-			AHeroCharacter* hero = *ActorItr;
+			ABasicUnit* hero = *ActorItr;
 			if (hero->TeamId != Attacker->TeamId && !TargetActors.Contains(hero))
 			{
 				if (FVector::DistSquaredXY(this->GetActorLocation(), hero->GetActorLocation()) < dis2)
 				{
 					OnHit(Attacker, hero);
-					AHeroCharacter::localPC->ServerAttackCompute(
+					ABasicUnit::localPC->ServerAttackCompute(
 						Attacker, hero, DamageType, Damage, false);
 					TargetActors.Add(hero);
 				}

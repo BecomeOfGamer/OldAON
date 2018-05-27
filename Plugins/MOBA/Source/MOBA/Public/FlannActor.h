@@ -45,7 +45,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	TArray<AHeroCharacter*> FindRadiusActorByLocation(AHeroCharacter* hero, FVector Center, 
+	TArray<ABasicUnit*> FindRadiusActorByLocation(ABasicUnit* hero, FVector Center,
 		float Radius, ETeamFlag flag, bool CheckAlive, std::vector<std::vector<float>>& dists);
 
 	void Resize(int32 maxActor, int32 maxQuery);
@@ -54,7 +54,7 @@ public:
 	FString Decompress(FLZ4 flz4);
 
 private:
-	TArray<AHeroCharacter*> FindArray;
+	TArray<ABasicUnit*> FindArray;
 	int32 MaxActor = 10000;
 	int32 MaxQuery = 1000;
 	int32 CurrnetRow = 0;

@@ -20,7 +20,7 @@ struct FLevelVariable
 };
 
 
-class AHeroCharacter;
+class ABasicUnit;
 class AHeroSkill;
 /**
  * 
@@ -52,58 +52,58 @@ public:
 
 	//升級的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnUpgrade(AHeroCharacter* caster, int32 Level);
+	void OnUpgrade(ABasicUnit* caster, int32 Level);
 
 	//重生的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnRebirth(AHeroCharacter* caster);
+	void OnRebirth(ABasicUnit* caster);
 
 	//be damage by someone
 	//受到傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void BeDamage(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
+	void BeDamage(ABasicUnit* attacker, ABasicUnit* target, EDamageType dtype, float OriginDamage, float RealDamage);
 	//被治療的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void BeHeal(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount);
+	void BeHeal(ABasicUnit* caster, ABasicUnit* target, float heal_mount);
 	//被暈眩的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void BeStuned(AHeroCharacter* caster, AHeroCharacter* target, float time);
+	void BeStuned(ABasicUnit* caster, ABasicUnit* target, float time);
 	//被吸收生命的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void BeStealLife(AHeroCharacter* caster, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage, float heal_mount);
+	void BeStealLife(ABasicUnit* caster, ABasicUnit* target, EDamageType dtype, float OriginDamage, float RealDamage, float heal_mount);
 
 	//準備攻擊，但攻擊還沒打出去
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnAttackStart(AHeroCharacter* attacker, AHeroCharacter* target);
+	void OnAttackStart(ABasicUnit* attacker, ABasicUnit* target);
 	//攻擊打出傷害後的瞬間
 	//不能在這個事件中呼叫ServerAttackCompute時AttackLanded帶true
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnAttackLanded(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
+	void OnAttackLanded(ABasicUnit* attacker, ABasicUnit* target, EDamageType dtype, float OriginDamage, float RealDamage);
 	//攻擊打出但被閃避
 	//不能在這個事件中呼叫ServerAttackCompute時AttackLanded帶true
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnAttackMiss(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
+	void OnAttackMiss(ABasicUnit* attacker, ABasicUnit* target, EDamageType dtype, float OriginDamage, float RealDamage);
 	//造成傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void CreateDamage(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
+	void CreateDamage(ABasicUnit* attacker, ABasicUnit* target, EDamageType dtype, float OriginDamage, float RealDamage);
 	//治療別人的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnHealLanded(AHeroCharacter* caster, AHeroCharacter* target, float heal_mount);
+	void OnHealLanded(ABasicUnit* caster, ABasicUnit* target, float heal_mount);
 	//被打死的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnDeath(AHeroCharacter* caster, AHeroCharacter* killer, EDamageType dtype, float damage);
+	void OnDeath(ABasicUnit* caster, ABasicUnit* killer, EDamageType dtype, float damage);
 	//準備施放技能進入施法前搖
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnAbilityStart(AHeroCharacter* caster, AHeroCharacter* target, FVector dest);
+	void OnAbilityStart(ABasicUnit* caster, ABasicUnit* target, FVector dest);
 	//成功施放技能進入施法後搖
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnAbilityExecuted(AHeroCharacter* caster, AHeroCharacter* target, FVector dest);
+	void OnAbilityExecuted(ABasicUnit* caster, ABasicUnit* target, FVector dest);
 	//擊殺敵方英雄的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnHeroKilled(AHeroCharacter* caster, AHeroCharacter* killer, EDamageType dtype, float damage);
+	void OnHeroKilled(ABasicUnit* caster, ABasicUnit* killer, EDamageType dtype, float damage);
 	//吸收敵人生命的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnStealLife(AHeroCharacter* caster, AHeroCharacter* target, EDamageType dtype, float damage, float heal_mount);
+	void OnStealLife(ABasicUnit* caster, ABasicUnit* target, EDamageType dtype, float damage, float heal_mount);
 	//當buff層數增加或減少時呼叫
 	//不能在這個事件中呼叫AddStack
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
@@ -113,11 +113,11 @@ public:
 	//衝突時以Priority值較大的優先，如果是相同的值則不變化
 	//法球版 準備攻擊，但攻擊還沒打出去
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnOrbAttackStart(AHeroCharacter* attacker, AHeroCharacter* target);
+	void OnOrbAttackStart(ABasicUnit* attacker, ABasicUnit* target);
 	//法球版 攻擊打出傷害後的瞬間
 	//不能在這個事件中呼叫ServerAttackCompute時AttackLanded帶true
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnOrbAttackLanded(AHeroCharacter* attacker, AHeroCharacter* target, EDamageType dtype, float OriginDamage, float RealDamage);
+	void OnOrbAttackLanded(ABasicUnit* attacker, ABasicUnit* target, EDamageType dtype, float OriginDamage, float RealDamage);
 
 	// 時間事件觸發
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
@@ -144,7 +144,7 @@ public:
 	FString BuffTips;
 
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadOnly)
-	AHeroCharacter* caster;
+	ABasicUnit* caster;
 
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadOnly)
 	AHeroSkill* skill;
@@ -197,10 +197,10 @@ public:
 	TMap<EHeroBuffUnique, float> BuffUniqueMap;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
-	TSet<AHeroCharacter*> BuffTarget;
+	TSet<ABasicUnit*> BuffTarget;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
-	AHeroCharacter* BuffTargetOne = nullptr;
+	ABasicUnit* BuffTargetOne = nullptr;
 
 	// 是否能疊加
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadOnly)

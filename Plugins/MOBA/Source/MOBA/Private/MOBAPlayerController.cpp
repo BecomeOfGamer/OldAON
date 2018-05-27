@@ -376,12 +376,12 @@ void AMOBAPlayerController::SetWebUICallback(UWebInterface* wi)
 
 // network function
 
-bool AMOBAPlayerController::ServerSetHeroAction_Validate(AHeroCharacter* hero, const FHeroAction& action)
+bool AMOBAPlayerController::ServerSetHeroAction_Validate(ABasicUnit* hero, const FHeroAction& action)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerSetHeroAction_Implementation(AHeroCharacter* hero,
+void AMOBAPlayerController::ServerSetHeroAction_Implementation(ABasicUnit* hero,
         const FHeroAction& action)
 {
 	if (Role == ROLE_Authority && IsValid(hero))
@@ -391,12 +391,12 @@ void AMOBAPlayerController::ServerSetHeroAction_Implementation(AHeroCharacter* h
 	}
 }
 
-bool AMOBAPlayerController::ServerAppendHeroAction_Validate(AHeroCharacter* hero, const FHeroAction& action)
+bool AMOBAPlayerController::ServerAppendHeroAction_Validate(ABasicUnit* hero, const FHeroAction& action)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerAppendHeroAction_Implementation(AHeroCharacter* hero,
+void AMOBAPlayerController::ServerAppendHeroAction_Implementation(ABasicUnit* hero,
         const FHeroAction& action)
 {
 	if (Role == ROLE_Authority)
@@ -405,12 +405,12 @@ void AMOBAPlayerController::ServerAppendHeroAction_Implementation(AHeroCharacter
 	}
 }
 
-bool AMOBAPlayerController::ServerClearHeroAction_Validate(AHeroCharacter* hero, const FHeroAction& action)
+bool AMOBAPlayerController::ServerClearHeroAction_Validate(ABasicUnit* hero, const FHeroAction& action)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerClearHeroAction_Implementation(AHeroCharacter* hero,
+void AMOBAPlayerController::ServerClearHeroAction_Implementation(ABasicUnit* hero,
         const FHeroAction& action)
 {
 	if (Role == ROLE_Authority)
@@ -419,12 +419,12 @@ void AMOBAPlayerController::ServerClearHeroAction_Implementation(AHeroCharacter*
 	}
 }
 
-bool AMOBAPlayerController::ServerCharacterMove_Validate(AHeroCharacter* hero, const FVector& pos)
+bool AMOBAPlayerController::ServerCharacterMove_Validate(ABasicUnit* hero, const FVector& pos)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerCharacterMove_Implementation(AHeroCharacter* hero, const FVector& pos)
+void AMOBAPlayerController::ServerCharacterMove_Implementation(ABasicUnit* hero, const FVector& pos)
 {
 	if (Role == ROLE_Authority)
 	{
@@ -436,12 +436,12 @@ void AMOBAPlayerController::ServerCharacterMove_Implementation(AHeroCharacter* h
 	}
 }
 
-bool AMOBAPlayerController::ServerCharacterStopMove_Validate(AHeroCharacter* actor)
+bool AMOBAPlayerController::ServerCharacterStopMove_Validate(ABasicUnit* actor)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerCharacterStopMove_Implementation(AHeroCharacter* hero)
+void AMOBAPlayerController::ServerCharacterStopMove_Implementation(ABasicUnit* hero)
 {
 	if (Role == ROLE_Authority)
 	{
@@ -453,14 +453,14 @@ void AMOBAPlayerController::ServerCharacterStopMove_Implementation(AHeroCharacte
 	}
 }
 
-bool AMOBAPlayerController::ServerHeroUseSkill_Validate(AHeroCharacter* hero, EHeroActionStatus SpellType,
-	int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim)
+bool AMOBAPlayerController::ServerHeroUseSkill_Validate(ABasicUnit* hero, EHeroActionStatus SpellType,
+	int32 index, FVector VFaceTo, FVector Pos, ABasicUnit* victim)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerHeroUseSkill_Implementation(AHeroCharacter* hero, EHeroActionStatus SpellType, 
-	int32 index, FVector VFaceTo, FVector Pos, AHeroCharacter* victim)
+void AMOBAPlayerController::ServerHeroUseSkill_Implementation(ABasicUnit* hero, EHeroActionStatus SpellType, 
+	int32 index, FVector VFaceTo, FVector Pos, ABasicUnit* victim)
 {
 	if (Role == ROLE_Authority)
 	{
@@ -512,12 +512,12 @@ void AMOBAPlayerController::ServerHeroAddExpCompute_Implementation(AHeroCharacte
 	}
 }
 
-bool AMOBAPlayerController::ServerHealCompute_Validate(AHeroCharacter* attacker, AHeroCharacter* victim, float amount)
+bool AMOBAPlayerController::ServerHealCompute_Validate(ABasicUnit* attacker, ABasicUnit* victim, float amount)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerHealCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, float amount)
+void AMOBAPlayerController::ServerHealCompute_Implementation(ABasicUnit* attacker, ABasicUnit* victim, float amount)
 {
 	if (Role == ROLE_Authority && victim->IsAlive)
 	{
@@ -533,14 +533,14 @@ void AMOBAPlayerController::ServerHealCompute_Implementation(AHeroCharacter* att
 	}
 }
 
-bool AMOBAPlayerController::ServerAttackCompute_Validate(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
+bool AMOBAPlayerController::ServerAttackCompute_Validate(ABasicUnit* attacker, ABasicUnit* victim, EDamageType dtype, float damage, bool AttackLanded)
 {
 	return true;
 }
 
-void AMOBAPlayerController::ServerAttackCompute_Implementation(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, float damage, bool AttackLanded)
+void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attacker, ABasicUnit* victim, EDamageType dtype, float damage, bool AttackLanded)
 {
-	if (Role == ROLE_Authority && victim->IsAlive)
+	if (Role == ROLE_Authority && IsValid(attacker) && IsValid(victim) && victim->IsAlive)
 	{
 		AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
 		float Injury = 1;
@@ -775,6 +775,11 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(AHeroCharacter* a
 		attacker->ServerShowDamageEffect(victim->GetActorLocation(),
 			victim->GetActorLocation() - attacker->GetActorLocation(), FDamage);
 	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
+			FString::Printf(TEXT("attacker or victim error")));
+	}
 	/*
 	if (victim->BuffPropertyMap[HEROP::MinHealth] > 0 && victim->CurrentHP < victim->BuffPropertyMap[HEROP::MinHealth])
 	{
@@ -787,7 +792,7 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(AHeroCharacter* a
 	*/
 }
 
-TArray<AHeroCharacter*> AMOBAPlayerController::FindRadiusActorByLocation(AHeroCharacter* hero, FVector Center,
+TArray<ABasicUnit*> AMOBAPlayerController::FindRadiusActorByLocation(ABasicUnit* hero, FVector Center,
 	float Radius, ETeamFlag flag, bool CheckAlive)
 {
 	if (IsValid(hero))
@@ -804,5 +809,5 @@ TArray<AHeroCharacter*> AMOBAPlayerController::FindRadiusActorByLocation(AHeroCh
 		FString::Printf(TEXT("FindRadiusActorByLocation hero error")));
 	}
 	
-	return TArray<AHeroCharacter*>();
+	return TArray<ABasicUnit*>();
 }

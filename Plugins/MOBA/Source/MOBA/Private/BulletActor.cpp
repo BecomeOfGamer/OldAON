@@ -85,7 +85,7 @@ void ABulletActor::Tick(float DeltaTime)
     }
 }
 
-void ABulletActor::SetTargetActor(AHeroCharacter* attacker, AHeroCharacter* TActor)
+void ABulletActor::SetTargetActor(ABasicUnit* attacker, ABasicUnit* TActor)
 {
     TargetActor = TActor;
 	Attacker = attacker;

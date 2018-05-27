@@ -34,14 +34,14 @@ public:
 
 	// 剛被產生出來 或是要準備彈到下一個目標時會觸發
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnStart(AHeroCharacter* caster, AHeroCharacter* target);
+	void OnStart(ABasicUnit* caster, ABasicUnit* target);
 	// 擊中目標
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnHit(AHeroCharacter* caster, AHeroCharacter* target);
+	void OnHit(ABasicUnit* caster, ABasicUnit* target);
 
 	// 被閃避
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void BeDodge(AHeroCharacter* caster, AHeroCharacter* target);
+	void BeDodge(ABasicUnit* caster, ABasicUnit* target);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MoveSpeed;
@@ -82,7 +82,7 @@ public:
 
 	// 設定攻擊者
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
-	AHeroCharacter* Attacker;
+	ABasicUnit* Attacker;
 
 	// 設定施法技能實體
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
@@ -90,11 +90,11 @@ public:
 	
 	// 設定要擊中的目標，如果設定多個則產生連鎖彈跳效果
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
-	TArray<AHeroCharacter*> TargetActors;
+	TArray<ABasicUnit*> TargetActors;
 
-	AHeroCharacter* LastTarget = nullptr;
+	ABasicUnit* LastTarget = nullptr;
 
-	AHeroCharacter* CheckLastTarget = nullptr;
+	ABasicUnit* CheckLastTarget = nullptr;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
 	int32 CurrentTargetIndex = 0;

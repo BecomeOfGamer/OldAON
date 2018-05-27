@@ -60,23 +60,23 @@ public:
 
 	/** Navigate player to the given world location. */	
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerCharacterMove(AHeroCharacter* hero, const FVector& pos);
+	void ServerCharacterMove(ABasicUnit* hero, const FVector& pos);
 	
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerCharacterStopMove(AHeroCharacter* hero);
+	void ServerCharacterStopMove(ABasicUnit* hero);
 	
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerHeroUseSkill(AHeroCharacter* hero, EHeroActionStatus SpellType, int32 index, 
-		FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
+	void ServerHeroUseSkill(ABasicUnit* hero, EHeroActionStatus SpellType, int32 index,
+		FVector VFaceTo, FVector Pos, ABasicUnit* victim);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerSetHeroAction(AHeroCharacter* hero, const FHeroAction& action);
+	void ServerSetHeroAction(ABasicUnit* hero, const FHeroAction& action);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerAppendHeroAction(AHeroCharacter* hero, const FHeroAction& action);
+	void ServerAppendHeroAction(ABasicUnit* hero, const FHeroAction& action);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerClearHeroAction(AHeroCharacter* hero, const FHeroAction& action);
+	void ServerClearHeroAction(ABasicUnit* hero, const FHeroAction& action);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerHeroSkillLevelUp(AHeroCharacter* hero, int32 idx);
@@ -88,14 +88,14 @@ public:
 	void ServerHeroAddExpCompute(AHeroCharacter* hero, float exp);
 
 	UFUNCTION(Server, WithValidation, UnReliable, BlueprintCallable, Category = "MOBA")
-	void ServerAttackCompute(AHeroCharacter* attacker, AHeroCharacter* victim, EDamageType dtype, 
+	void ServerAttackCompute(ABasicUnit* attacker, ABasicUnit* victim, EDamageType dtype,
 		float damage, bool AttackLanded);
 
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
-	void ServerHealCompute(AHeroCharacter* attacker, AHeroCharacter* victim, float amount);
+	void ServerHealCompute(ABasicUnit* attacker, ABasicUnit* victim, float amount);
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	TArray<AHeroCharacter*> FindRadiusActorByLocation(AHeroCharacter* hero, FVector Center,
+	TArray<ABasicUnit*> FindRadiusActorByLocation(ABasicUnit* hero, FVector Center,
 		float Radius, ETeamFlag flag, bool CheckAlive);
 
 	FVector2D GetMouseScreenPosition();

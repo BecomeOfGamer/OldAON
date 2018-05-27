@@ -30,9 +30,9 @@ void AFlannActor::Tick(float DeltaTime)
 	int32 row = 0;
 	FindArray.Empty();
 	rdata.SetNumZeroed(MaxActor * 2);
-	for (TActorIterator<AHeroCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	for (TActorIterator<ABasicUnit> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
-		AHeroCharacter* hero = *ActorItr;
+		ABasicUnit* hero = *ActorItr;
 		FindArray.Add(hero);
 		FVector pos = hero->GetActorLocation();
 		rdata[row * 2 + 0] = pos.X;
@@ -54,11 +54,11 @@ void AFlannActor::Tick(float DeltaTime)
 	CurrnetRow = row;
 }
 
-TArray<AHeroCharacter*> AFlannActor::FindRadiusActorByLocation(AHeroCharacter* hero, FVector Center, 
+TArray<ABasicUnit*> AFlannActor::FindRadiusActorByLocation(ABasicUnit* hero, FVector Center,
 	float Radius, ETeamFlag flag, bool CheckAlive, std::vector<std::vector<float>>& dists)
 {
 	Radius = Radius * Radius;
-	TArray<AHeroCharacter*> res;
+	TArray<ABasicUnit*> res;
 	qdata1.SetNumZeroed(2);
 	query1 = flann::Matrix<float>(qdata1.GetData(), 1, 2);
 
@@ -69,7 +69,7 @@ TArray<AHeroCharacter*> AFlannActor::FindRadiusActorByLocation(AHeroCharacter* h
 		index->radiusSearch(query1, indices, dists, Radius, flann::SearchParams(32, 0, true));
 		for (int& idx : indices[0])
 		{
-			AHeroCharacter* target = FindArray[idx];
+			ABasicUnit* target = FindArray[idx];
 			if (CheckAlive && !target->IsAlive)
 			{
 				continue;
@@ -99,7 +99,7 @@ TArray<AHeroCharacter*> AFlannActor::FindRadiusActorByLocation(AHeroCharacter* h
 	}
 	else if (CurrnetRow == 1)
 	{
-		AHeroCharacter* target = FindArray[0];
+		ABasicUnit* target = FindArray[0];
 		if (FVector::DistSquared2D(target->GetTargetLocation(), Center) < Radius)
 		{
 			if (CheckAlive && !target->IsAlive)

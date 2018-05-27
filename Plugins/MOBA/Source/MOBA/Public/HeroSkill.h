@@ -90,22 +90,22 @@ public:
 	//指定技
 	//參數： 技能發動的指向，技能實際發動位置，被指定的人
 	UFUNCTION(BlueprintImplementableEvent)
-	void BP_SpellToActor(FVector VFaceTo, FVector Pos, AHeroCharacter* victim);
+	void BP_SpellToActor(FVector VFaceTo, FVector Pos, ABasicUnit* victim);
 
 	//指定技的持續施法的計時事件
 	//參數： 被指定的人
 	UFUNCTION(BlueprintImplementableEvent)
-	void BP_ChannellingActorInterval(AHeroCharacter* victim);
+	void BP_ChannellingActorInterval(ABasicUnit* victim);
 
 	//指定技的持續施法中斷
 	//參數： 被指定的人
 	UFUNCTION(BlueprintImplementableEvent)
-	void BP_ChannellingActorBreak(AHeroCharacter* victim);
+	void BP_ChannellingActorBreak(ABasicUnit* victim);
 
 	//指定技的持續施法結束
 	//參數： 被指定的人
 	UFUNCTION(BlueprintImplementableEvent)
-	void BP_ChannellingActorEnd(AHeroCharacter* victim);
+	void BP_ChannellingActorEnd(ABasicUnit* victim);
 
 	//指向技的持續施法的計時事件
 	//參數： 被指定的人
@@ -186,11 +186,11 @@ public:
 
 	//技能發動者
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
-	AHeroCharacter* Caster;
+	ABasicUnit* Caster;
 
 	//最後一個被指定的敵人
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
-	AHeroCharacter* Victim;
+	ABasicUnit* Victim;
 
 	//最後一個被指定點
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")

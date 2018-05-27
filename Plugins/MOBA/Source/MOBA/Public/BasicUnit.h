@@ -50,9 +50,112 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	float GetMPPercent();
 
-	// 依等級更新血魔攻速
+	//依等級更新血魔攻速
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void UpdateHPMPAS();
+
+	//英雄選擇中
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void SelectionOn();
+
+	//取消英雄選擇中
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void SelectionOff();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	bool TriggerSkill(int32 index, FVector Pos, ABasicUnit* CurrentTarget);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	bool ShowSkillHint(int32 index);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void HideSkillHint();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	bool UseSkill(EHeroActionStatus SpellType, int32 index, FVector VFaceTo, FVector Pos, ABasicUnit* victim);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	int32 GetCurrentSkillIndex();
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	AHeroSkill* GetCurrentSkill();
+
+	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable, Category = "MOBA")
+	void ServerPlayAttackStartSFX();
+
+	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable, Category = "MOBA")
+	void ServerPlayAttackLandedSFX();
+
+	// 確定當前動作做完了沒
+	bool CheckCurrentActionFinish();
+
+	// 做動作
+	UFUNCTION(Server, WithValidation, Reliable, Category = "MOBA")
+	void DoAction(const FHeroAction& _CurrentAction);
+
+	// 停止目前所有動作
+	void DoNothing();
+
+	// 做移動攻擊到指定位置
+	void DoAction_MovingAttackToPosition(const FHeroAction& _CurrentAction);
+	// 做移動到指定位置
+	void DoAction_MoveToPosition(const FHeroAction& _CurrentAction);
+	void DoAction_MoveToPositionImpl(const FHeroAction& _CurrentAction);
+	
+	// 推出做完的動作
+	void PopAction();
+	// 使用打人
+	void DoAction_AttackActor(const FHeroAction& _CurrentAction);
+	// 使用指定技
+	void DoAction_SpellToActor(const FHeroAction& _CurrentAction);
+	// 使用指向技
+	void DoAction_SpellToDirection(const FHeroAction& _CurrentAction);
+	//持續施法中
+	void DoAction_SpellChannelling(const FHeroAction& _CurrentAction);
+	//撿拾物品
+	void DoAction_MoveToPickup(const FHeroAction& _CurrentAction);
+	//丟棄物品
+	void DoAction_MoveToThrowEqu(const FHeroAction& _CurrentAction);
+
+	//播放攻擊動畫
+	UFUNCTION(NetMulticast, Unreliable, WithValidation)
+	void ServerPlayAttack(float duraction, float rate);
+	
+	//播放持續施法動畫
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_PlayChannelling(float duraction, float rate);
+	
+	//加上buff
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void AddBuff(AHeroBuff* buff);
+	
+	//使用buff名稱得到buff指標
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	AHeroBuff* GetBuffByName(FString name);
+
+	// 加入Buff時取代同名的Buff
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void AddUniqueBuff(AHeroBuff* buff);
+	
+	// 移除所有同名的Buff
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void RemoveBuffByName(FString name);
+
+	// 移除Buff
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void RemoveBuff(AHeroBuff* buff);
+
+	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable)
+	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_PlayAttack(float duraction, float rate);
+
+	bool Pickup(AEquipment* equ);
+
+	bool ThrowEquipment(AEquipment* equ, FVector pos);
+
+	bool HasEquipment(AEquipment* equ);
 
 	// Particle特效
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
@@ -111,7 +214,7 @@ public:
 
 	// 移動攻擊時，遇到想攻擊的敵人
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	AHeroCharacter* MovingAttackTarget = nullptr;
+	ABasicUnit* MovingAttackTarget = nullptr;
 	
 	// 技能實體
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)

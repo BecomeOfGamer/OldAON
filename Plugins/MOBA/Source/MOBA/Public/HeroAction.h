@@ -7,7 +7,7 @@
 #include "HeroAction.generated.h"
 
 
-class AHeroCharacter;
+class ABasicUnit;
 class AEquipment;
 
 /**
@@ -27,7 +27,7 @@ struct FHeroAction
 
 	// for MoveToActor, FollowActor, AttackActor, MovingAttackActor, SpellToActor, ThrowEquToActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AHeroCharacter* TargetActor;
+	ABasicUnit* TargetActor;
 
 	// for MoveToPickup
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

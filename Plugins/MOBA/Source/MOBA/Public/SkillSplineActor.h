@@ -41,10 +41,10 @@ public:
 
 	// 剛被產生出來
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnCreate(AHeroCharacter* caster, AHeroCharacter* target);
+	void OnCreate(ABasicUnit* caster, ABasicUnit* target);
 	// 擊中目標
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnHit(AHeroCharacter* caster, AHeroCharacter* target);
+	void OnHit(ABasicUnit* caster, ABasicUnit* target);
 	
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
@@ -100,7 +100,7 @@ public:
 
 	// 設定攻擊者
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
-	AHeroCharacter* Attacker;
+	ABasicUnit* Attacker;
 
 	// 設定施法技能實體
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite, Replicated)
@@ -108,7 +108,7 @@ public:
 
 	// 被擊中的人們
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite, Replicated)
-	TArray<AHeroCharacter*> TargetActors;
+	TArray<ABasicUnit*> TargetActors;
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	EDamageType DamageType = EDamageType::DAMAGE_MAGICAL;
