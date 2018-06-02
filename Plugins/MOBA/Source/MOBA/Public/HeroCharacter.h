@@ -37,18 +37,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	UWebInterfaceJsonValue* BuildJsonValue();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
-	void OnAnimaStatusChanged(int32 _LastAnimaStatus, int32 _AnimaStatus);
-
+	
 	// for UI
 	UFUNCTION()
 	void OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
 
-	
-
 	void CheckSelf(bool res, FString msg);
-
 
 	// 依等級更新血魔攻速
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
@@ -67,7 +61,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void AddExpCompute(float exp);
 
-	
+	// 目前經驗值
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	int32 CurrentEXP;
 	
 	// 歷史說明
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
@@ -117,12 +113,8 @@ public:
 	
 	// 目前等級
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	int32 CurrentLevel;
+	int32 CurrentLevel = 1;
 	
-	// 可以使用的技能點數
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	int32 CurrentSkillPoints;
-
 	// 每級經驗值對應表
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TArray<int32> EXPIncreaseArray;

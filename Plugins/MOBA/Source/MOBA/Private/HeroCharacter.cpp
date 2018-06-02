@@ -25,121 +25,9 @@ AHeroCharacter::AHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(FObjectInitializer::Get())
 {
 	//SetRemoteRoleForBackwardsCompat(ROLE_AutonomousProxy);
-	HeroBullet = NULL;
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
 	//PrimaryActorTick.TickInterval = 0.1;
-	SelectionDecal = ObjectInitializer.CreateDefaultSubobject<UDecalComponent>(this, TEXT("SelectionDecal0"));
-	PositionOnHead = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionOnHead0"));
-	PositionUnderFoot = ObjectInitializer.CreateDefaultSubobject<UArrowComponent>(this, TEXT("PositionUnderFoot0"));
-	AttackStartSFX = ObjectInitializer.CreateDefaultSubobject<UAudioComponent>(this, TEXT("AttackStartSFX0"));
-	AttackLandedSFX = ObjectInitializer.CreateDefaultSubobject<UAudioComponent>(this, TEXT("AttackLandedSFX0"));
-	AttackStartSFX->bAutoActivate = false;
-	AttackLandedSFX->bAutoActivate = false;
-
-	PositionOnHead->SetupAttachment(GetCapsuleComponent());
-	PositionUnderFoot->SetupAttachment(GetCapsuleComponent());
-
-	SelectionDecal->SetWorldLocation(FVector(0, 0, -90));
-	// FRotator = rotation Y Z X
-	SelectionDecal->SetWorldRotation(FQuat(FRotator(90, 0, 0)));
-	SelectionDecal->SetWorldScale3D(FVector(10, 50, 50));
-	SelectionDecal->DecalSize = FVector(2, 1, 1);
-	SelectionDecal->SetupAttachment(GetCapsuleComponent());
-
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-	BodyStatus = EHeroBodyStatus::Standing;
-	GetMesh()->SetWorldRotation(FQuat(FRotator(0, -90, 0)));
-
-	// 目前攻擊動畫時間長度
-	CurrentAttackingAnimationTimeLength = 0.5;
-	// 基礎血量
-	BaseHP = 450;
-	// 基礎魔力
-	BaseMP = 100;
-	// 基礎撿物品距離
-	PickupObjectDistance = 500;
-	// 基礎等級
-	CurrentLevel = 1;
-	// 原始攻擊秒數
-	BaseAttackSpeedSecond = 1.8;
-	IsAttacked = false;
-	IsAlive = true;
-	LastMoveTarget = FVector::ZeroVector;
-	AttackingCounting = 0;
-	FollowActorUpdateCounting = 0;
-	SpellingCounting = 0;
-	StunningLeftCounting = 0;
-	AnimaStatus = 0;
-	LastAnimaStatus = 0;
-
-	// 基礎攻擊前搖時間長度
-	BaseAttackingBeginingTimeLength = 0.5;
-	// 基礎攻擊後搖時間長度
-	BaseAttackingEndingTimeLength = 0.3;
-	// 基礎攻擊動畫時間長度
-	BaseAttackingAnimationTimeLength = 0.5;
-
-	// 基礎施法前等待時間長度
-	BaseSpellingWatingTimeLength = 0;
-	// 基礎施法動畫時間長度
-	BaseSpellingAnimationTimeLength = 1;
-	// 基礎施法前搖時間長度
-	BaseSpellingBeginingTimeLength = 0.5;
-	// 基礎施法後搖時間長度
-	BaseSpellingEndingTimeLength = 0.5;
-
-	// 啟始技能點
-	CurrentSkillPoints = 1;
-	// 每隔一段時間更新移動
-	FollowActorUpdateTimeGap = 0.3;
-
-	// set for mouse click
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
-
-	for (int i = 0; i < (int)EHeroBuffState::EndBuffKind; ++i)
-	{
-		BuffStateMap.Add((EHeroBuffState)i, false);
-		DefaultBuffState.Add((EHeroBuffState)i, false);
-	}
-	for (int i = 0; i < (int)EHeroBuffProperty::EndBuffProperty; ++i)
-	{
-		BuffPropertyMap.Add((EHeroBuffProperty)i, 0);
-		DefaultBuffProperty.Add((EHeroBuffProperty)i, 0);
-	}
-
-	DefaultBuffProperty[EHeroBuffProperty::PhysicalDamageOutputPercentage] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::MagicalDamageOutputPercentage] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::PureDamageOutputPercentage] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::PhysicalDamageInputPercentage] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::MagicalDamageInputPercentage] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::PureDamageInputPercentage] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::MoveSpeedRatio] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::MoveSpeedConstant] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::AttackSpeedRatio] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::AttackSpeedConstant] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::AbsorbPhysicalDamagePercentage] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::AbsorbMagicalDamagePercentage] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::AbsorbPureDamagePercentage] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::HealPercentage] = 1;
-	DefaultBuffProperty[EHeroBuffProperty::ManaRegenConstant] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::ManaRegenPercentage] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::ManaRegenRatio] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::HealthRegenConstant] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::HealthRegenPercentage] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::HealthRegenRatio] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::AttackBounsConstantWhite] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::AttackBounsConstantGreen] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::AttackBounsPercentage] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::ArmorBounsConstant] = 0;
-	DefaultBuffProperty[EHeroBuffProperty::ArmorBounsPercentage] = 0;
 }
 
 void AHeroCharacter::PostInitializeComponents()
@@ -152,85 +40,18 @@ void AHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCapsuleComponent()->OnClicked.AddUniqueDynamic(this, &AHeroCharacter::OnMouseClicked);
-
-	localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
-
-	SelectionDecal->SetVisibility(false);
-	isSelection = false;
-	
 	Equipments.SetNum(6);
-	for(int32 idx = 0; idx < Equipments.Num(); ++idx)
-	{
-		Equipments[idx] = NULL;
-	}
-	CurrentSkillHint = NULL;
-	CurrentSkillIndex = 0;
 	
-
-	CurrentAttackingBeginingTimeLength = BaseAttackingBeginingTimeLength;
-	CurrentAttackingEndingTimeLength = BaseAttackingEndingTimeLength;
-	CurrentAttackingAnimationTimeLength = BaseAttackingAnimationTimeLength;
-	CurrentSpellingWatingTimeLength = BaseSpellingWatingTimeLength;
-	CurrentSpellingAnimationTimeLength = BaseSpellingAnimationTimeLength;
-	CurrentSpellingBeginingTimeLength = BaseSpellingBeginingTimeLength;
-	CurrentSpellingEndingTimeLength = BaseSpellingEndingTimeLength;
-	CurrentSpellingRate = CurrentSpellingAnimationTimeLength / (CurrentSpellingBeginingTimeLength + CurrentSpellingEndingTimeLength);
 	// 依等級更新力敏智
 	UpdateSAI();
-	// 依等級更新血魔攻速
-	UpdateHPMPAS();
-	CurrentHP = CurrentMaxHP;
-	CurrentMP = CurrentMaxMP;
-	CurrentAttackRange = BaseAttackRange;
-	CurrentAttack = BaseAttack;
-	CurrentArmor = BaseArmor;
-	if (Role == ROLE_Authority)
-	{
-		for (auto& Elem : Skill_Classes)
-		{
-			this->Skills.Add(GetWorld()->SpawnActor<AHeroSkill>(Elem));
-		}
-		for (AHeroSkill*& Elem : this->Skills)
-		{
-			if (Elem)
-			{
-				Elem->Caster = this;
-			}
-		}
-	}
-
-	MinimumDontMoveDistance = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 30;
-	BaseMaterial = GetMesh()->GetMaterial(0);
 }
 
 // Called every frame
 void AHeroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	Frame++;
-	// 慢慢更新就好
 	if (Frame % 7 == 0)
 	{
-		// 移動速度更新
-		{
-			CurrentMoveSpeed = (BaseMoveSpeed + BuffPropertyMap[HEROP::MoveSpeedConstant]) * BuffPropertyMap[HEROP::MoveSpeedRatio];
-			UCharacterMovementComponent* mc = Cast<UCharacterMovementComponent>(GetMovementComponent());
-			mc->MaxWalkSpeed = CurrentMoveSpeed;
-			mc->MaxWalkSpeedCrouched = CurrentMoveSpeed;
-		}
-		if (BlendingColor != LastBlendingColor)
-		{
-			LastBlendingColor = BlendingColor;
-			UMaterialInstanceDynamic* MILight = UMaterialInstanceDynamic::Create(
-				BaseMaterial, this);
-			MILight->SetVectorParameterValue(FName(TEXT("BlendingColor")), BlendingColor);
-			GetMesh()->SetMaterial(0, MILight);
-		}
-		// 如果沒有初始化成功就初始化 local AMOBAPlayerController
-		if (!IsValid(localPC))
-		{
-			localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
-		}
 		if (EXPIncreaseArray.Num() == 0)
 		{
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
@@ -239,294 +60,10 @@ void AHeroCharacter::Tick(float DeltaTime)
 				EXPIncreaseArray = ags->GetEXPIncreaseArray();
 			}
 		}
-		// 如果沒法球時從自身狀態找一個法球裝
-		if (!IsValid(CurrentOrb))
-		{
-			for (AHeroBuff* Buff : BuffQueue)
-			{
-				if (IsValid(Buff) && Buff->IsOrb)
-				{
-					if (IsValid(CurrentOrb))
-					{
-						if (CurrentOrb->Priority < Buff->Priority)
-						{
-							CurrentOrb = Buff;
-						}
-					}
-					else
-					{
-						CurrentOrb = Buff;
-					}
-				}
-			}
-		}
-		// 如果法球失效，移除法球
-		if (!IsValid(CurrentOrb))
-		{
-			CurrentOrb = nullptr;
-		}
-		// 計算各種buff
-		{ 
-			BlendingColor = FLinearColor::White;
-			TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
-			TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
-			for (AHeroBuff* Buff : BuffQueue)
-			{
-				if (IsValid(Buff))
-				{
-					for (auto& Elem : Buff->BuffPropertyMap)
-					{
-						SwapProperty[Elem.Key] += Elem.Value;
-					}
-					for (EHeroBuffState& Elem : Buff->BuffState)
-					{
-						SwapState[Elem] = true;
-						if (Elem == HEROS::Blending)
-						{
-							BlendingColor = Buff->BlendingColor;
-						}
-					}
-				}
-			}
-
-			BuffStateMap = SwapState;
-			BuffPropertyMap = SwapProperty;
-		}
-		// 更新血魔攻速
-		UpdateHPMPAS();
-		//計算暈眩狀態
-		if (BuffStateMap[HEROS::Stunning])
-		{
-			//如果在持續施法中
-			switch (BodyStatus)
-			{
-			case EHeroBodyStatus::SpellChannellingActor:
-			{
-				//強制斷招
-				AHeroSkill* hs = LastUseSkill;
-				hs->IsChannelling = false;
-				hs->BP_ChannellingActorBreak(hs->Victim);
-			}
-			break;
-			case EHeroBodyStatus::SpellChannelling:
-			{
-				//強制斷招
-				AHeroSkill* hs = LastUseSkill;
-				hs->IsChannelling = false;
-				hs->BP_ChannellingBreak(hs->CastPoint);
-			}
-			break;
-			default:
-				break;
-			}
-			
-			BodyStatus = EHeroBodyStatus::Stunning;
-			LastMoveTarget = FVector::ZeroVector;
-		}
-		else if (EHeroBodyStatus::Stunning == BodyStatus)
-		{
-			if (!BuffStateMap[HEROS::Stunning])
-			{
-				BodyStatus = EHeroBodyStatus::Standing;
-			}
-		}
-		{// 計算各種自然回復
-			if (IsAlive)
-			{
-				CurrentHP += DeltaTime * CurrentRegenHP;
-				CurrentMP += DeltaTime * CurrentRegenMP;
-				if (CurrentHP > CurrentMaxHP)
-				{
-					CurrentHP = CurrentMaxHP;
-				}
-				if (CurrentMP > CurrentMaxMP)
-				{
-					CurrentMP = CurrentMaxMP;
-				}
-			}
-			else
-			{
-				DeadTime += DeltaTime;
-			}
-			// 修正小於0的值為0
-			if (CurrentHP < 0)
-			{
-				CurrentHP = 0;
-			}
-			if (CurrentMP < 0)
-			{
-				CurrentMP = 0;
-			}
-		}
 	}
-	//更新再快一點但不用到每個Frame
-	if (Frame % 3 == 0)
+	if (!IsAlive)
 	{
-		// 更新 Buff 持續時間
-		bool isLastFrameStunning = (0 == StunningLeftCounting);
-		StunningLeftCounting = 0;
-		for (int32 i = 0; i < BuffQueue.Num(); ++i)
-		{
-			// 移除時間到的Buff
-			if (IsValid(BuffQueue[i]))
-			{
-				if (!BuffQueue[i]->Forever && BuffQueue[i]->Duration <= 0)
-				{
-					// 釋放記憶體
-					if (!BuffQueue[i]->IsPendingKillPending())
-					{
-						BuffQueue[i]->OnDestroy();
-						//BuffQueue[i]->Destroy();
-					}
-					BuffQueue.RemoveAt(i);
-					i--;
-				}
-			}
-			else
-			{
-				BuffQueue.RemoveAt(i);
-				i--;
-			}
-		}
-	}
-	if (LastAnimaStatus != AnimaStatus)
-	{
-		OnAnimaStatusChanged(LastAnimaStatus, AnimaStatus);
-		LastAnimaStatus = AnimaStatus;
-	}
-	
-	if (CurrentSkillHint)
-	{
-		AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
-		if (hud)
-		{
-			// 如果有插旗移動，以最後一根移動旗為準來顯示技能提示
-			int32 lastMoveIndex = -1;
-			for (int32 i = 0; i < ActionQueue.Num(); ++i)
-			{
-				if (ActionQueue[i].ActionStatus == EHeroActionStatus::MoveToPosition)
-				{
-					lastMoveIndex = i;
-				}
-			}
-			// 如果有按左shift的話顯示插旗後的技能位置
-			if (hud->bLeftShiftDown && lastMoveIndex >= 0)
-			{
-				FVector pos = ActionQueue[lastMoveIndex].TargetVec1;
-				pos.Z += 50;
-				CurrentSkillHint->UpdatePos(pos, hud->CurrentMouseHit);
-				CurrentSkillDirection = hud->CurrentMouseHit - pos;
-				CurrentSkillDirection.Z = 0;
-			}
-			else
-			{
-				CurrentSkillDirection = hud->CurrentMouseHit - GetActorLocation();
-				CurrentSkillHint->UpdatePos(GetActorLocation(), hud->CurrentMouseHit);
-			}
-		}
-	}
-	// 死了
-	if(CurrentHP <= 0 && IsAlive)
-	{
-		bool hasRebirth = false;
-		// 看有沒有重生狀態
-		for (int32 i = 0; i < BuffQueue.Num(); ++i)
-		{
-			AHeroBuff* Buff = BuffQueue[i];
-			if (IsValid(Buff) && Buff->BuffState.Contains(HEROS::Rebirth))
-			{
-				CurrentHP = CurrentMaxHP;
-				Buff->OnRebirth(this);
-				hasRebirth = true;
-				BuffQueue.RemoveAt(i);
-				break;
-			}
-		}
-		if (!hasRebirth)
-		{
-			// 死了還想跑，給我停下
-			if (GetVelocity().Size() > 5 && IsValid(localPC))
-			{
-				localPC->ServerCharacterStopMove(this);
-			}
-			IsAlive = false;
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
-			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
-			CurrentHP = 0;
-			// TODO: event dead
-			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			if (ags && IsValid(localPC))
-			{
-				TArray<ABasicUnit*> EnemyGetExp = localPC->FindRadiusActorByLocation(this, this->GetActorLocation(), ags->EXPGetRange, ETeamFlag::TeamEnemy, true);
-				float exp = this->BountyEXP / EnemyGetExp.Num();
-				for (ABasicUnit* unit : EnemyGetExp)
-				{
-					AHeroCharacter* hero = Cast<AHeroCharacter>(unit);
-					if (IsValid(hero))
-					{
-						localPC->ServerHeroAddExpCompute(hero, exp);
-					}
-				}
-			}
-		}
-	}
-	AttackingCounting += DeltaTime;
-	FollowActorUpdateCounting += DeltaTime;
-	SpellingCounting += DeltaTime;
-	
-	// 算CD
-	for(int32 i = 0; i < this->Skills.Num(); ++i)
-	{
-		if (this->Skills[i])
-		{
-			this->Skills[i]->CheckCD(DeltaTime);
-		}
-	}
-	// 是否有動作？
-	if (ActionQueue.Num() > 0 && IsAlive && EHeroBodyStatus::Stunning != BodyStatus)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Magenta, FString::Printf(L"ActionQueue %d", ActionQueue.Num()));
-		// 動作駐列最上層動作是否為當前動作
-		if (ActionQueue[0] != CurrentAction)
-		{
-			// 拿出動作
-			CurrentAction = ActionQueue[0];
-			// 進入此狀態的有限狀態機來做事
-			DoAction(CurrentAction);
-		}
-		// 查看當前動作是否做完？
-		else if (!CheckCurrentActionFinish())
-		{
-			// 進入此狀態的有限狀態機來做事
-			DoAction(CurrentAction);
-		}
-		else
-		{
-			// 推出事件
-			PopAction();
-			// 檢查動作駐列是否為空？
-			if (ActionQueue.Num() == 0)
-			{
-				// 站立不動
-				DoNothing();
-			}
-			else
-			{
-				// 進入此狀態的有限狀態機來做事
-				DoAction(CurrentAction);
-			}
-		}
-	}
-	else
-	{
-		// 站立不動
-		DoNothing();
+		DeadTime += DeltaTime;
 	}
 }
 
@@ -546,7 +83,7 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 		return 0;
 	}
 	UWebInterfaceJsonObject* wjo = UWebInterfaceHelpers::ConstructObject();
-	wjo->SetString(FString(TEXT("HeroName")), UnitName);
+	wjo->SetString(FString(TEXT("UnitName")), UnitName);
 	wjo->SetInteger(FString(TEXT("TeamId")), TeamId);
 	wjo->SetBoolean(FString(TEXT("IsAlive")), IsAlive);
 	wjo->SetInteger(FString(TEXT("CurrentMoveSpeed")), CurrentMoveSpeed);
@@ -836,4 +373,5 @@ void AHeroCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AHeroCharacter, CurrentSkillPoints);
 	DOREPLIFETIME(AHeroCharacter, CurrentLevel);
+	DOREPLIFETIME(AHeroCharacter, CurrentEXP);
 }

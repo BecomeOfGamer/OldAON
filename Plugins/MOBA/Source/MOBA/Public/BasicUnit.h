@@ -89,6 +89,9 @@ public:
 	// 確定當前動作做完了沒
 	bool CheckCurrentActionFinish();
 
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void SetCustomTimeDilation(float v);
+
 	// 做動作
 	UFUNCTION(Server, WithValidation, Reliable, Category = "MOBA")
 	void DoAction(const FHeroAction& _CurrentAction);
@@ -157,39 +160,50 @@ public:
 
 	bool HasEquipment(AEquipment* equ);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnAnimaStatusChanged(int32 _LastAnimaStatus, int32 _AnimaStatus);
+
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	UWebInterfaceJsonValue* BuildJsonValue();
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MOBA")
+	float DeltaTimeRatio = 1;
+	
+
 	// Particle特效
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TMap<FString, UParticleSystemComponent*> Particles;
 
 	// Debug information
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA|Debug")
 	bool IsDebug;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	EMOBAType UnitType = EMOBAType::BasicUnit;
 
 	// 選人的地版光環
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA|Interaction")
 	UDecalComponent * SelectionDecal;
 
 	// 手動設定的頭頂位置
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Interaction")
 	UArrowComponent * PositionOnHead;
 
 	// 手動設定的腳底位置
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA|Interaction")
 	UArrowComponent * PositionUnderFoot;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA|Interaction")
 	UAudioComponent * AttackStartSFX;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA|Interaction")
 	UAudioComponent * AttackLandedSFX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-	TSubclassOf<ABulletActor> HeroBullet;
+	//遠攻單位的子彈
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Interaction")
+	TSubclassOf<ABulletActor> AttackBullet = NULL;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Interaction")
 	TSubclassOf<ADamageEffect> ShowDamageEffect;
 
 	// 英雄名/單位名
@@ -215,11 +229,7 @@ public:
 	// 移動攻擊時，遇到想攻擊的敵人
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	ABasicUnit* MovingAttackTarget = nullptr;
-	
-	// 技能實體
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	TArray<AHeroSkill*> Skills;
-	
+		
 	// 技能
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TArray<TSubclassOf<AHeroSkill>>	Skill_Classes;
@@ -230,34 +240,34 @@ public:
 
 	// 原始攻擊秒數
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseAttackSpeedSecond;
+	float BaseAttackSpeedSecond = 1.8;
 	
 	// 基礎攻擊動畫時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseAttackingAnimationTimeLength;
+	float BaseAttackingAnimationTimeLength = 0.6;
 	// 基礎攻擊前搖時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseAttackingBeginingTimeLength;
+	float BaseAttackingBeginingTimeLength = 0.3;
 	// 基礎攻擊後搖時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseAttackingEndingTimeLength;
+	float BaseAttackingEndingTimeLength = 0.3;
 
 	// 基礎施法前等待時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseSpellingWatingTimeLength;
+	float BaseSpellingWatingTimeLength = 0;
 	// 基礎施法動畫時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseSpellingAnimationTimeLength;
+	float BaseSpellingAnimationTimeLength = 0.6;
 	// 基礎施法前搖時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseSpellingBeginingTimeLength;
+	float BaseSpellingBeginingTimeLength = 0.3;
 	// 基礎施法後搖時間長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseSpellingEndingTimeLength;
+	float BaseSpellingEndingTimeLength = 0.3;
 	
 	// 追踨目標更新時間
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float FollowActorUpdateTimeGap;
+	float FollowActorUpdateTimeGap = 0.3;
 
 	// 基礎魔法受傷倍率
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
@@ -283,36 +293,15 @@ public:
 	float BaseRegenMP;
 	// 基礎血量
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseHP;
+	float BaseHP = 400;
 	// 基礎魔力
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseMP;
+	float BaseMP = 100;
 
 	// 基礎掉落金錢
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseBountyGold;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	int32 Frame = 0;
-
-	// 當前技能提示
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
-	ASkillHintActor* CurrentSkillHint;
-
-	// 當前技能指向
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
-	FVector CurrentSkillDirection;
-
-	// 準備要用的技能索引
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	int32 CurrentSkillIndex;
-	
-	
-
-	// 目前經驗值
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	int32 CurrentEXP;
-
+	float BaseBountyGold = 100;
+		
 	// 死亡給敵經驗值
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	int32 BountyEXP;
@@ -326,26 +315,46 @@ public:
 
 	// 撿東西的距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float PickupObjectDistance;
+	float PickupObjectDistance = 500;
 
 	// 最小移動距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float MinimumDontMoveDistance;
-
-
+	
+	// 技能實體
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	TArray<AHeroSkill*> Skills;
 	// 隊伍id
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	int32 TeamId;
 	// 目前是否攻擊
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	bool PlayAttack;
 	// 當前普攻是否打出來了
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	bool IsAttacked;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
+	bool IsAttacked = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
+	int32 Frame = 0;
+
+	// 當前技能提示
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA|Current")
+	ASkillHintActor* CurrentSkillHint;
+
+	// 當前技能指向
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA|Current")
+	FVector CurrentSkillDirection;
+
+	// 準備要用的技能索引
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	int32 CurrentSkillIndex = -1;
+
+	// 可以使用的技能點數
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	int32 CurrentSkillPoints = 0;
 
 	// 目前是否活著
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	bool IsAlive;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	bool IsAlive = true;
 
 	/*
 
@@ -363,17 +372,17 @@ public:
 							    Cause Damage
 	*/
 	// 目前攻擊動畫時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	float CurrentAttackingAnimationTimeLength;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
+	float CurrentAttackingAnimationTimeLength = 0.5;
 	// 目前攻擊動畫播放速度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	float CurrentAttackingAnimationRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	float CurrentAttackingAnimationRate = 1;
 	// 目前攻擊前搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	float CurrentAttackingBeginingTimeLength;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	float CurrentAttackingBeginingTimeLength = 0.3;
 	// 目前攻擊後搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	float CurrentAttackingEndingTimeLength;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	float CurrentAttackingEndingTimeLength = 0.2;
 
 	/*
 
@@ -390,139 +399,139 @@ public:
 	*/
 
 	// 目前施法前等待時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentSpellingWatingTimeLength;
 	// 目前施法動畫時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentSpellingAnimationTimeLength;
 	// 施法速度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentSpellingRate;
 	// 目前施法前搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentSpellingBeginingTimeLength;
 	// 目前施法後搖時間長度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentSpellingEndingTimeLength;
 	//當前剩餘持續施法時間
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float ChannellingTime = 0;
 
 	// 目前攻擊計時器
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	float AttackingCounting;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	float AttackingCounting = 0;
 	// 目前施法計時器
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting", Replicated)
-	float SpellingCounting;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Counting", Replicated)
+	float SpellingCounting = 0;
 	// 追踨目標計時器
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting")
-	float FollowActorUpdateCounting;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Counting")
+	float FollowActorUpdateCounting = 0;
 	// 暈炫倒數計時器
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counting")
-	float StunningLeftCounting;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Counting")
+	float StunningLeftCounting = 0;
 
 	// 移動速度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentMoveSpeed;
 	// 血量
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentMaxHP;
 	// 魔力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentMaxMP;
 	// 血量
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	float CurrentHP;
 	// 魔力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	float CurrentMP;
 	// 回血
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentRegenHP;
 	// 回魔
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentRegenMP;
 	// 攻速
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentAttackSpeed;
 	// 攻速秒數
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	float CurrentAttackSpeedSecond;
 	// 攻擊力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentAttack;
 	// 防禦力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentArmor;
 	// 當前魔法減傷
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentMagicInjured;
 	// 目前攻擊距離
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentAttackRange;
 	// 裝備
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	TArray<AEquipment*> Equipments;
 	// 暫存mesh材質的地方
 	UMaterialInterface* BaseMaterial;
 
 	// 當前模型混色
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	FLinearColor BlendingColor = FLinearColor::White;
 
 	FLinearColor LastBlendingColor = FLinearColor::White;
 
 	// 動畫狀態
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
-	int32 AnimaStatus;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
+	int32 AnimaStatus = 0;
 
-	int32 LastAnimaStatus;
+	int32 LastAnimaStatus = 0;
 
 	// 依序做完裡面的動作
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	TArray<FHeroAction> ActionQueue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	FHeroAction CurrentAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	EHeroBodyStatus BodyStatus;
 
 	// 所有的buff
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	TArray<AHeroBuff*> BuffQueue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	TArray<float> BuffDuration;
 
 	// 當前法球
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	AHeroBuff* CurrentOrb;
 
 	// 當前狀態
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	TMap<EHeroBuffState, bool> BuffStateMap;
 
 	// 預設狀態
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	TMap<EHeroBuffState, bool> DefaultBuffState;
 
 	// 當前加成 可能可以用TArray替代
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	TMap<EHeroBuffProperty, float> BuffPropertyMap;
 	
 	// 預設加成
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	TMap<EHeroBuffProperty, float> DefaultBuffProperty;
 	
 	// 最後一次移動的位置
-	FVector LastMoveTarget;
+	FVector LastMoveTarget = FVector::ZeroVector;
 
 	// 最後一次要使用的技能
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	FHeroAction LastUseSkillAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	AHeroSkill* LastUseSkill;
 
 	static AMOBAPlayerController* localPC;
