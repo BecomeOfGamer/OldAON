@@ -183,7 +183,7 @@ public:
 	TArray<ABasicUnit*> RemoveSelection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	AHeroCharacter* CurrentSelectTarget;
+	ABasicUnit* CurrentSelectTarget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TMap<FString,int32>  SkillMapping;

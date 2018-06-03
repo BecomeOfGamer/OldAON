@@ -37,6 +37,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// for UI
+	UFUNCTION()
+	void OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
 
 	// for Game Logic
 	UFUNCTION(BlueprintCallable, Category = "MOBA")

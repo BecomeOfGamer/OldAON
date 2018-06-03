@@ -96,11 +96,50 @@ ABasicUnit::ABasicUnit(const FObjectInitializer& ObjectInitializer)
 
 }
 
+void ABasicUnit::OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
+{
+	AMHUD* hud = Cast<AMHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+	if (hud && hud->HUDStatus == EMHUDStatus::Normal)
+	{
+		// 按下左鍵
+		if (hud->bMouseLButton)
+		{
+			if (hud->CurrentSelection.Num() == 1)
+			{
+				if (hud->CurrentSelection[0] == this)
+				{
+					return;
+				}
+				if (hud->CurrentSelection[0]->CurrentSkillHint)
+				{
+					return;
+				}
+			}
+			hud->ClickedSelected = true;
+			hud->ClearAllSelection();
+			SelectionOn();
+		}
+		// 按下右鍵
+		else if (hud->bMouseRButton)
+		{
+			if (hud->CurrentSelection.Num() > 0)
+			{
+				hud->HeroAttackHero(this);
+			}
+		}
+		hud->CurrentSelectTarget = nullptr;
+	}
+	else if (hud)
+	{
+		hud->CurrentSelectTarget = this;
+	}
+}
+
 // Called when the game starts or when spawned
 void ABasicUnit::BeginPlay()
 {
 	Super::BeginPlay();
-
+	GetCapsuleComponent()->OnClicked.AddUniqueDynamic(this, &ABasicUnit::OnMouseClicked);
 	localPC = Cast<AMOBAPlayerController>(GetWorld()->GetFirstPlayerController());
 
 	SelectionDecal->SetVisibility(false);

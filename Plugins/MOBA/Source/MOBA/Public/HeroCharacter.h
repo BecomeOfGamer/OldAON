@@ -38,10 +38,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	UWebInterfaceJsonValue* BuildJsonValue();
 	
-	// for UI
-	UFUNCTION()
-	void OnMouseClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
-
 	void CheckSelf(bool res, FString msg);
 
 	// 依等級更新血魔攻速
