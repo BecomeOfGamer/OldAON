@@ -119,7 +119,7 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 	wjo->SetInteger(FString(TEXT("BaseAttackRange")), BaseAttackRange);
 
 	wjo->SetNumber(FString::Printf(TEXT("Skill_Amount")), this->Skills.Num());
-	wjo->SetNumber(FString::Printf(TEXT("Buff_Amount")), BuffQueue.Num());
+	wjo->SetNumber(FString::Printf(TEXT("Buff_Amount")), Buffs.Num());
 	for (int i=0;i < this->Skills.Num();++i)
 	{
 		if (IsValid(this->Skills[i]))
@@ -142,17 +142,17 @@ UWebInterfaceJsonValue* AHeroCharacter::BuildJsonValue()
 			wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), this->Skills[i]->MaxLevel);
 		}
 	}
-	for (int i = 0; i < BuffQueue.Num(); ++i)
+	for (int i = 0; i < Buffs.Num(); ++i)
 	{
-		if (IsValid(BuffQueue[i]))
+		if (IsValid(Buffs[i]))
 		{
-			wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), BuffQueue[i]->Name);
-			wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), BuffQueue[i]->Webpath);
-			wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), BuffQueue[i]->BuffTips);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), BuffQueue[i]->Stacks);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), BuffQueue[i]->Duration);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), BuffQueue[i]->MaxDuration);
-			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), BuffQueue[i]->CanStacks);
+			wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), Buffs[i]->Name);
+			wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), Buffs[i]->Webpath);
+			wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), Buffs[i]->BuffTips);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), Buffs[i]->Stacks);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), Buffs[i]->Duration);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), Buffs[i]->MaxDuration);
+			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), Buffs[i]->CanStacks);
 		}
 	}
 	

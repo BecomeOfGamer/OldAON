@@ -58,6 +58,13 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnRebirth(ABasicUnit* caster);
 
+	//得到Buff前的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnAddBuff(ABasicUnit* caster, ABasicUnit* target, AHeroBuff* buff);
+	//失去Buff後的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnRemoveBuff(ABasicUnit* caster, ABasicUnit* target, AHeroBuff* buff);
+	
 	//be damage by someone
 	//受到傷害的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")

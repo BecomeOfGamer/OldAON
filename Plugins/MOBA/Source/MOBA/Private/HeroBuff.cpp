@@ -111,7 +111,7 @@ void AHeroBuff::Tick(float DeltaTime)
 					if (!BuffTarget.Contains(hero))
 					{
 						//Result1.Add(hero);
-						hero->AddUniqueBuff(this);
+						hero->AddUniqueBuff(this, BuffTargetOne);
 						if (IsValid(AuraParticle))
 						{
 							if (AuraFollowActor)
@@ -147,7 +147,7 @@ void AHeroBuff::Tick(float DeltaTime)
 				{
 					if (!tmp.Contains(hero))
 					{
-						hero->RemoveBuff(this);
+						hero->RemoveBuff(this, BuffTargetOne);
 					}
 				}
 				BuffTarget = tmp;

@@ -521,13 +521,13 @@ void AMOBAPlayerController::ServerHealCompute_Implementation(ABasicUnit* attacke
 {
 	if (Role == ROLE_Authority && victim->IsAlive)
 	{
-		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+		for (int32 i = 0; i < victim->Buffs.Num(); ++i)
 		{
-			victim->BuffQueue[i]->BeHeal(attacker, victim, amount);
+			victim->Buffs[i]->BeHeal(attacker, victim, amount);
 		}
-		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+		for (int32 i = 0; i < attacker->Buffs.Num(); ++i)
 		{
-			attacker->BuffQueue[i]->OnHealLanded(attacker, victim, amount);
+			attacker->Buffs[i]->OnHealLanded(attacker, victim, amount);
 		}
 		victim->CurrentHP += amount * victim->BuffPropertyMap[HEROP::HealPercentage];
 	}
@@ -550,43 +550,43 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attac
 		{
 		case EDamageType::DAMAGE_PHYSICAL:
 			Injury = ags->ArmorConvertToInjuryPersent(victim->CurrentArmor);
-			for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+			for (int32 i = 0; i < attacker->Buffs.Num(); ++i)
 			{
-				if (attacker->BuffQueue[i]->BuffUniqueMap.Contains(HEROU::PhysicalCriticalChance))
+				if (attacker->Buffs[i]->BuffUniqueMap.Contains(HEROU::PhysicalCriticalChance))
 				{
 					float chance = FMath::FRandRange(0, 1);
-					if (attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PhysicalCriticalChance] >= chance &&
-						attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PhysicalCriticalPercentage] >= max_critical)
+					if (attacker->Buffs[i]->BuffUniqueMap[HEROU::PhysicalCriticalChance] >= chance &&
+						attacker->Buffs[i]->BuffUniqueMap[HEROU::PhysicalCriticalPercentage] >= max_critical)
 					{
-						max_critical = attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PhysicalCriticalPercentage];
+						max_critical = attacker->Buffs[i]->BuffUniqueMap[HEROU::PhysicalCriticalPercentage];
 					}
 				}
 			}
 			break;
 		case EDamageType::DAMAGE_MAGICAL:
-			for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+			for (int32 i = 0; i < attacker->Buffs.Num(); ++i)
 			{
-				if (attacker->BuffQueue[i]->BuffUniqueMap.Contains(HEROU::MagicalCriticalChance))
+				if (attacker->Buffs[i]->BuffUniqueMap.Contains(HEROU::MagicalCriticalChance))
 				{
 					float chance = FMath::FRandRange(0, 1);
-					if (attacker->BuffQueue[i]->BuffUniqueMap[HEROU::MagicalCriticalChance] >= chance &&
-						attacker->BuffQueue[i]->BuffUniqueMap[HEROU::MagicalCriticalPercentage] >= max_critical)
+					if (attacker->Buffs[i]->BuffUniqueMap[HEROU::MagicalCriticalChance] >= chance &&
+						attacker->Buffs[i]->BuffUniqueMap[HEROU::MagicalCriticalPercentage] >= max_critical)
 					{
-						max_critical = attacker->BuffQueue[i]->BuffUniqueMap[HEROU::MagicalCriticalPercentage];
+						max_critical = attacker->Buffs[i]->BuffUniqueMap[HEROU::MagicalCriticalPercentage];
 					}
 				}
 			}
 			break;
 		case EDamageType::DAMAGE_PURE:
-			for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+			for (int32 i = 0; i < attacker->Buffs.Num(); ++i)
 			{
-				if (attacker->BuffQueue[i]->BuffUniqueMap.Contains(HEROU::PureCriticalChance))
+				if (attacker->Buffs[i]->BuffUniqueMap.Contains(HEROU::PureCriticalChance))
 				{
 					float chance = FMath::FRandRange(0, 1);
-					if (attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PureCriticalChance] >= chance &&
-						attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PureCriticalPercentage] >= max_critical)
+					if (attacker->Buffs[i]->BuffUniqueMap[HEROU::PureCriticalChance] >= chance &&
+						attacker->Buffs[i]->BuffUniqueMap[HEROU::PureCriticalPercentage] >= max_critical)
 					{
-						max_critical = attacker->BuffQueue[i]->BuffUniqueMap[HEROU::PureCriticalPercentage];
+						max_critical = attacker->Buffs[i]->BuffUniqueMap[HEROU::PureCriticalPercentage];
 					}
 				}
 			}
@@ -621,24 +621,24 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attac
 			}
 			if (attackMiss)
 			{
-				for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+				for (int32 i = 0; i < attacker->Buffs.Num(); ++i)
 				{
-					attacker->BuffQueue[i]->OnAttackMiss(attacker, victim, dtype, damage, RDamage);
+					attacker->Buffs[i]->OnAttackMiss(attacker, victim, dtype, damage, RDamage);
 				}
 				return;
 			}
 		}
 		
-		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+		for (int32 i = 0; i < attacker->Buffs.Num(); ++i)
 		{
-			for (auto& Elem : attacker->BuffQueue[i]->BuffUniqueMap)
+			for (auto& Elem : attacker->Buffs[i]->BuffUniqueMap)
 			{
 				if (Elem.Key == HEROU::BlockingPhysicalChance && dtype == EDamageType::DAMAGE_PHYSICAL)
 				{
 					float chance = FMath::FRandRange(0, 1);
 					if (Elem.Value >= max_critical)
 					{
-						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingPhysicalConstant];
+						FDamage -= victim->Buffs[i]->BuffUniqueMap[HEROU::BlockingPhysicalConstant];
 					}
 				}
 				else if (Elem.Key == HEROU::BlockingMagicalChance && dtype == EDamageType::DAMAGE_MAGICAL)
@@ -646,7 +646,7 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attac
 					float chance = FMath::FRandRange(0, 1);
 					if (Elem.Value >= max_critical)
 					{
-						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingMagicalConstant];
+						FDamage -= victim->Buffs[i]->BuffUniqueMap[HEROU::BlockingMagicalConstant];
 					}
 				}
 				else if (Elem.Key == HEROU::BlockingPureChance && dtype == EDamageType::DAMAGE_PURE)
@@ -654,7 +654,7 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attac
 					float chance = FMath::FRandRange(0, 1);
 					if (Elem.Value >= max_critical)
 					{
-						FDamage -= victim->BuffQueue[i]->BuffUniqueMap[HEROU::BlockingPureConstant];
+						FDamage -= victim->Buffs[i]->BuffUniqueMap[HEROU::BlockingPureConstant];
 					}
 				}
 			}
@@ -742,9 +742,9 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attac
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
 		//FString::Printf(TEXT("Server FDamage %f"), FDamage));
 
-		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+		for (int32 i = 0; i < victim->Buffs.Num(); ++i)
 		{
-			victim->BuffQueue[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
+			victim->Buffs[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
 		}
 		victim->CurrentHP -= FDamage;
 		if (attacker->BuffPropertyMap[HEROP::StealHealth] > 0)
@@ -755,21 +755,21 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attac
 		{
 			attacker->CurrentOrb->OnOrbAttackLanded(attacker, victim, dtype, damage, RDamage);
 		}
-		for (int32 i = 0; i < attacker->BuffQueue.Num(); ++i)
+		for (int32 i = 0; i < attacker->Buffs.Num(); ++i)
 		{
-			attacker->BuffQueue[i]->CreateDamage(attacker, victim, dtype, damage, RDamage);
+			attacker->Buffs[i]->CreateDamage(attacker, victim, dtype, damage, RDamage);
 			if (AttackLanded)
 			{
-				attacker->BuffQueue[i]->OnAttackLanded(attacker, victim, dtype, damage, RDamage);
+				attacker->Buffs[i]->OnAttackLanded(attacker, victim, dtype, damage, RDamage);
 			}
 		}
 		if (AttackLanded)
 		{
 			attacker->ServerPlayAttackLandedSFX();
 		}
-		for (int32 i = 0; i < victim->BuffQueue.Num(); ++i)
+		for (int32 i = 0; i < victim->Buffs.Num(); ++i)
 		{
-			victim->BuffQueue[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
+			victim->Buffs[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
 		}
 		// 顯示傷害文字
 		attacker->ServerShowDamageEffect(victim->GetActorLocation(),

@@ -873,8 +873,11 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				else if (hs->SkillBehavior[HEROB::UnitTargetEnemy] &&
 					IsValid(CurrentSelectTarget) && CurrentSelectTarget->TeamId != hero->TeamId)
 				{
-					act.ActionStatus = EHeroActionStatus::SpellToActor;
-					act.TargetActor = CurrentSelectTarget;
+					if (!CurrentSelectTarget->BuffStateMap[HEROS::BanBeSkillSight])
+					{
+						act.ActionStatus = EHeroActionStatus::SpellToActor;
+						act.TargetActor = CurrentSelectTarget;
+					}
 				}
 				else if (hs->SkillBehavior[HEROB::Aoe])
 				{

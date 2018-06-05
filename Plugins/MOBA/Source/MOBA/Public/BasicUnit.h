@@ -133,7 +133,7 @@ public:
 	
 	//加上buff
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void AddBuff(AHeroBuff* buff);
+	void AddBuff(AHeroBuff* buff, ABasicUnit* caster);
 	
 	//使用buff名稱得到buff指標
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
@@ -141,7 +141,7 @@ public:
 
 	// 加入Buff時取代同名的Buff
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void AddUniqueBuff(AHeroBuff* buff);
+	void AddUniqueBuff(AHeroBuff* buff, ABasicUnit* caster);
 	
 	// 移除所有同名的Buff
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
@@ -149,7 +149,7 @@ public:
 
 	// 移除Buff
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void RemoveBuff(AHeroBuff* buff);
+	void RemoveBuff(AHeroBuff* buff, ABasicUnit* caster);
 
 	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable)
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
@@ -502,7 +502,7 @@ public:
 
 	// 所有的buff
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
-	TArray<AHeroBuff*> BuffQueue;
+	TArray<AHeroBuff*> Buffs;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	TArray<float> BuffDuration;

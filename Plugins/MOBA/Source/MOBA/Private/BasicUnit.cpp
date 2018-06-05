@@ -221,7 +221,7 @@ void ABasicUnit::Tick(float DeltaTime)
 		// 如果沒法球時從自身狀態找一個法球裝
 		if (!IsValid(CurrentOrb))
 		{
-			for (AHeroBuff* Buff : BuffQueue)
+			for (AHeroBuff* Buff : Buffs)
 			{
 				if (IsValid(Buff) && Buff->IsOrb)
 				{
@@ -249,7 +249,7 @@ void ABasicUnit::Tick(float DeltaTime)
 			BlendingColor = FLinearColor::White;
 			TMap<EHeroBuffProperty, float> SwapProperty = DefaultBuffProperty;
 			TMap<EHeroBuffState, bool> SwapState = DefaultBuffState;
-			for (AHeroBuff* Buff : BuffQueue)
+			for (AHeroBuff* Buff : Buffs)
 			{
 				if (IsValid(Buff))
 				{
@@ -340,26 +340,26 @@ void ABasicUnit::Tick(float DeltaTime)
 		// 更新 Buff 持續時間
 		bool isLastFrameStunning = (0 == StunningLeftCounting);
 		StunningLeftCounting = 0;
-		for (int32 i = 0; i < BuffQueue.Num(); ++i)
+		for (int32 i = 0; i < Buffs.Num(); ++i)
 		{
 			// 移除時間到的Buff
-			if (IsValid(BuffQueue[i]))
+			if (IsValid(Buffs[i]))
 			{
-				if (!BuffQueue[i]->Forever && BuffQueue[i]->Duration <= 0)
+				if (!Buffs[i]->Forever && Buffs[i]->Duration <= 0)
 				{
 					// 釋放記憶體
-					if (!BuffQueue[i]->IsPendingKillPending())
+					if (!Buffs[i]->IsPendingKillPending())
 					{
-						BuffQueue[i]->OnDestroy();
+						Buffs[i]->OnDestroy();
 						//BuffQueue[i]->Destroy();
 					}
-					BuffQueue.RemoveAt(i);
+					Buffs.RemoveAt(i);
 					i--;
 				}
 			}
 			else
 			{
-				BuffQueue.RemoveAt(i);
+				Buffs.RemoveAt(i);
 				i--;
 			}
 		}
@@ -405,15 +405,15 @@ void ABasicUnit::Tick(float DeltaTime)
 	{
 		bool hasRebirth = false;
 		// 看有沒有重生狀態
-		for (int32 i = 0; i < BuffQueue.Num(); ++i)
+		for (int32 i = 0; i < Buffs.Num(); ++i)
 		{
-			AHeroBuff* Buff = BuffQueue[i];
+			AHeroBuff* Buff = Buffs[i];
 			if (IsValid(Buff) && Buff->BuffState.Contains(HEROS::Rebirth))
 			{
 				CurrentHP = CurrentMaxHP;
 				Buff->OnRebirth(this);
 				hasRebirth = true;
-				BuffQueue.RemoveAt(i);
+				Buffs.RemoveAt(i);
 				break;
 			}
 		}
@@ -506,9 +506,14 @@ void ABasicUnit::Tick(float DeltaTime)
 }
 
 
-void ABasicUnit::AddBuff(AHeroBuff* buff)
+void ABasicUnit::AddBuff(AHeroBuff* buff, ABasicUnit* caster)
 {
-	BuffQueue.Add(buff);
+	for (int32 i = 0; i < Buffs.Num(); ++i)
+	{
+		Buffs[i]->OnAddBuff(caster, this, buff);
+	}
+	Buffs.Add(buff);
+	buff->BuffTarget.Add(this);
 	if (buff->BuffTargetOne == nullptr)
 	{
 		buff->BuffTargetOne = this;
@@ -527,7 +532,6 @@ void ABasicUnit::AddBuff(AHeroBuff* buff)
 			CurrentOrb = buff;
 		}
 	}
-	buff->BuffTarget.Add(this);
 	if (buff->FollowActor)
 	{
 		switch (buff->FollowPosition)
@@ -553,19 +557,23 @@ void ABasicUnit::AddBuff(AHeroBuff* buff)
 AHeroBuff* ABasicUnit::GetBuffByName(FString name)
 {
 	AHeroBuff* res = 0;
-	for (int32 i = 0; i < BuffQueue.Num(); ++i)
+	for (int32 i = 0; i < Buffs.Num(); ++i)
 	{
-		if (BuffQueue[i]->Name == name)
+		if (Buffs[i]->Name == name)
 		{
-			res = BuffQueue[i];
+			res = Buffs[i];
 			break;
 		}
 	}
 	return res;
 }
 
-void ABasicUnit::AddUniqueBuff(AHeroBuff* buff)
+void ABasicUnit::AddUniqueBuff(AHeroBuff* buff, ABasicUnit* caster)
 {
+	for (int32 i = 0; i < Buffs.Num(); ++i)
+	{
+		Buffs[i]->OnAddBuff(caster, this, buff);
+	}
 	if (!IsValid(buff))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
@@ -613,38 +621,42 @@ void ABasicUnit::AddUniqueBuff(AHeroBuff* buff)
 		}
 	}
 	bool hasinsert = false;
-	for (int32 i = 0; i < BuffQueue.Num(); ++i)
+	for (int32 i = 0; i < Buffs.Num(); ++i)
 	{
-		if (BuffQueue[i]->Name == buff->Name)
+		if (Buffs[i]->Name == buff->Name)
 		{
 			hasinsert = true;
-			BuffQueue[i]->Destroy();
-			BuffQueue[i] = buff;
+			Buffs[i]->Destroy();
+			Buffs[i] = buff;
 			break;
 		}
 	}
 	if (!hasinsert)
 	{
-		BuffQueue.Add(buff);
+		Buffs.Add(buff);
 	}
 }
 
 void ABasicUnit::RemoveBuffByName(FString name)
 {
-	for (int32 i = 0; i < BuffQueue.Num(); ++i)
+	for (int32 i = 0; i < Buffs.Num(); ++i)
 	{
-		if (BuffQueue[i]->Name == name)
+		if (Buffs[i]->Name == name)
 		{
-			BuffQueue[i]->Destroy();
-			BuffQueue.RemoveAt(i);
+			Buffs[i]->Destroy();
+			Buffs.RemoveAt(i);
 			i--;
 		}
 	}
 }
 
-void ABasicUnit::RemoveBuff(AHeroBuff* buff)
+void ABasicUnit::RemoveBuff(AHeroBuff* buff, ABasicUnit* caster)
 {
-	BuffQueue.Remove(buff);
+	Buffs.Remove(buff);
+	for (int32 i = 0; i < Buffs.Num(); ++i)
+	{
+		Buffs[i]->OnRemoveBuff(caster, this, buff);
+	}
 }
 
 // Called to bind functionality to input
@@ -709,7 +721,11 @@ bool ABasicUnit::TriggerSkill(int32 index, FVector Pos, ABasicUnit* CurrentTarge
 				}
 				else if (hs->SkillBehavior[EHeroBehavior::UnitTarget])
 				{
-					localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToActor, index, dir, Pos, CurrentTarget);
+					//確認是否被禁止指定技
+					if (!CurrentTarget->BuffStateMap[HEROS::BanBeSkillSight])
+					{
+						localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToActor, index, dir, Pos, CurrentTarget);
+					}
 				}
 				else if (hs->SkillBehavior[EHeroBehavior::Directional])
 				{
@@ -926,7 +942,7 @@ UWebInterfaceJsonValue* ABasicUnit::BuildJsonValue()
 	wjo->SetInteger(FString(TEXT("BaseAttackRange")), BaseAttackRange);
 
 	wjo->SetNumber(FString::Printf(TEXT("Skill_Amount")), this->Skills.Num());
-	wjo->SetNumber(FString::Printf(TEXT("Buff_Amount")), BuffQueue.Num());
+	wjo->SetNumber(FString::Printf(TEXT("Buff_Amount")), Buffs.Num());
 	for (int i = 0; i < this->Skills.Num(); ++i)
 	{
 		if (IsValid(this->Skills[i]))
@@ -949,17 +965,17 @@ UWebInterfaceJsonValue* ABasicUnit::BuildJsonValue()
 			wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), this->Skills[i]->MaxLevel);
 		}
 	}
-	for (int i = 0; i < BuffQueue.Num(); ++i)
+	for (int i = 0; i < Buffs.Num(); ++i)
 	{
-		if (IsValid(BuffQueue[i]))
+		if (IsValid(Buffs[i]))
 		{
-			wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), BuffQueue[i]->Name);
-			wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), BuffQueue[i]->Webpath);
-			wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), BuffQueue[i]->BuffTips);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), BuffQueue[i]->Stacks);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), BuffQueue[i]->Duration);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), BuffQueue[i]->MaxDuration);
-			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), BuffQueue[i]->CanStacks);
+			wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), Buffs[i]->Name);
+			wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), Buffs[i]->Webpath);
+			wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), Buffs[i]->BuffTips);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), Buffs[i]->Stacks);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), Buffs[i]->Duration);
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), Buffs[i]->MaxDuration);
+			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), Buffs[i]->CanStacks);
 		}
 	}
 
@@ -1662,7 +1678,7 @@ void ABasicUnit::DoAction_AttackActor(const FHeroAction& CurrentAction)
 			{
 				CurrentOrb->OnAttackStart(this, TargetActor);
 			}
-			for (AHeroBuff* Buff : BuffQueue)
+			for (AHeroBuff* Buff : Buffs)
 			{
 				Buff->OnAttackStart(this, TargetActor);
 			}
@@ -1944,8 +1960,12 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 			{
 				if (IsValid(localPC))
 				{
-					localPC->ServerHeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
-						CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+					//確認是否被禁止指定技
+					if (!CurrentAction.TargetActor->BuffStateMap[HEROS::BanBeSkillSight])
+					{
+						localPC->ServerHeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
+							CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+					}
 				}
 				BodyStatus = EHeroBodyStatus::SpellEnding;
 				LastUseSkillAction = CurrentAction;
@@ -2097,7 +2117,7 @@ void ABasicUnit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLife
 	DOREPLIFETIME(ABasicUnit, CurrentMP);
 	DOREPLIFETIME(ABasicUnit, BodyStatus);
 	DOREPLIFETIME(ABasicUnit, ActionQueue);
-	DOREPLIFETIME(ABasicUnit, BuffQueue);
+	DOREPLIFETIME(ABasicUnit, Buffs);
 	DOREPLIFETIME(ABasicUnit, CurrentAction);
 	DOREPLIFETIME(ABasicUnit, AttackingCounting);
 	DOREPLIFETIME(ABasicUnit, CurrentSkillIndex);
