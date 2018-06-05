@@ -23,6 +23,12 @@ enum class EHeroBehavior : uint8
 	UnitTargetFriends,
 	//指定目標敵人
 	UnitTargetEnemy,
+	//指定英雄
+	UnitTarget_HeroUnit,
+	//指定一般單位 小兵
+	UnitTarget_BasicUnit,
+	//指定建築物
+	UnitTarget_BuildingUnit,
 	//範圍技
 	Aoe,
 	//不能學習

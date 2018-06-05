@@ -223,7 +223,7 @@ void AMHUD::DrawHUD()
 				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, HPBarBackColor);
 			}
 		}
-		DrawText(EachHero->UnitName, FLinearColor(1, 1, 1), footpos.X - EachHero->UnitName.Len()*.5f * 15, footpos.Y);
+		DrawText(EachHero->UnitName, FLinearColor(1, 1, 1), footpos.X - EachHero->UnitName.Len()*.5f * 15, footpos.Y, NULL, EachHero->UnitNameDrawSize);
 		headpos.Y += HPBarHeight + 1;
 		DrawRect(MPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
 		DrawRect(MPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetMPPercent(), HPBarHeight);
@@ -841,7 +841,6 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 					LocalController->ServerSetHeroAction(CurrentSelection[0], act);
 				}
 			}
-			
 			HUDStatus = EMHUDStatus::ToNormal;
 		}
 			break;
@@ -851,6 +850,7 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 		{
 			if (CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 			{
+				bool ClickOK = false;
 				ABasicUnit* hero = CurrentSelection[0];
 				hero->HideSkillHint();
 				FHeroAction act;
@@ -858,50 +858,70 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 				if (hs->SkillBehavior[HEROB::Directional])
 				{
 					act.ActionStatus = EHeroActionStatus::SpellToDirection;
+					ClickOK = true;
 				}
 				else if (hs->SkillBehavior[HEROB::UnitTarget])
 				{
-					act.ActionStatus = EHeroActionStatus::SpellToActor;
-					act.TargetActor = CurrentSelectTarget;
+					if ((CurrentSelectTarget->TeamId != hero->TeamId && 
+						!CurrentSelectTarget->BuffStateMap[HEROS::BanBeSkillSight]) ||
+						CurrentSelectTarget->TeamId == hero->TeamId && 
+						hs->SkillBehavior[HEROB((int)HEROB::UnitTarget_HeroUnit + (int)CurrentSelectTarget->UnitType)])
+					{
+						act.ActionStatus = EHeroActionStatus::SpellToActor;
+						act.TargetActor = CurrentSelectTarget;
+						ClickOK = true;
+					}
 				}
 				else if (hs->SkillBehavior[HEROB::UnitTargetFriends] &&
 					IsValid(CurrentSelectTarget) && CurrentSelectTarget->TeamId == hero->TeamId)
 				{
-					act.ActionStatus = EHeroActionStatus::SpellToActor;
-					act.TargetActor = CurrentSelectTarget;
+					if (hs->SkillBehavior[HEROB((int)HEROB::UnitTarget_HeroUnit + (int)CurrentSelectTarget->UnitType)])
+					{
+						act.ActionStatus = EHeroActionStatus::SpellToActor;
+						act.TargetActor = CurrentSelectTarget;
+						ClickOK = true;
+					}
 				}
 				else if (hs->SkillBehavior[HEROB::UnitTargetEnemy] &&
 					IsValid(CurrentSelectTarget) && CurrentSelectTarget->TeamId != hero->TeamId)
 				{
-					if (!CurrentSelectTarget->BuffStateMap[HEROS::BanBeSkillSight])
+					if (!CurrentSelectTarget->BuffStateMap[HEROS::BanBeSkillSight] &&
+						hs->SkillBehavior[HEROB((int)HEROB::UnitTarget_HeroUnit + (int)CurrentSelectTarget->UnitType)])
 					{
 						act.ActionStatus = EHeroActionStatus::SpellToActor;
 						act.TargetActor = CurrentSelectTarget;
+						ClickOK = true;
 					}
 				}
 				else if (hs->SkillBehavior[HEROB::Aoe])
 				{
 					act.ActionStatus = EHeroActionStatus::SpellToPosition;
+					ClickOK = true;
 				}
 				else if (hs->SkillBehavior[HEROB::NoTarget])
 				{
 					act.ActionStatus = EHeroActionStatus::SpellNow;
+					ClickOK = true;
 				}
-				act.TargetIndex1 = CurrentSelection[0]->GetCurrentSkillIndex();
-
-				act.TargetVec1 = GetCurrentDirection();
-				act.TargetVec2 = CurrentMouseHit;
-				act.SequenceNumber = SequenceNumber++;
-				if (bLeftShiftDown)
+				
+				if (ClickOK)
 				{
-					LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
-				}
-				else
-				{
-					LocalController->ServerSetHeroAction(CurrentSelection[0], act);
+					act.TargetIndex1 = CurrentSelection[0]->GetCurrentSkillIndex();
+					act.TargetVec1 = GetCurrentDirection();
+					act.TargetVec2 = CurrentMouseHit;
+					act.SequenceNumber = SequenceNumber++;
+					if (bLeftShiftDown)
+					{
+						LocalController->ServerAppendHeroAction(CurrentSelection[0], act);
+					}
+					else
+					{
+						LocalController->ServerSetHeroAction(CurrentSelection[0], act);
+					}
+					HUDStatus = EMHUDStatus::ToNormal;
 				}
 			}
-			HUDStatus = EMHUDStatus::ToNormal;
+			
 		}
 			break;
 		case EMHUDStatus::ToNormal:

@@ -213,6 +213,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FString UnitName;
 
+	// 英雄名/單位名
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	float UnitNameDrawSize = 1.f;
+
 	// 血條長度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float HPBarLength;
@@ -237,9 +241,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	TArray<TSubclassOf<AHeroSkill>>	Skill_Classes;
 
+	// 身體半徑，讓巨大的單位不需要很長的攻擊距離才能攻擊到
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	float BodySize = 100;
+
 	// 基礎攻擊距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	float BaseAttackRange;
+	float BaseAttackRange = 50;
 
 	// 原始攻擊秒數
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

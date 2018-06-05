@@ -722,7 +722,8 @@ bool ABasicUnit::TriggerSkill(int32 index, FVector Pos, ABasicUnit* CurrentTarge
 				else if (hs->SkillBehavior[EHeroBehavior::UnitTarget])
 				{
 					//確認是否被禁止指定技
-					if (!CurrentTarget->BuffStateMap[HEROS::BanBeSkillSight])
+					if (!CurrentTarget->BuffStateMap[HEROS::BanBeSkillSight] &&
+						hs->SkillBehavior[HEROB((int)HEROB::UnitTarget_HeroUnit+ (int)CurrentTarget->UnitType)])
 					{
 						localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellToActor, index, dir, Pos, CurrentTarget);
 					}
@@ -1338,7 +1339,7 @@ void ABasicUnit::DoAction_MovingAttackToPosition(const FHeroAction& CurrentActio
 		case EHeroBodyStatus::Standing:
 		{
 			float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-			if (CurrentAttackRange > DistanceToTargetActor)
+			if (CurrentAttackRange + TargetActor->BodySize > DistanceToTargetActor)
 			{
 				BodyStatus = EHeroBodyStatus::AttackWating;
 				IsAttacked = false;
@@ -1356,7 +1357,7 @@ void ABasicUnit::DoAction_MovingAttackToPosition(const FHeroAction& CurrentActio
 		case EHeroBodyStatus::Moving:
 		{
 			float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-			if (CurrentAttackRange > DistanceToTargetActor)
+			if (CurrentAttackRange + TargetActor->BodySize > DistanceToTargetActor)
 			{
 				if (IsValid(localPC))
 				{
@@ -1629,7 +1630,7 @@ void ABasicUnit::DoAction_AttackActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Standing:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (CurrentAttackRange > DistanceToTargetActor)
+		if (CurrentAttackRange + TargetActor->BodySize > DistanceToTargetActor)
 		{
 			BodyStatus = EHeroBodyStatus::AttackWating;
 			IsAttacked = false;
@@ -1647,7 +1648,7 @@ void ABasicUnit::DoAction_AttackActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Moving:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (CurrentAttackRange > DistanceToTargetActor)
+		if (CurrentAttackRange + TargetActor->BodySize > DistanceToTargetActor)
 		{
 			if (IsValid(localPC))
 			{
@@ -1900,7 +1901,7 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Standing:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (CurrentAttackRange > DistanceToTargetActor)
+		if (this->Skills[CurrentAction.TargetIndex1]->GetMaxCastRange() + TargetActor->BodySize > DistanceToTargetActor)
 		{
 			BodyStatus = EHeroBodyStatus::SpellWating;
 			SpellingCounting = 0;
@@ -1918,7 +1919,7 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Moving:
 	{
 		float DistanceToTargetActor = FVector::Dist(TargetActor->GetActorLocation(), this->GetActorLocation());
-		if (this->Skills[CurrentAction.TargetIndex1]->GetMaxCastRange() > DistanceToTargetActor)
+		if (this->Skills[CurrentAction.TargetIndex1]->GetMaxCastRange() + TargetActor->BodySize > DistanceToTargetActor)
 		{
 			if (IsValid(localPC))
 			{
