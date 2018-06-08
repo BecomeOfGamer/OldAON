@@ -289,9 +289,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current", Replicated)
 	float MaxCD;
 
-	//CD減少倍率
+	//CD倍率 0.9就是-10% CD
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
-	float CDRatio;
+	float CDRatio = 1;
 
 	//是否正在持法
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current")
