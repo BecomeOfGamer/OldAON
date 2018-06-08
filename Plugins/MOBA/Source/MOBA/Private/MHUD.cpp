@@ -204,8 +204,13 @@ void AMHUD::DrawHUD()
 		float  hpBarLength = EachHero->HPBarLength;
 		float  halfHPBarLength = hpBarLength * .5f;
 		headpos += HPBarOffset;
+		float HPLen = hpBarLength * EachHero->GetHPPercent();
+		float ShieldLen = hpBarLength * EachHero->GetShieldPercent();
+		//畫HP
 		DrawRect(HPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
-		DrawRect(HPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetHPPercent(), HPBarHeight);
+		DrawRect(HPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, HPLen, HPBarHeight);
+		//畫通用護盾
+		DrawRect(ShieldColor, headpos.X - halfHPBarLength + HPLen, headpos.Y, ShieldLen, HPBarHeight);
 		float maxhp = EachHero->CurrentMaxHP;
 		if(maxhp < 1500)
 		{

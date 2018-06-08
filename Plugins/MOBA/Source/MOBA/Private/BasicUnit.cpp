@@ -880,6 +880,19 @@ float ABasicUnit::GetHPPercent()
 	return CurrentHP / CurrentMaxHP;
 }
 
+float ABasicUnit::GetShieldPercent()
+{
+	return CurrentShield / CurrentMaxHP;
+}
+float ABasicUnit::GetShieldPhysicalPercent()
+{
+	return CurrentShieldPhysical / CurrentMaxHP;
+}
+float ABasicUnit::GetShieldMagicalPercent()
+{
+	return CurrentShieldMagical / CurrentMaxHP;
+}
+
 float ABasicUnit::GetMPPercent()
 {
 	return CurrentMP / CurrentMaxMP;
@@ -952,6 +965,128 @@ bool ABasicUnit::HasEquipment(AEquipment* equ)
 	return false;
 }
 
+UWebInterfaceJsonObject* ABasicUnit::BuildJsonObject()
+{
+	UWebInterfaceJsonObject* wjo = UWebInterfaceHelpers::ConstructObject();
+	//一般單位也有的屬性
+	//英雄名/單位名
+	wjo->SetString(FString(TEXT("UnitName")), UnitName);
+	//隊伍id
+	wjo->SetInteger(FString(TEXT("TeamId")), TeamId);
+	//是否活著
+	wjo->SetBoolean(FString(TEXT("IsAlive")), IsAlive);
+	//移動速度
+	wjo->SetInteger(FString(TEXT("CurrentMoveSpeed")), CurrentMoveSpeed);
+	//最大血量
+	wjo->SetInteger(FString(TEXT("CurrentMaxHP")), CurrentMaxHP);
+	//血量
+	wjo->SetInteger(FString(TEXT("CurrentHP")), CurrentHP);
+	//通用護盾值
+	wjo->SetInteger(FString(TEXT("CurrentShield")), CurrentShield);
+	//物理護盾值
+	wjo->SetInteger(FString(TEXT("CurrentShieldPhysical")), CurrentShieldPhysical);
+	//魔法護盾值
+	wjo->SetInteger(FString(TEXT("CurrentShieldMagical")), CurrentShieldMagical);
+	//最大魔力
+	wjo->SetInteger(FString(TEXT("CurrentMaxMP")), CurrentMaxMP);
+	//魔力
+	wjo->SetInteger(FString(TEXT("CurrentMP")), CurrentMP);
+	//每秒回血
+	wjo->SetNumber(FString(TEXT("CurrentRegenHP")), CurrentRegenHP);
+	//每秒回魔
+	wjo->SetNumber(FString(TEXT("CurrentRegenMP")), CurrentRegenMP);
+	//攻速
+	wjo->SetNumber(FString(TEXT("CurrentAttackSpeed")), CurrentAttackSpeed);
+	//攻速秒數
+	wjo->SetNumber(FString(TEXT("CurrentAttackSpeedSecond")), CurrentAttackSpeedSecond);
+	//攻擊力
+	wjo->SetInteger(FString(TEXT("CurrentAttack")), CurrentAttack);
+	//防禦力
+	wjo->SetNumber(FString(TEXT("CurrentArmor")), CurrentArmor);
+	//攻擊距離
+	wjo->SetInteger(FString(TEXT("CurrentAttackRange")), CurrentAttackRange);
+	//當前魔法受傷倍率
+	wjo->SetNumber(FString(TEXT("CurrentMagicInjured")), CurrentMagicInjured);
+	//準備要用的技能index
+	wjo->SetInteger(FString(TEXT("CurrentSkillIndex")), CurrentSkillIndex);
+	//剩餘的升級技能點數
+	wjo->SetInteger(FString(TEXT("CurrentSkillPoints")), CurrentSkillPoints);
+	//暈炫倒數計時器
+	wjo->SetInteger(FString(TEXT("StunningLeftCounting")), StunningLeftCounting);
+	//死亡給敵金錢
+	wjo->SetInteger(FString(TEXT("BountyGold")), BountyGold);
+	//基礎攻擊力
+	wjo->SetInteger(FString(TEXT("BaseAttack")), BaseAttack);
+	//基礎裝甲
+	wjo->SetNumber(FString(TEXT("BaseArmor")), BaseArmor);
+	//基礎移動速度
+	wjo->SetInteger(FString(TEXT("BaseMoveSpeed")), BaseMoveSpeed);
+	//基礎攻擊距離
+	wjo->SetInteger(FString(TEXT("BaseAttackRange")), BaseAttackRange);
+	//技能數量
+	wjo->SetNumber(FString::Printf(TEXT("Skill_Amount")), this->Skills.Num());
+	//Buff數量
+	wjo->SetNumber(FString::Printf(TEXT("Buff_Amount")), Buffs.Num());
+	for (int i = 0; i < this->Skills.Num(); ++i)
+	{
+		if (IsValid(this->Skills[i]))
+		{
+			//技能名稱
+			wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), this->Skills[i]->Name);
+			//是否啟用
+			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_Enabled"), i + 1), this->Skills[i]->IsEnable());
+			//是否顯示
+			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_Display"), i + 1), this->Skills[i]->IsDisplay());
+			//圖片路徑
+			wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), this->Skills[i]->Webpath);
+			//技能描述
+			wjo->SetString(FString::Printf(TEXT("Skill%d_Description"), i + 1), this->Skills[i]->GetDescription());
+			//CD百分比
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CDPercent"), i + 1), this->Skills[i]->GetSkillCDPercent());
+			//目前CD時間
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentCD"), i + 1), this->Skills[i]->CurrentCD);
+			//目前最大CD時間
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), this->Skills[i]->MaxCD);
+			//該技能目前可不可以升級
+			if (this->Skills[i]->CanLevelUp() && CurrentSkillPoints > 0)
+			{
+				wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), true);
+			}
+			else
+			{
+				wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), false);
+			}
+			//技能等級
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentLevel"), i + 1), this->Skills[i]->CurrentLevel);
+			//技能最大等級
+			wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), this->Skills[i]->MaxLevel);
+		}
+	}
+	for (int i = 0; i < Buffs.Num(); ++i)
+	{
+		if (IsValid(Buffs[i]))
+		{
+			//Buff名稱
+			wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), Buffs[i]->Name);
+			//圖片路徑
+			wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), Buffs[i]->Webpath);
+			//是否是正面Buff
+			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_Friendly"), i + 1), Buffs[i]->Friendly);
+			//Buff提示
+			wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), Buffs[i]->BuffTips);
+			//Buff堆疊成數
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), Buffs[i]->Stacks);
+			//Buff持續剩餘時間
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), Buffs[i]->Duration);
+			//Buff持續總時間
+			wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), Buffs[i]->MaxDuration);
+			//Buff是否可堆疊
+			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), Buffs[i]->CanStacks);
+		}
+	}
+	return wjo;
+}
+
 UWebInterfaceJsonValue* ABasicUnit::BuildJsonValue()
 {
 	bool initok = true;
@@ -967,72 +1102,7 @@ UWebInterfaceJsonValue* ABasicUnit::BuildJsonValue()
 	{
 		return 0;
 	}
-	UWebInterfaceJsonObject* wjo = UWebInterfaceHelpers::ConstructObject();
-	wjo->SetString(FString(TEXT("UnitName")), UnitName);
-	wjo->SetInteger(FString(TEXT("TeamId")), TeamId);
-	wjo->SetBoolean(FString(TEXT("IsAlive")), IsAlive);
-	wjo->SetInteger(FString(TEXT("CurrentMoveSpeed")), CurrentMoveSpeed);
-	wjo->SetInteger(FString(TEXT("CurrentMaxHP")), CurrentMaxHP);
-	wjo->SetInteger(FString(TEXT("CurrentHP")), CurrentHP);
-	wjo->SetInteger(FString(TEXT("CurrentMaxMP")), CurrentMaxMP);
-	wjo->SetInteger(FString(TEXT("CurrentMP")), CurrentMP);
-	wjo->SetNumber(FString(TEXT("CurrentRegenHP")), CurrentRegenHP);
-	wjo->SetNumber(FString(TEXT("CurrentRegenMP")), CurrentRegenMP);
-	wjo->SetNumber(FString(TEXT("CurrentAttackSpeed")), CurrentAttackSpeed);
-	wjo->SetInteger(FString(TEXT("CurrentAttack")), CurrentAttack);
-	wjo->SetNumber(FString(TEXT("CurrentArmor")), CurrentArmor);
-	wjo->SetInteger(FString(TEXT("CurrentAttackRange")), CurrentAttackRange);
-	wjo->SetNumber(FString(TEXT("CurrentAttackSpeedSecond")), CurrentAttackSpeedSecond);
-	wjo->SetNumber(FString(TEXT("CurrentMagicInjured")), CurrentMagicInjured);
-	
-	wjo->SetInteger(FString(TEXT("CurrentSkillIndex")), CurrentSkillIndex);
-	wjo->SetInteger(FString(TEXT("StunningLeftCounting")), StunningLeftCounting);
-	wjo->SetInteger(FString(TEXT("BountyEXP")), BountyEXP);
-	wjo->SetInteger(FString(TEXT("BountyGold")), BountyGold);
-	wjo->SetInteger(FString(TEXT("BaseAttack")), BaseAttack);
-	wjo->SetNumber(FString(TEXT("BaseArmor")), BaseArmor);
-	wjo->SetInteger(FString(TEXT("BaseMoveSpeed")), BaseMoveSpeed);
-	wjo->SetInteger(FString(TEXT("BaseAttackRange")), BaseAttackRange);
-
-	wjo->SetNumber(FString::Printf(TEXT("Skill_Amount")), this->Skills.Num());
-	wjo->SetNumber(FString::Printf(TEXT("Buff_Amount")), Buffs.Num());
-	for (int i = 0; i < this->Skills.Num(); ++i)
-	{
-		if (IsValid(this->Skills[i]))
-		{
-			wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), this->Skills[i]->Name);
-			wjo->SetString(FString::Printf(TEXT("Skill%d_Webpath"), i + 1), this->Skills[i]->Webpath);
-			wjo->SetString(FString::Printf(TEXT("Skill%d_Description"), i + 1), this->Skills[i]->GetDescription());
-			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CDPercent"), i + 1), this->Skills[i]->GetSkillCDPercent());
-			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentCD"), i + 1), this->Skills[i]->CurrentCD);
-			wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxCD"), i + 1), this->Skills[i]->MaxCD);
-			if (this->Skills[i]->CanLevelUp() && CurrentSkillPoints > 0)
-			{
-				wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), true);
-			}
-			else
-			{
-				wjo->SetBoolean(FString::Printf(TEXT("Skill%d_CanLevelUp"), i + 1), false);
-			}
-			wjo->SetNumber(FString::Printf(TEXT("Skill%d_CurrentLevel"), i + 1), this->Skills[i]->CurrentLevel);
-			wjo->SetNumber(FString::Printf(TEXT("Skill%d_MaxLevel"), i + 1), this->Skills[i]->MaxLevel);
-		}
-	}
-	for (int i = 0; i < Buffs.Num(); ++i)
-	{
-		if (IsValid(Buffs[i]))
-		{
-			wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), Buffs[i]->Name);
-			wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), Buffs[i]->Webpath);
-			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_Friendly"), i + 1), Buffs[i]->Friendly);
-			wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), Buffs[i]->BuffTips);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), Buffs[i]->Stacks);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), Buffs[i]->Duration);
-			wjo->SetNumber(FString::Printf(TEXT("Buff%d_MaxDuration"), i + 1), Buffs[i]->MaxDuration);
-			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_CanStacks"), i + 1), Buffs[i]->CanStacks);
-		}
-	}
-
+	UWebInterfaceJsonObject* wjo = BuildJsonObject();
 	return UWebInterfaceHelpers::ConvertObject(wjo);
 }
 

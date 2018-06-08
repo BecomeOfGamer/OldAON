@@ -207,6 +207,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FLinearColor	HPBarBackColor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FLinearColor	ShieldColor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FLinearColor	ShieldPhysicalColor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	FLinearColor	ShieldMagicalColor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FLinearColor	MPBarForeColor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FLinearColor	MPBarBackColor;

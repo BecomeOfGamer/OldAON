@@ -59,6 +59,26 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnRebirth(ABasicUnit* caster);
 
+	//得到通用護盾
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnGetShield(ABasicUnit* caster, ABasicUnit* protege, float value);
+	//在通用護盾破裂的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnShieldBreak(ABasicUnit* protege, float value);
+	//得到物理護盾
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnGetShieldPhysical(ABasicUnit* caster, ABasicUnit* protege, float value);
+	//在物理護盾破裂的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnShieldPhysicalBreak(ABasicUnit* protege, float value);
+	//得到魔法護盾
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnGetShieldMagical(ABasicUnit* caster, ABasicUnit* protege, float value);
+	//在魔法護盾破裂的瞬間
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void OnShieldMagicalBreak(ABasicUnit* protege, float value);
+	
+
 	//得到Buff前的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAddBuff(ABasicUnit* caster, ABasicUnit* target, AHeroBuff* buff);
