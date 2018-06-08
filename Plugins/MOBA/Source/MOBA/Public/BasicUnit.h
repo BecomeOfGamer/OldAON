@@ -145,11 +145,19 @@ public:
 	
 	// 移除所有同名的Buff
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
-	void RemoveBuffByName(FString name);
+	void RemoveBuffByName(FString name, ABasicUnit* caster);
 
 	// 移除Buff
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void RemoveBuff(AHeroBuff* buff, ABasicUnit* caster);
+	
+	// 移除所有正面狀態
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void RemoveFriendlyBuff(ABasicUnit* caster);
+
+	// 移除所有負面狀態
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void RemoveUnfriendlyBuff(ABasicUnit* caster);
 
 	UFUNCTION(NetMulticast, WithValidation, Unreliable, BlueprintCallable)
 	void ServerShowDamageEffect(FVector pos, FVector dir, float Damage);
@@ -165,6 +173,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAnimaStatusChanged(int32 _LastAnimaStatus, int32 _AnimaStatus);
+
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	UWebInterfaceJsonValue* BuildJsonValue();

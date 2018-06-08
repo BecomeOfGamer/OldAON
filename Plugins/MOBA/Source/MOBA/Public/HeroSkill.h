@@ -186,6 +186,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	void SetEnable(bool value);
 
+	//目前是否可以使用技能
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	bool IsDisplay();
+	
+	//目前是否可以使用技能
+	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
+	void SetDisplay(bool value);
+
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
@@ -220,6 +228,11 @@ public:
 	//是否啟用
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
 	bool Enable = true;
+
+	//是否顯示
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
+	bool Display = true;
+
 
 	//最大施法距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

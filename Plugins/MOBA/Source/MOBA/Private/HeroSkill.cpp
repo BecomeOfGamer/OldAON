@@ -56,7 +56,7 @@ void AHeroSkill::StartCD()
 	{
 		IsChannelling = true;
 	}
-	
+	MaxCD = CDRatio * LevelCD[CurrentLevel - 1];
 }
 
 void AHeroSkill::EndCD()
@@ -72,7 +72,7 @@ void AHeroSkill::LevelUp()
 		CurrentLevel++;
 		if (LevelCD.Num() >= CurrentLevel)
 		{
-			MaxCD = CDRatio = LevelCD[CurrentLevel - 1];
+			MaxCD = CDRatio * LevelCD[CurrentLevel - 1];
 		}
 		if (ManaCost.Num() >= CurrentLevel)
 		{
@@ -229,6 +229,16 @@ bool AHeroSkill::IsEnable()
 void AHeroSkill::SetEnable(bool value)
 {
 	Enable = value;
+}
+
+bool AHeroSkill::IsDisplay()
+{
+	return Display;
+}
+
+void AHeroSkill::SetDisplay(bool value)
+{
+	Display = value;
 }
 
 FString AHeroSkill::GetDescription()

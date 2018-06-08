@@ -1,216 +1,218 @@
-#pragma once
+ï»¿#pragma once
 
 
 UENUM(BlueprintType)
 enum class EDamageType : uint8
 {
-	//ª«²z¶Ë®`
+	//ç‰©ç†å‚·å®³
 	DAMAGE_PHYSICAL,
-	//Å]ªk¶Ë®`
+	//é­”æ³•å‚·å®³
 	DAMAGE_MAGICAL,
-	//¯u¹ê¶Ë®`
+	//çœŸå¯¦å‚·å®³
 	DAMAGE_PURE
 };
 
 UENUM(BlueprintType)
 enum class EHeroBuffState : uint8
 {
-	//·w¬¯
+	//æšˆç‚«
 	Stunning,
-	//¸T²¾°Ê
+	//ç¦ç§»å‹•
 	BanMove,
-	//¸T§ğÀ»
+	//ç¦æ”»æ“Š
 	BanAttack,
-	//¸T§Ş¯à
+	//ç¦æŠ€èƒ½
 	BanSkill,
-	//¸T¹D¨ã
+	//ç¦é“å…·
 	BanEquipment,
-	//¤£¯à³Qªk³N«ü©w
+	//ä¸èƒ½è¢«æ³•è¡“æŒ‡å®š
 	BanBeSkillSight,
-	//¤£¯à³Q´¶§ğ«ü©w
+	//ä¸èƒ½è¢«æ™®æ”»æŒ‡å®š
 	BanBeAttackSight,
-	//Å]ªk§K¬Ì
+	//é­”æ³•å…ç–«
 	MagicalImmune,
-	//ª«²z§K¬Ì
+	//ç‰©ç†å…ç–«
 	PhysicalImmune,
-	//¯u¶Ë§K¬Ì
+	//çœŸå‚·å…ç–«
 	PureImmune,
-	//µL¼Ä
+	//ç„¡æ•µ
 	Invulnerable,
-	//ºÎ¯v¡A³Q§ğÀ»·|¿ô¨Ó
+	//ç¡çœ ï¼Œè¢«æ”»æ“Šæœƒé†’ä¾†
 	Sleeping,
-	//´¶§ğÂà´«¬°Å]ªk¶Ë®`
+	//æ™®æ”»è½‰æ›ç‚ºé­”æ³•å‚·å®³
 	AttackUseMagic,
-	//´¶§ğÂà´«¬°¯u¹ê¶Ë®`
+	//æ™®æ”»è½‰æ›ç‚ºçœŸå¯¦å‚·å®³
 	AttackUsePure,
-	//Áô§Î
+	//éš±å½¢
 	Invisible,
-	//²V¦â
+	//æ··è‰²
 	Blending,
-	//¥i­«¥Í
+	//å¯é‡ç”Ÿ
 	Rebirth,
-	//µ²§ô¦CÁ|
+	//ç„¡è¦–è² é¢ç‹€æ…‹
+	IgnoreUnfriendly,
+	//çµæŸåˆ—èˆ‰
 	EndBuffKind,
 };
 #define HEROS EHeroBuffState
 
-// BaseAttack¬O­ì©l§ğÀ»¤O
-// ª«²z¿é¥X = (((BaseAttack+AttackBounsConstantWhite)*(AttackBounsPercentage+1)+AttackBounsConstantGreen)*PhysicalDamageOutputPercentage)
-// BaseManaRegen¬O­ì©l¦^Å]³t«×
-// ¦^Å]³t«× = (BaseManaRegen*ManaRegenPercentage+ManaRegenConstant)*HealthRegenRatio
-// BaseAttackSpeed ¬O­ì©l§ğ³t¡ABaseAttackSpeedFixed ¬OÅÜ¨­¨tªº°òÂ¦§ğ³t
-// §ğÀ»³t«× = (BaseAttackSpeed*AttackSpeedConstant)*AttackSpeedRatio
-// §ğÀ»³t«× = (BaseAttackSpeedFixed*AttackSpeedConstant)*AttackSpeedRatio
+// BaseAttackæ˜¯åŸå§‹æ”»æ“ŠåŠ›
+// ç‰©ç†è¼¸å‡º = (((BaseAttack+AttackBounsConstantWhite)*(AttackBounsPercentage+1)+AttackBounsConstantGreen)*PhysicalDamageOutputPercentage)
+// BaseManaRegenæ˜¯åŸå§‹å›é­”é€Ÿåº¦
+// å›é­”é€Ÿåº¦ = (BaseManaRegen*ManaRegenPercentage+ManaRegenConstant)*HealthRegenRatio
+// BaseAttackSpeed æ˜¯åŸå§‹æ”»é€Ÿï¼ŒBaseAttackSpeedFixed æ˜¯è®Šèº«ç³»çš„åŸºç¤æ”»é€Ÿ
+// æ”»æ“Šé€Ÿåº¦ = (BaseAttackSpeed*AttackSpeedConstant)*AttackSpeedRatio
+// æ”»æ“Šé€Ÿåº¦ = (BaseAttackSpeedFixed*AttackSpeedConstant)*AttackSpeedRatio
 // 
-// ¥iÅ|¥[ªº¼Æ­È
+// å¯ç–ŠåŠ çš„æ•¸å€¼
 UENUM(BlueprintType)
 enum class EHeroBuffProperty : uint8
 {
-	//ª«²z¶Ë®`¿é¥X¥[¦¨(¦Ê¤À¤ñ) EX. 0.1 ¥[¦¨10%
+	//ç‰©ç†å‚·å®³è¼¸å‡ºåŠ æˆ(ç™¾åˆ†æ¯”) EX. 0.1 åŠ æˆ10%
 	PhysicalDamageOutputPercentage,
-	//Å]ªk¶Ë®`¿é¥X¥[¦¨(¦Ê¤À¤ñ) EX. 0.1 ¥[¦¨10%
+	//é­”æ³•å‚·å®³è¼¸å‡ºåŠ æˆ(ç™¾åˆ†æ¯”) EX. 0.1 åŠ æˆ10%
 	MagicalDamageOutputPercentage,
-	//¯u¶Ë¶Ë®`¿é¥X¥[¦¨(¦Ê¤À¤ñ) EX. 0.1 ¥[¦¨10%
+	//çœŸå‚·å‚·å®³è¼¸å‡ºåŠ æˆ(ç™¾åˆ†æ¯”) EX. 0.1 åŠ æˆ10%
 	PureDamageOutputPercentage,
-	//¨ü¨ìª«²z¶Ë®`¥[¦¨(¦Ê¤À¤ñ) EX. -0.1 ´î¶Ë10%
+	//å—åˆ°ç‰©ç†å‚·å®³åŠ æˆ(ç™¾åˆ†æ¯”) EX. -0.1 æ¸›å‚·10%
 	PhysicalDamageInputPercentage,
-	//¨ü¨ìÅ]ªk¶Ë®`¥[¦¨(¦Ê¤À¤ñ) EX. -0.1 ´î¶Ë10%
+	//å—åˆ°é­”æ³•å‚·å®³åŠ æˆ(ç™¾åˆ†æ¯”) EX. -0.1 æ¸›å‚·10%
 	MagicalDamageInputPercentage,
-	//¨ü¨ì¯u¹ê¶Ë®`¥[¦¨(¦Ê¤À¤ñ) EX. -0.1 ´î¶Ë10%
+	//å—åˆ°çœŸå¯¦å‚·å®³åŠ æˆ(ç™¾åˆ†æ¯”) EX. -0.1 æ¸›å‚·10%
 	PureDamageInputPercentage,
-	//²¾°Ê³t«×¥[¦¨(¦Ê¤À¤ñ) EX. 2 2­¿¶]³t
+	//ç§»å‹•é€Ÿåº¦åŠ æˆ(ç™¾åˆ†æ¯”) EX. 2 2å€è·‘é€Ÿ
 	MoveSpeedRatio,
-	//²¾°Ê³t«×¥[¦¨(©T©w­È) EX. 100 ¼W¥[100¶]³t
+	//ç§»å‹•é€Ÿåº¦åŠ æˆ(å›ºå®šå€¼) EX. 100 å¢åŠ 100è·‘é€Ÿ
 	MoveSpeedConstant,
-	//§ğ³t¥[¦¨(¦Ê¤À¤ñ) EX. 2 2­¿§ğ³t¬ğ¯}°òÂ¦§ğ³t­­¨î
+	//æ”»é€ŸåŠ æˆ(ç™¾åˆ†æ¯”) EX. 2 2å€æ”»é€Ÿçªç ´åŸºç¤æ”»é€Ÿé™åˆ¶
 	AttackSpeedRatio,
-	//§ğ³t¥[¦¨(©T©w­È) EX. 0.5 ¼W¥[50%§ğ³t ³Ì°ª500% ¥[°òÂ¦­È100³Ì°ª600
+	//æ”»é€ŸåŠ æˆ(å›ºå®šå€¼) EX. 0.5 å¢åŠ 50%æ”»é€Ÿ æœ€é«˜500% åŠ åŸºç¤å€¼100æœ€é«˜600
 	AttackSpeedConstant,
-	//§l¦¬ª«²z¶Ë®`(¦Ê¤À¤ñ) EX. 0.1 §l¦¬¨ü¨ìªº10%ª«²z¶Ë®`
+	//å¸æ”¶ç‰©ç†å‚·å®³(ç™¾åˆ†æ¯”) EX. 0.1 å¸æ”¶å—åˆ°çš„10%ç‰©ç†å‚·å®³
 	AbsorbPhysicalDamagePercentage,
-	//§l¦¬Å]ªk¶Ë®`(¦Ê¤À¤ñ) EX. 0.1 §l¦¬¨ü¨ìªº10%Å]ªk¶Ë®`
+	//å¸æ”¶é­”æ³•å‚·å®³(ç™¾åˆ†æ¯”) EX. 0.1 å¸æ”¶å—åˆ°çš„10%é­”æ³•å‚·å®³
 	AbsorbMagicalDamagePercentage,
-	//§l¦¬¯u¹ê¶Ë®`(¦Ê¤À¤ñ) EX. 0.1 §l¦¬¨ü¨ìªº10%¯u¹ê¶Ë®`
+	//å¸æ”¶çœŸå¯¦å‚·å®³(ç™¾åˆ†æ¯”) EX. 0.1 å¸æ”¶å—åˆ°çš„10%çœŸå¯¦å‚·å®³
 	AbsorbPureDamagePercentage,
-	//ªvÂ¡¥[¦¨(¦Ê¤À¤ñ) EX. 0.2 ªvÀø¥Í©R´£¤É10%
+	//æ²»ç™’åŠ æˆ(ç™¾åˆ†æ¯”) EX. 0.2 æ²»ç™‚ç”Ÿå‘½æå‡10%
 	HealPercentage,
-	//¦^Å](©T©w­È) EX. 3 ¨C¬í¦^Å]¼W¥[3
+	//å›é­”(å›ºå®šå€¼) EX. 3 æ¯ç§’å›é­”å¢åŠ 3
 	ManaRegenConstant,
-	//¦^Å](¦Ê¤À¤ñ) EX. 0.03 ¨C¬í¦^Å]¼W¥[Á`Å]¤Oªº3%
+	//å›é­”(ç™¾åˆ†æ¯”) EX. 0.03 æ¯ç§’å›é­”å¢åŠ ç¸½é­”åŠ›çš„3%
 	ManaRegenPercentage,
-	//¦^Å](¤ñ¨Ò¥[¦¨) EX. 2 ¦^´_Å]¤O+200%=300% ¦pªG·í«e¦^Å]20´NÅÜ¦¨60
+	//å›é­”(æ¯”ä¾‹åŠ æˆ) EX. 2 å›å¾©é­”åŠ›+200%=300% å¦‚æœç•¶å‰å›é­”20å°±è®Šæˆ60
 	ManaRegenRatio,
-	//¦^¦å(©T©w­È) EX. 10 ¨C¬í¦^¦å¼W¥[10
+	//å›è¡€(å›ºå®šå€¼) EX. 10 æ¯ç§’å›è¡€å¢åŠ 10
 	HealthRegenConstant,
-	//¦^¦å(¦Ê¤À¤ñ) EX. 0.01 ¨C¬í¦^¦å¼W¥[Á`¥Í©Rªº1%
+	//å›è¡€(ç™¾åˆ†æ¯”) EX. 0.01 æ¯ç§’å›è¡€å¢åŠ ç¸½ç”Ÿå‘½çš„1%
 	HealthRegenPercentage,
-	//¦^¦å(¤ñ¨Ò¥[¦¨) EX. 2 ¦^´_¦å¶q+200%=300% ¦pªG·í«e¦^¦å50´NÅÜ¦¨150
+	//å›è¡€(æ¯”ä¾‹åŠ æˆ) EX. 2 å›å¾©è¡€é‡+200%=300% å¦‚æœç•¶å‰å›è¡€50å°±è®Šæˆ150
 	HealthRegenRatio,
-	//§ğÀ»¥[¦¨(©T©w­È) EX. 30 §ğÀ»¥Õ¦r+30 ¥i¥H³Q¨ä¥¦§ğÀ»¥[¦¨¼vÅT
+	//æ”»æ“ŠåŠ æˆ(å›ºå®šå€¼) EX. 30 æ”»æ“Šç™½å­—+30 å¯ä»¥è¢«å…¶å®ƒæ”»æ“ŠåŠ æˆå½±éŸ¿
 	AttackBounsConstantWhite,
-	//§ğÀ»¥[¦¨(©T©w­È) EX. 30 §ğÀ»ºñ¦r+30 ¤£·|³Q¨ä¥¦§ğÀ»¥[¦¨¼vÅT
+	//æ”»æ“ŠåŠ æˆ(å›ºå®šå€¼) EX. 30 æ”»æ“Šç¶ å­—+30 ä¸æœƒè¢«å…¶å®ƒæ”»æ“ŠåŠ æˆå½±éŸ¿
 	AttackBounsConstantGreen,
-	//§ğÀ»¥[¦¨(¦Ê¤À¤ñ) EX. 2 §ğÀ»¥Õ¦r­¼2¥[¨ìºñ¦r ¤£³Q¨ä¥¦§ğÀ»¥[¦¨¼vÅT
+	//æ”»æ“ŠåŠ æˆ(ç™¾åˆ†æ¯”) EX. 2 æ”»æ“Šç™½å­—ä¹˜2åŠ åˆ°ç¶ å­— ä¸è¢«å…¶å®ƒæ”»æ“ŠåŠ æˆå½±éŸ¿
 	AttackBounsPercentage,
-	//¨¾¿m¥[¦¨(©T©w­È) EX. 5 ¨¾¿m¥Õ¦r+5
+	//é˜²ç¦¦åŠ æˆ(å›ºå®šå€¼) EX. 5 é˜²ç¦¦ç™½å­—+5
 	ArmorBounsConstant,
-	//¨¾¿m¥[¦¨(¦Ê¤À¤ñ) EX. 1 ·í«e¨¾¿m­¼¤W1¥[¨ìºñ¦r
+	//é˜²ç¦¦åŠ æˆ(ç™¾åˆ†æ¯”) EX. 1 ç•¶å‰é˜²ç¦¦ä¹˜ä¸Š1åŠ åˆ°ç¶ å­—
 	ArmorBounsPercentage,
-	//¥Í©R§l¦¬ EX. 0.2 §l¦¬³y¦¨¶Ë®`ªº20%
+	//ç”Ÿå‘½å¸æ”¶ EX. 0.2 å¸æ”¶é€ æˆå‚·å®³çš„20%
 	StealHealth,
-	//§ğÀ»¥¢»~¾÷²v EX. 0.15 15%ªº¾÷²vmiss
+	//æ”»æ“Šå¤±èª¤æ©Ÿç‡ EX. 0.15 15%çš„æ©Ÿç‡miss
 	AttackMiss,
-	//®æÀÉ§ğÀ»¾÷²v EX. 0.25 25%ªº¾÷²v®æÀÉª«²z¶Ë®`
+	//æ ¼æª”æ”»æ“Šæ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡æ ¼æª”ç‰©ç†å‚·å®³
 	BlockingPhysical,
-	//®æÀÉÅ]ªk¾÷²v EX. 0.25 25%ªº¾÷²v®æÀÉÅ]ªk¶Ë®`
+	//æ ¼æª”é­”æ³•æ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡æ ¼æª”é­”æ³•å‚·å®³
 	BlockingMagical,
-	//®æÀÉ¯u¶Ë¾÷²v EX. 0.25 25%ªº¾÷²v®æÀÉ¯u¶Ë¶Ë®`
+	//æ ¼æª”çœŸå‚·æ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡æ ¼æª”çœŸå‚·å‚·å®³
 	BlockingPure,
-	//®æÀÉ©T©wª«²z¶Ë®` EX. 500 ¥ô¦óª«²z¶Ë®`¥ı®æÀÉ500
+	//æ ¼æª”å›ºå®šç‰©ç†å‚·å®³ EX. 500 ä»»ä½•ç‰©ç†å‚·å®³å…ˆæ ¼æª”500
 	BlockingPhysicalConstant,
-	//®æÀÉ©T©wÅ]ªk¶Ë®` EX. 200 ¥ô¦óÅ]ªk¶Ë®`¥ı®æÀÉ200
+	//æ ¼æª”å›ºå®šé­”æ³•å‚·å®³ EX. 200 ä»»ä½•é­”æ³•å‚·å®³å…ˆæ ¼æª”200
 	BlockingMagicalConstant,
-	//®æÀÉ©T©w¯u¹ê¶Ë®` EX. 50  ¥ô¦ó¯u¹ê¶Ë®`¥ı®æÀÉ50
+	//æ ¼æª”å›ºå®šçœŸå¯¦å‚·å®³ EX. 50  ä»»ä½•çœŸå¯¦å‚·å®³å…ˆæ ¼æª”50
 	BlockingPureConstant,
-	//¦å¶q¤W­­¼W¥[ EX. 300 ¼W¥[300³Ì¤j¥Í©R­È
+	//è¡€é‡ä¸Šé™å¢åŠ  EX. 300 å¢åŠ 300æœ€å¤§ç”Ÿå‘½å€¼
 	HealthBouns,
-	//Å]¶q¤W­­¼W¥[ EX. 250 ¼W¥[250³Ì¤jÅ]¤O­È
+	//é­”é‡ä¸Šé™å¢åŠ  EX. 250 å¢åŠ 250æœ€å¤§é­”åŠ›å€¼
 	ManaBouns,
-	//°{Á×¾÷²v EX 0.1 ¦³10%ªº°{Á×¾÷²v
+	//é–ƒé¿æ©Ÿç‡ EX 0.1 æœ‰10%çš„é–ƒé¿æ©Ÿç‡
 	Dodge,
-	//¤O¶q EX. 1.5 ´N¥[1.5ªº¤O¶q
+	//åŠ›é‡ EX. 1.5 å°±åŠ 1.5çš„åŠ›é‡
 	Strength,
-	//±Ó±¶ EX. 2.5 ´N¥[2.5ªº±Ó±¶
+	//æ•æ· EX. 2.5 å°±åŠ 2.5çš„æ•æ·
 	Agile,
-	//´¼¼z EX. 3.5 ´N¥[3.5ªº´¼¼z
+	//æ™ºæ…§ EX. 3.5 å°±åŠ 3.5çš„æ™ºæ…§
 	Intelligence,
-	// µ²§ô¦CÁ|
+	// çµæŸåˆ—èˆ‰
 	EndBuffProperty
 };
 #define HEROP EHeroBuffProperty
 
-// ¤£¥iÅ|¥[ªº¼Æ­È
+// ä¸å¯ç–ŠåŠ çš„æ•¸å€¼
 UENUM(BlueprintType)
 enum class EHeroBuffUnique : uint8
 {
-	//Âê³Ì§C¦å EX. 100 ¦å¶q¤£·|¤Ö©ó100
+	//é–æœ€ä½è¡€ EX. 100 è¡€é‡ä¸æœƒå°‘æ–¼100
 	MinHealth,
-	//Âê³Ì°ª¦å EX. 2000 ¦å¶q¤£·|°ª©ó2000
+	//é–æœ€é«˜è¡€ EX. 2000 è¡€é‡ä¸æœƒé«˜æ–¼2000
 	MaxHealth,
-	//Âê³Ì§CÅ] EX. 200 Å]¤O¤£·|§C©ó200
+	//é–æœ€ä½é­” EX. 200 é­”åŠ›ä¸æœƒä½æ–¼200
 	MinMana,
-	//Âê³Ì°ªÅ] EX. 400 Å]¤O¤£·|°ª©ó400
+	//é–æœ€é«˜é­” EX. 400 é­”åŠ›ä¸æœƒé«˜æ–¼400
 	MaxMana,
-	//§ïÅÜ°òÂ¦§ğ³t(¦Ê¤À¤ñ) EX. 0.9 °òÂ¦§ğ³t±q1.8ÅÜ¬°0.9
+	//æ”¹è®ŠåŸºç¤æ”»é€Ÿ(ç™¾åˆ†æ¯”) EX. 0.9 åŸºç¤æ”»é€Ÿå¾1.8è®Šç‚º0.9
 	BaseAttackSpeedFixed,
-	//²¾°Ê³t«×¥[¦¨(°ß¤@) EX. 80 ¦h­Ó¸Ë³Æ¤]¬O©T©w¥[80¶]³t
+	//ç§»å‹•é€Ÿåº¦åŠ æˆ(å”¯ä¸€) EX. 80 å¤šå€‹è£å‚™ä¹Ÿæ˜¯å›ºå®šåŠ 80è·‘é€Ÿ
 	MoveSpeedUnique,
-	//©T©w²¾°Ê³t«× EX. 700 ©T©w700¶]³t
+	//å›ºå®šç§»å‹•é€Ÿåº¦ EX. 700 å›ºå®š700è·‘é€Ÿ
 	MoveSpeedFixed,
-	//¸ÓBuffª«²zÃzÀ»¾÷²v EX. 0.25 25%ªº¾÷²vÃzÀ»
+	//è©²Buffç‰©ç†çˆ†æ“Šæ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡çˆ†æ“Š
 	PhysicalCriticalChance,
-	//¸ÓBuffª«²zÃzÀ»­¿²v EX. 2.25 2.25ÃzÀ»¶Ë®`
+	//è©²Buffç‰©ç†çˆ†æ“Šå€ç‡ EX. 2.25 2.25çˆ†æ“Šå‚·å®³
 	PhysicalCriticalPercentage,
-	//¸ÓBuffÅ]ªkÃzÀ»¾÷²v EX. 0.25 25%ªº¾÷²vÃzÀ»
+	//è©²Buffé­”æ³•çˆ†æ“Šæ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡çˆ†æ“Š
 	MagicalCriticalChance,
-	//¸ÓBuffÅ]ªkÃzÀ»­¿²v EX. 2.25 2.25ÃzÀ»¶Ë®`
+	//è©²Buffé­”æ³•çˆ†æ“Šå€ç‡ EX. 2.25 2.25çˆ†æ“Šå‚·å®³
 	MagicalCriticalPercentage,
-	//¸ÓBuff¯u¶ËÃzÀ»¾÷²v EX. 0.25 25%ªº¾÷²vÃzÀ»
+	//è©²BuffçœŸå‚·çˆ†æ“Šæ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡çˆ†æ“Š
 	PureCriticalChance,
-	//¸ÓBuff¯u¶ËÃzÀ»­¿²v EX. 2.25 2.25ÃzÀ»¶Ë®`
+	//è©²BuffçœŸå‚·çˆ†æ“Šå€ç‡ EX. 2.25 2.25çˆ†æ“Šå‚·å®³
 	PureCriticalPercentage,
-	//®æÀÉª«²z¾÷²v EX. 0.25 25%ªº¾÷²v®æÀÉª«²z¶Ë®`
+	//æ ¼æª”ç‰©ç†æ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡æ ¼æª”ç‰©ç†å‚·å®³
 	BlockingPhysicalChance,
-	//®æÀÉÅ]ªk¾÷²v EX. 0.25 25%ªº¾÷²v®æÀÉÅ]ªk¶Ë®`
+	//æ ¼æª”é­”æ³•æ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡æ ¼æª”é­”æ³•å‚·å®³
 	BlockingMagicalChance,
-	//®æÀÉ¯u¶Ë¾÷²v EX. 0.25 25%ªº¾÷²v®æÀÉ¯u¶Ë¶Ë®`
+	//æ ¼æª”çœŸå‚·æ©Ÿç‡ EX. 0.25 25%çš„æ©Ÿç‡æ ¼æª”çœŸå‚·å‚·å®³
 	BlockingPureChance,
-	//®æÀÉ©T©wª«²z¶Ë®` EX. 500 ¥ô¦óª«²z¶Ë®`¥ı®æÀÉ500
+	//æ ¼æª”å›ºå®šç‰©ç†å‚·å®³ EX. 500 ä»»ä½•ç‰©ç†å‚·å®³å…ˆæ ¼æª”500
 	BlockingPhysicalConstant,
-	//®æÀÉ©T©wÅ]ªk¶Ë®` EX. 200 ¥ô¦óÅ]ªk¶Ë®`¥ı®æÀÉ200
+	//æ ¼æª”å›ºå®šé­”æ³•å‚·å®³ EX. 200 ä»»ä½•é­”æ³•å‚·å®³å…ˆæ ¼æª”200
 	BlockingMagicalConstant,
-	//®æÀÉ©T©w¯u¹ê¶Ë®` EX. 50  ¥ô¦ó¯u¹ê¶Ë®`¥ı®æÀÉ50
+	//æ ¼æª”å›ºå®šçœŸå¯¦å‚·å®³ EX. 50  ä»»ä½•çœŸå¯¦å‚·å®³å…ˆæ ¼æª”50
 	BlockingPureConstant,
-	//¹ï²ÄN­Ó¶¤¥îÁô§ÎµL®Ä
+	//å°ç¬¬Nå€‹éšŠä¼éš±å½¢ç„¡æ•ˆ
 	UnInvisibleTeam,
-	//¹ï¼Ä¤HªºÆF®ğ/¥úÀô¥b®|
+	//å°æ•µäººçš„éˆæ°£/å…‰ç’°åŠå¾‘
 	AuraRadiusEnemy,
-	//¹ï¦Û¤v¤HªºÆF®ğ/¥úÀô¥b®|
+	//å°è‡ªå·±äººçš„éˆæ°£/å…‰ç’°åŠå¾‘
 	AuraRadiusFriends,
-	// µ²§ô¦CÁ|
+	// çµæŸåˆ—èˆ‰
 	EndBuffProperty,
 };
 #define HEROU EHeroBuffUnique
 
-// ¯S®Ä¸òÀHªº¦ì¸m
+// ç‰¹æ•ˆè·Ÿéš¨çš„ä½ç½®
 UENUM(BlueprintType)
 enum class EBuffPosition : uint8
 {
-	//ÀY¤W
+	//é ­ä¸Š
 	Head,
-	//¸}¤W
+	//è…³ä¸Š
 	Foot,
-	//¨¤¦â¤¤¤ßÂI
+	//è§’è‰²ä¸­å¿ƒé»
 	Root
 };
 
@@ -218,68 +220,68 @@ enum class EBuffPosition : uint8
 UENUM(BlueprintType)
 enum class EKeyBehavior : uint8
 {
-	// §Ş¯à1
+	// æŠ€èƒ½1
 	KEY_SKILL_1,
-	// §Ş¯à2
+	// æŠ€èƒ½2
 	KEY_SKILL_2,
-	// §Ş¯à3
+	// æŠ€èƒ½3
 	KEY_SKILL_3,
-	// §Ş¯à4
+	// æŠ€èƒ½4
 	KEY_SKILL_4,
-	// §Ş¯à5
+	// æŠ€èƒ½5
 	KEY_SKILL_5,
-	// §Ş¯à6
+	// æŠ€èƒ½6
 	KEY_SKILL_6,
-	// §Ş¯à7
+	// æŠ€èƒ½7
 	KEY_SKILL_7,
-	// §Ş¯à8
+	// æŠ€èƒ½8
 	KEY_SKILL_8,
-	// §Ş¯à9
+	// æŠ€èƒ½9
 	KEY_SKILL_9,
-	// §Ş¯à10
+	// æŠ€èƒ½10
 	KEY_SKILL_10,
-	// §ğÀ»
+	// æ”»æ“Š
 	KEY_ATTACK,
-	// ²¾°Ê
+	// ç§»å‹•
 	KEY_MOVE,
-	// °±¤î©Ò¦³°Ê§@
+	// åœæ­¢æ‰€æœ‰å‹•ä½œ
 	KEY_STOP,
-	// ¿ï¾Ü¦Û¤vªº­^¶¯
+	// é¸æ“‡è‡ªå·±çš„è‹±é›„
 	KEY_SELECT_OWNED_HERO,
 };
 
 UENUM(BlueprintType)
 enum class EHeroActionStatus : uint8
 {
-	//¯¸µÛ¥ğ®§
+	//ç«™è‘—ä¼‘æ¯
 	Default,
-	//AÂI¦aªO ²¾°Ê¤¤¹J¨ì¼Ä¤H°±¤U¨Ó§ğÀ»
+	//Aé»åœ°æ¿ ç§»å‹•ä¸­é‡åˆ°æ•µäººåœä¸‹ä¾†æ”»æ“Š
 	MovingAttackToPosition,
-	//²¾°Ê¨ì«ü©w¦ì¸m
+	//ç§»å‹•åˆ°æŒ‡å®šä½ç½®
 	MoveToPosition,
-	//²¾°Ê¨ì«ü©wªº¤H¨­Ãä
+	//ç§»å‹•åˆ°æŒ‡å®šçš„äººèº«é‚Š
 	MoveToActor,
-	//¸òµÛ¤H¨«
+	//è·Ÿè‘—äººèµ°
 	FollowActor,
-	//¥´«ü©wªº¤H
+	//æ‰“æŒ‡å®šçš„äºº
 	AttackActor,
-	//Ãä²¾°ÊÃä§ğÀ»«ü©w¼Ä¤H
+	//é‚Šç§»å‹•é‚Šæ”»æ“ŠæŒ‡å®šæ•µäºº
 	MovingAttackActor,
-	//ª½±µ¬I©ñ§Ş¯à
+	//ç›´æ¥æ–½æ”¾æŠ€èƒ½
 	SpellNow,
-	//«ü©w¦aÂIªº§Ş¯à
+	//æŒ‡å®šåœ°é»çš„æŠ€èƒ½
 	SpellToPosition,
-	//«ü¦V§Ş
+	//æŒ‡å‘æŠ€
 	SpellToDirection,
-	//«ü©w§Ş
+	//æŒ‡å®šæŠ€
 	SpellToActor,
-	//¾ß¸Ë
+	//æ’¿è£
 	MoveToPickup,
-	//¥á¸Ë
+	//ä¸Ÿè£
 	MoveToThrowEqu,
-	//¥á¸Ëµ¹¤H
+	//ä¸Ÿè£çµ¦äºº
 	ThrowEquToActor,
-	// ¯}Ãa³õ´ºª«¥ó
+	// ç ´å£å ´æ™¯ç‰©ä»¶
 	AttackSceneObject,
 };
 
@@ -287,27 +289,27 @@ enum class EHeroActionStatus : uint8
 UENUM(BlueprintType)
 enum class EHeroBodyStatus : uint8
 {
-	//¯¸µÛµo§b
+	//ç«™è‘—ç™¼å‘†
 	Standing,
-	//²¾°Ê¤¤
+	//ç§»å‹•ä¸­
 	Moving,
-	//·w¯t¤¤
+	//æšˆçœ©ä¸­
 	Stunning,
-	//§ğÀ»µ¥«İ
+	//æ”»æ“Šç­‰å¾…
 	AttackWating,
-	//§ğÀ»«e·n
+	//æ”»æ“Šå‰æ–
 	AttackBegining,
-	//§ğÀ»«á·n
+	//æ”»æ“Šå¾Œæ–
 	AttackEnding,
-	//¬Iªk«eµ¥«İ
+	//æ–½æ³•å‰ç­‰å¾…
 	SpellWating,
-	//¬Iªk«e·n
+	//æ–½æ³•å‰æ–
 	SpellBegining,
-	//¬Iªk«á·n
+	//æ–½æ³•å¾Œæ–
 	SpellEnding,
-	//«ùÄò¹ï¬Y¤H¬Iªk¤¤
+	//æŒçºŒå°æŸäººæ–½æ³•ä¸­
 	SpellChannellingActor,
-	//«ùÄò¬Iªk¤¤
+	//æŒçºŒæ–½æ³•ä¸­
 	SpellChannelling,
 };
 
@@ -315,25 +317,25 @@ enum class EHeroBodyStatus : uint8
 UENUM(BlueprintType)
 enum class ETeamFlag : uint8
 {
-	// Â´¥Ğ­x
+	// ç¹”ç”°è»
 	Team1 = 1,
-	// Áp¦X­x
+	// è¯åˆè»
 	Team2 = 2,
-	// ¼Ä¶¤
+	// æ•µéšŠ
 	TeamEnemy,
-	// ¤Í­x
+	// å‹è»
 	TeamFriends,
-	// ¥ş³¡
+	// å…¨éƒ¨
 	TeamAll,
 };
 
 UENUM(BlueprintType)
 enum class EMOBAType : uint8
 {
-	// ­^¶¯
+	// è‹±é›„
 	HeroUnit,
-	// ¤p§L
+	// å°å…µ
 	BasicUnit,
-	// «Ø¿vª«
+	// å»ºç¯‰ç‰©
 	BuildingUnit,
 };

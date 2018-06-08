@@ -47,6 +47,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	//Buff時間到時消失的瞬間
+	//但是被消除Buff時不會呼叫
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnDestroy();
 
@@ -61,7 +62,8 @@ public:
 	//得到Buff前的瞬間
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnAddBuff(ABasicUnit* caster, ABasicUnit* target, AHeroBuff* buff);
-	//失去Buff後的瞬間
+	//被指定消除Buff後的瞬間
+	//RemoveBuff, RemoveBuffByName, RemoveFriendlyBuff, RemoveUnfriendlyBuff
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void OnRemoveBuff(ABasicUnit* caster, ABasicUnit* target, AHeroBuff* buff);
 	
@@ -224,6 +226,10 @@ public:
 
 	UPROPERTY(Category = "MOBA", EditAnywhere, BlueprintReadWrite)
 	int32 MaxStacks = 100;
+
+	//是否是正面Buff
+	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite)
+	bool Friendly = true;
 
 	// 當前持續時間
 	UPROPERTY(Category = "MOBA", meta = (ExposeOnSpawn = "true"), EditAnywhere, BlueprintReadWrite)

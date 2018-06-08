@@ -219,22 +219,30 @@ void ABasicUnit::Tick(float DeltaTime)
 		}
 		
 		// 如果沒法球時從自身狀態找一個法球裝
+		// 無視負面效果的法球
 		if (!IsValid(CurrentOrb))
 		{
 			for (AHeroBuff* Buff : Buffs)
 			{
 				if (IsValid(Buff) && Buff->IsOrb)
 				{
-					if (IsValid(CurrentOrb))
+					if (BuffStateMap[HEROS::IgnoreUnfriendly] && !Buff->Friendly)
 					{
-						if (CurrentOrb->Priority < Buff->Priority)
-						{
-							CurrentOrb = Buff;
-						}
+						// do nothing
 					}
 					else
 					{
-						CurrentOrb = Buff;
+						if (IsValid(CurrentOrb))
+						{
+							if (CurrentOrb->Priority < Buff->Priority)
+							{
+								CurrentOrb = Buff;
+							}
+						}
+						else
+						{
+							CurrentOrb = Buff;
+						}
 					}
 				}
 			}
@@ -253,16 +261,23 @@ void ABasicUnit::Tick(float DeltaTime)
 			{
 				if (IsValid(Buff))
 				{
-					for (auto& Elem : Buff->BuffPropertyMap)
+					if (BuffStateMap[HEROS::IgnoreUnfriendly] && !Buff->Friendly)
 					{
-						SwapProperty[Elem.Key] += Elem.Value;
+						// do nothing
 					}
-					for (EHeroBuffState& Elem : Buff->BuffState)
+					else
 					{
-						SwapState[Elem] = true;
-						if (Elem == HEROS::Blending)
+						for (auto& Elem : Buff->BuffPropertyMap)
 						{
-							BlendingColor = Buff->BlendingColor;
+							SwapProperty[Elem.Key] += Elem.Value;
+						}
+						for (EHeroBuffState& Elem : Buff->BuffState)
+						{
+							SwapState[Elem] = true;
+							if (Elem == HEROS::Blending)
+							{
+								BlendingColor = Buff->BlendingColor;
+							}
 						}
 					}
 				}
@@ -273,8 +288,8 @@ void ABasicUnit::Tick(float DeltaTime)
 		}
 		// 更新血魔攻速
 		UpdateHPMPAS();
-		//計算暈眩狀態
-		if (BuffStateMap[HEROS::Stunning])
+		//計算暈眩狀態且沒有無視負面效果狀態
+		if (BuffStateMap[HEROS::Stunning] && !BuffStateMap[HEROS::IgnoreUnfriendly])
 		{
 			//如果在持續施法中
 			switch (BodyStatus)
@@ -347,12 +362,8 @@ void ABasicUnit::Tick(float DeltaTime)
 			{
 				if (!Buffs[i]->Forever && Buffs[i]->Duration <= 0)
 				{
-					// 釋放記憶體
-					if (!Buffs[i]->IsPendingKillPending())
-					{
-						Buffs[i]->OnDestroy();
-						//BuffQueue[i]->Destroy();
-					}
+					//呼叫消失事件
+					Buffs[i]->OnDestroy();
 					Buffs.RemoveAt(i);
 					i--;
 				}
@@ -637,13 +648,14 @@ void ABasicUnit::AddUniqueBuff(AHeroBuff* buff, ABasicUnit* caster)
 	}
 }
 
-void ABasicUnit::RemoveBuffByName(FString name)
+void ABasicUnit::RemoveBuffByName(FString name, ABasicUnit* caster)
 {
 	for (int32 i = 0; i < Buffs.Num(); ++i)
 	{
 		if (Buffs[i]->Name == name)
 		{
-			Buffs[i]->Destroy();
+			auto buff = Buffs[i];
+			Buffs[i]->OnRemoveBuff(caster, this, buff);
 			Buffs.RemoveAt(i);
 			i--;
 		}
@@ -656,6 +668,46 @@ void ABasicUnit::RemoveBuff(AHeroBuff* buff, ABasicUnit* caster)
 	for (int32 i = 0; i < Buffs.Num(); ++i)
 	{
 		Buffs[i]->OnRemoveBuff(caster, this, buff);
+	}
+}
+
+void ABasicUnit::RemoveFriendlyBuff(ABasicUnit* caster)
+{
+	for (int i = 0; i < Buffs.Num(); ++i)
+	{
+		if (IsValid(Buffs[i]) && Buffs[i]->Friendly)
+		{
+			auto buff = Buffs[i];
+			// 不爆破光環Buff
+			if (!buff->BuffUniqueMap.Contains(HEROU::AuraRadiusFriends) &&
+				!buff->BuffUniqueMap.Contains(HEROU::AuraRadiusEnemy))
+			{
+				Buffs[i]->OnRemoveBuff(caster, this, buff);
+				buff->Destroy();
+			}
+			Buffs.RemoveAt(i);
+			i--;
+		}
+	}
+}
+
+void ABasicUnit::RemoveUnfriendlyBuff(ABasicUnit* caster)
+{
+	for (int i = 0; i < Buffs.Num(); ++i)
+	{
+		if (IsValid(Buffs[i]) && !Buffs[i]->Friendly)
+		{
+			auto buff = Buffs[i];
+			// 不爆破光環Buff
+			if (!buff->BuffUniqueMap.Contains(HEROU::AuraRadiusFriends) &&
+				!buff->BuffUniqueMap.Contains(HEROU::AuraRadiusEnemy))
+			{
+				Buffs[i]->OnRemoveBuff(caster, this, buff);
+				buff->Destroy();
+			}
+			Buffs.RemoveAt(i);
+			i--;
+		}
 	}
 }
 
@@ -972,6 +1024,7 @@ UWebInterfaceJsonValue* ABasicUnit::BuildJsonValue()
 		{
 			wjo->SetString(FString::Printf(TEXT("Buff%d_Name"), i + 1), Buffs[i]->Name);
 			wjo->SetString(FString::Printf(TEXT("Buff%d_Webpath"), i + 1), Buffs[i]->Webpath);
+			wjo->SetBoolean(FString::Printf(TEXT("Buff%d_Friendly"), i + 1), Buffs[i]->Friendly);
 			wjo->SetString(FString::Printf(TEXT("Buff%d_BuffTips"), i + 1), Buffs[i]->BuffTips);
 			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Stacks"), i + 1), Buffs[i]->Stacks);
 			wjo->SetNumber(FString::Printf(TEXT("Buff%d_Duration"), i + 1), Buffs[i]->Duration);
