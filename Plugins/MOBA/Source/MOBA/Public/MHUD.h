@@ -84,28 +84,56 @@ public:
 
 	FMHitBox* FindHitBoxByName(const FString& name);
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void MOBA_HitBoxRButtonPressed(const FString& name);
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void MOBA_HitBoxRButtonReleased(const FString& name);
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void MOBA_HitBoxLButtonPressed(const FString& name);
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void MOBA_HitBoxLButtonReleased(const FString& name);
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void MOBA_MouseRButtonPressed();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void UpdateHeroData(ABasicUnit* hero);
 
 	// 加入一個可以被點選的按鈕
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void MOBA_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, 
 		int32 Priority, bool bConsumesInput);
+
+	// 加入一個可以被點選的按鈕
+	UFUNCTION(BlueprintCallable, Category = "MOBA")
+	void MOBA_CleanHitBox();
+
+	//得到一個所有ui範圍的json string
+	/*
+	{
+	"data":[
+		{
+			"id":"menu",
+			"x": 250,
+			"y": 200,
+			"w": 120,
+			"h": 100
+		},
+		{
+			"id":"skill",
+			"x": 500,
+			"y": 400,
+			"w": 80,
+			"h": 80
+		}
+	]
+	}
+	*/
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	FString GetUIRegion();
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	bool IsGameRegion(FVector2D pos);
@@ -184,10 +212,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	ABasicUnit* CurrentSelectTarget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
-	TMap<FString,int32>  SkillMapping;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FVector2D InitialMouseXY;
 

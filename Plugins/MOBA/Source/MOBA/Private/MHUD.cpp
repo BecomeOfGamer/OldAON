@@ -44,38 +44,6 @@ void AMHUD::BeginPlay()
 	{
 		HeroCanSelection.Add(*ActorItr);
 	}
-	for(int i = 0; i < 6; ++i)
-	{
-		FVector2D p1, s1;
-		GetEquipmentPosition(i, p1, s1);
-		MOBA_AddHitBox(p1, s1, FString::Printf(TEXT("Equipment%d"), i + 1), 0, false);
-		if(EquipmentMaterial)
-		{
-			EquipmentDMaterials.Add(UMaterialInstanceDynamic::Create(EquipmentMaterial, this));
-		}
-	}
-	for(int i = 0; i < 5; ++i)
-	{
-		FVector2D p1, s1;
-		GetSkillPosition(i, p1, s1);
-		FString skname = FString::Printf(TEXT("Skill%d"), i + 1);
-		MOBA_AddHitBox(p1, s1, skname, 0, false);
-		FString sklvname = FString::Printf(TEXT("SkillLvUp%d"), i + 1);
-		s1.Y = s1.Y * 0.25;
-		p1.Y -= s1.Y;
-		MOBA_AddHitBox(p1, s1, sklvname, 0, false);
-		SkillMapping.Add(skname, i);
-		if(SkillMaterial)
-		{
-			SkillDMaterials.Add(UMaterialInstanceDynamic::Create(SkillMaterial, this));
-		}
-	}
-	{
-		FVector2D p1, s1;
-		GetExpPosition(p1, s1);
-		FString skname = "EXP";
-		MOBA_AddHitBox(p1, s1, skname, -99, false);
-	}
 	if(ThrowMaterial)
 	{
 		ThrowDMaterial = UMaterialInstanceDynamic::Create(ThrowMaterial, this);
@@ -105,11 +73,32 @@ void AMHUD::Tick(float DeltaSeconds)
 		if (IsValid(CurrentSelection[0]))
 		{
 			UpdateHeroData(CurrentSelection[0]);
+			
 		}
 	}
 	else
 	{
+
 		UpdateHeroData(0);
+	}
+	MOBA_CleanHitBox();
+	FString JsonString = GetUIRegion();
+	TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(*JsonString);
+	TSharedPtr<FJsonObject> JsonObj;
+	if (FJsonSerializer::Deserialize(Reader, JsonObj) && JsonObj.IsValid())
+	{
+		TArray <TSharedPtr<FJsonValue>> zonesJs = JsonObj->GetArrayField("data");
+		for (int itZones = 0; itZones != zonesJs.Num(); itZones++) {
+			TSharedPtr<FJsonObject> temp = zonesJs[itZones]->AsObject();
+			FString id;
+			double x = 0, y = 0, w = 0, h = 0;
+			temp->TryGetStringField(FString(TEXT("id")), id);
+			temp->TryGetNumberField(FString(TEXT("x")), x);
+			temp->TryGetNumberField(FString(TEXT("y")), y);
+			temp->TryGetNumberField(FString(TEXT("w")), w);
+			temp->TryGetNumberField(FString(TEXT("h")), h);
+			MOBA_AddHitBox(FVector2D(x, y), FVector2D(w, h), id, 0, false);
+		}
 	}
 	OnSize();
 }
@@ -185,6 +174,12 @@ void AMHUD::DrawHUD()
 			HeroCanSelection.RemoveAt(i);
 			i--;
 		}
+	}
+	for (int32 Index = 0; Index < MOBA_HitBoxMap.Num(); ++Index)
+	{
+		DrawRect(SelectionBoxFillColor, 
+			MOBA_HitBoxMap[Index].Coords.X*ViewportScale, MOBA_HitBoxMap[Index].Coords.Y*ViewportScale,
+			MOBA_HitBoxMap[Index].Size.X*ViewportScale, MOBA_HitBoxMap[Index].Size.Y*ViewportScale);
 	}
 	for(ABasicUnit* EachHero : HeroCanSelection)
 	{
@@ -328,7 +323,7 @@ void AMHUD::DrawHUD()
 	}
 	*/
 	// 畫滑鼠icon
-
+	/*
 	if (MouseIcon.Contains(HUDStatus) && MouseIcon[HUDStatus].mat)
 	{
 		if (MouseIcon[HUDStatus].pos == EMouseIconPosition::LeftTop)
@@ -345,6 +340,7 @@ void AMHUD::DrawHUD()
 				mouseW, mouseH);
 		}
 	}
+	*/
 }
 
 bool AMHUD::CheckInSelectionBox(FVector2D pos)
@@ -405,6 +401,11 @@ void AMHUD::MOBA_AddHitBox(FVector2D Position, FVector2D Size, const FString& Na
 	{
 		MOBA_HitBoxMap.Add(FMHitBox(Position, Size, Name, bConsumesInput, Priority));
 	}
+}
+
+void AMHUD::MOBA_CleanHitBox()
+{
+	MOBA_HitBoxMap.Empty();
 }
 
 bool AMHUD::IsGameRegion(FVector2D pos)
@@ -939,57 +940,6 @@ void AMHUD::OnLMousePressed2(FVector2D pos)
 		return;
 	}
 	
-	// 顯示技能提示
-	/*
-	if(CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
-	{
-		AHeroCharacter* selectHero = CurrentSelection[0];
-		for(FMHitBox& HitBox : MOBA_HitBoxMap)
-		{
-			if (HitBox.GetName().Left(5) == TEXT("Skill") && HitBox.GetName().Len() == 6)
-			{
-				if (HitBox.Contains(pos, ViewportScale))
-				{
-					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
-					bool res = selectHero->TriggerSkill(idx, CurrentMouseHit, GetMouseTarget(120*ViewportScale));
-					CurrentSkillIndex = idx;
-					if(res)
-					{
-						HUDStatus = EMHUDStatus::SkillHint;
-					}
-				}
-			}
-			else if (HitBox.GetName().Left(9) == TEXT("SkillLvUp") && HitBox.GetName().Len() == 10)
-			{
-				if (HitBox.Contains(pos, ViewportScale))
-				{
-					int32 idx = FCString::Atoi(*HitBox.GetName().Right(1)) - 1;
-					if (selectHero->CurrentSkillPoints > 0 && selectHero->Skills.Num() > idx && selectHero->Skills[idx]->CanLevelUp())
-					{
-						LocalController->ServerHeroSkillLevelUp(selectHero, idx);
-					}
-				}
-			}
-		}
-		// 發事件給BP
-		for (FMHitBox& HitBox : MOBA_HitBoxMap)
-		{
-			if (HitBox.Contains(pos, ViewportScale))
-			{
-				MOBA_HitBoxLButtonPressed(HitBox.GetName());
-				if (SkillMapping.Contains(HitBox.GetName()))
-				{
-					CurrentSelection[0]->ShowSkillHint(SkillMapping.FindRef(HitBox.GetName()));
-
-				}
-				if (HitBox.ConsumesInput())
-				{
-					break;  //Early out if this box consumed the click
-				}
-			}
-		}
-	}
-	*/
 }
 
 void AMHUD::OnLMouseReleased(FVector2D pos)

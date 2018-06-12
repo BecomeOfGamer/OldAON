@@ -197,6 +197,11 @@ $(document).ready(function(){
 });
 
 $(function(){
+	setInterval(function() {
+		ue4("UpdateUIRegion",'{"data":[{"id":"menu","x": 250,"y": 200,"w": 120,"h": 100},{"id":"skill","x": 650,"y": 800,"w": 600,"h": 400}]}');	
+	}, 
+	1000);
+	
 	  var deg;
 	  
   $('input').on('mousedown',function(){
