@@ -463,7 +463,7 @@ public:
 	//暈炫倒數計時器
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Counting")
 	float StunningLeftCounting = 0;
-
+	
 	//移動速度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float CurrentMoveSpeed;

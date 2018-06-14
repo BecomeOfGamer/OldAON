@@ -199,13 +199,22 @@ void AMHUD::DrawHUD()
 		float  hpBarLength = EachHero->HPBarLength;
 		float  halfHPBarLength = hpBarLength * .5f;
 		headpos += HPBarOffset;
-		float HPLen = hpBarLength * EachHero->GetHPPercent();
-		float ShieldLen = hpBarLength * EachHero->GetShieldPercent();
+		float HPPersent = EachHero->GetHPPercent() + EachHero->GetShieldPercent();
+		if (HPPersent < 1)
+		{
+			HPPersent = 1;
+		}
+		float HPLen = hpBarLength * (EachHero->GetHPPercent() / HPPersent);
+		float ShieldLen = hpBarLength * (EachHero->GetShieldPercent() / HPPersent);
+		float ShieldPhysicalLen = hpBarLength * (EachHero->GetShieldPhysicalPercent() / HPPersent);
+		float ShieldMagicalLen = hpBarLength * (EachHero->GetShieldMagicalPercent() / HPPersent);
 		//畫HP
 		DrawRect(HPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
 		DrawRect(HPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, HPLen, HPBarHeight);
 		//畫通用護盾
 		DrawRect(ShieldColor, headpos.X - halfHPBarLength + HPLen, headpos.Y, ShieldLen, HPBarHeight);
+		DrawRect(ShieldPhysicalColor, headpos.X - halfHPBarLength + HPLen, headpos.Y- HPBarHeight, ShieldPhysicalLen, HPBarHeight);
+		DrawRect(ShieldMagicalColor, headpos.X - halfHPBarLength + HPLen, headpos.Y+ HPBarHeight, ShieldMagicalLen, HPBarHeight);
 		float maxhp = EachHero->CurrentMaxHP;
 		if(maxhp < 1500)
 		{
@@ -223,8 +232,10 @@ void AMHUD::DrawHUD()
 				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, HPBarBackColor);
 			}
 		}
+		//畫角色名字
 		DrawText(EachHero->UnitName, FLinearColor(1, 1, 1), footpos.X - EachHero->UnitName.Len()*.5f * 15, footpos.Y, NULL, EachHero->UnitNameDrawSize);
 		headpos.Y += HPBarHeight + 1;
+		//畫MP
 		DrawRect(MPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
 		DrawRect(MPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetMPPercent(), HPBarHeight);
 		float maxmp = EachHero->CurrentMaxMP;
@@ -245,102 +256,6 @@ void AMHUD::DrawHUD()
 			}
 		}
 	}
-	/*
-	if(CurrentSelection.Num() > 0)
-	{
-		AHeroCharacter* selectHero = CurrentSelection[0];
-		if (IsValid(selectHero))
-		{
-			if (HUDStatus == EMHUDStatus::ThrowEquipment)
-			{
-				ThrowDMaterial->SetTextureParameterValue(TEXT("InputTexture"), ThrowTexture);
-				DrawMaterialSimple(ThrowDMaterial, CurrentMouseXY.X, CurrentMouseXY.Y,
-					100 * ViewportScale, 100 * ViewportScale);
-			}
-
-			// 畫經驗條
-			
-			{
-				FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("EXP")));
-				DrawRect(MPBarBackColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale,
-					skhb->Size.X *ViewportScale, skhb->Size.Y *ViewportScale);
-				DrawRect(MPBarForeColor, skhb->Coords.X*ViewportScale, skhb->Coords.Y*ViewportScale,
-					skhb->Size.X*ViewportScale * selectHero->GetCurrentExpPercent(), skhb->Size.Y*ViewportScale);
-				DrawText(FString::Printf(TEXT("LV %d"), selectHero->CurrentLevel), FLinearColor(1, 1, 1),
-					skhb->Coords.X*ViewportScale, skhb->Coords.Y *ViewportScale, LevelFont);
-			}
-			// 畫技能圖
-			if (SkillMaterial)
-			{
-				for (int32 idx = 0; idx < 4; ++idx)
-				{
-					FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("Skill%d"), idx + 1));
-					FMHitBox* sklvhb = FindHitBoxByName(FString::Printf(TEXT("SkillLvUp%d"), idx + 1));
-
-					if (skhb && SkillDMaterials.Num() > idx && selectHero->Skills.Num() > idx && selectHero->Skills[idx])
-					{
-						// need check
-						SkillDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Skills[idx]->Texture);
-						SkillDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->Skills[idx]->GetSkillCDPercent());
-						DrawMaterialSimple(SkillDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
-							skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
-						// 當技能可以升級且目前有升級點數
-						if (sklvhb && SkillLevelUpMaterial && selectHero->CurrentSkillPoints > 0 && selectHero->Skills[idx]->CanLevelUp())
-						{
-							DrawMaterialSimple(SkillLevelUpMaterial, sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale,
-								sklvhb->Size.X * ViewportScale, sklvhb->Size.Y * ViewportScale);
-						}
-						DrawText(FString::Printf(TEXT("LV %d"), selectHero->Skills[idx]->CurrentLevel), FLinearColor(1, 1, 1),
-							sklvhb->Coords.X * ViewportScale, sklvhb->Coords.Y * ViewportScale, LevelFont);
-					}
-				}
-			}
-			// 畫裝備圖
-			if (EquipmentMaterial)
-			{
-				for (int32 idx = 0; idx < 6; ++idx)
-				{
-					FMHitBox* skhb = FindHitBoxByName(FString::Printf(TEXT("Equipment%d"), idx + 1));
-
-					if (skhb)
-					{
-						if (EquipmentDMaterials.Num() > idx && selectHero->Equipments.Num() > idx && selectHero->Equipments[idx])
-						{
-							EquipmentDMaterials[idx]->SetTextureParameterValue(TEXT("InputTexture"), selectHero->Equipments[idx]->Head);
-							//EquipmentDMaterials[idx]->SetScalarParameterValue(TEXT("Alpha"), selectHero->GetSkillCDPercent(idx));
-							DrawMaterialSimple(EquipmentDMaterials[idx], skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
-								skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
-						}
-						else
-						{
-							DrawRect(SelectionBoxFillColor, skhb->Coords.X * ViewportScale, skhb->Coords.Y * ViewportScale,
-								skhb->Size.X * ViewportScale, skhb->Size.Y * ViewportScale);
-						}
-					}
-				}
-			}
-		}
-	}
-	*/
-	// 畫滑鼠icon
-	/*
-	if (MouseIcon.Contains(HUDStatus) && MouseIcon[HUDStatus].mat)
-	{
-		if (MouseIcon[HUDStatus].pos == EMouseIconPosition::LeftTop)
-		{
-			DrawMaterialSimple(MouseIcon[HUDStatus].mat, CurrentMouseXY.X, CurrentMouseXY.Y,
-				MouseSize.X * ViewportScale, MouseSize.Y * ViewportScale);
-		}
-		else if (MouseIcon[HUDStatus].pos == EMouseIconPosition::Center)
-		{
-			int32 mouseW = MouseSize.X * ViewportScale;
-			int32 mouseH = MouseSize.Y * ViewportScale;
-			DrawMaterialSimple(MouseIcon[HUDStatus].mat,
-				CurrentMouseXY.X - mouseW*0.5, CurrentMouseXY.Y - mouseH*0.5,
-				mouseW, mouseH);
-		}
-	}
-	*/
 }
 
 bool AMHUD::CheckInSelectionBox(FVector2D pos)

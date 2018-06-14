@@ -746,7 +746,101 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attac
 		{
 			victim->Buffs[i]->BeDamage(attacker, victim, dtype, damage, RDamage);
 		}
-		victim->CurrentHP -= FDamage;
+		float damage = FDamage;
+		switch (dtype)
+		{
+		case EDamageType::DAMAGE_PHYSICAL:
+		{
+			if (victim->CurrentShieldPhysical > 0)
+			{
+				if (victim->CurrentShieldPhysical > FDamage)
+				{
+					damage = 0;
+					victim->CurrentShieldPhysical -= FDamage;
+				}
+				else if (victim->CurrentShieldPhysical < FDamage)
+				{
+					damage -= victim->CurrentShieldPhysical;
+					victim->CurrentShieldPhysical = 0;
+				}
+				else
+				{
+					damage = 0;
+					victim->CurrentShieldPhysical = 0;
+				}
+				if (victim->CurrentShieldPhysical == 0)
+				{
+					for (int32 i = 0; i < victim->Buffs.Num(); ++i)
+					{
+						victim->Buffs[i]->OnShieldPhysicalBreak(attacker, victim);
+					}
+				}
+			}
+		}
+			break;
+		case EDamageType::DAMAGE_MAGICAL:
+		{
+			if (victim->CurrentShieldMagical > 0)
+			{
+				if (victim->CurrentShieldMagical > FDamage)
+				{
+					damage = 0;
+					victim->CurrentShieldMagical -= FDamage;
+				}
+				else if (victim->CurrentShieldMagical < FDamage)
+				{
+					damage -= victim->CurrentShieldMagical;
+					victim->CurrentShieldMagical = 0;
+				}
+				else
+				{
+					damage = 0;
+					victim->CurrentShieldMagical = 0;
+				}
+				if (victim->CurrentShieldMagical == 0)
+				{
+					for (int32 i = 0; i < victim->Buffs.Num(); ++i)
+					{
+						victim->Buffs[i]->OnShieldMagicalBreak(attacker, victim);
+					}
+				}
+			}
+		}
+			break;
+		case EDamageType::DAMAGE_PURE:
+			break;
+		default:
+			break;
+		}
+		float damage2 = damage;
+		//通用護盾
+		if (victim->CurrentShield > 0)
+		{
+			if (victim->CurrentShield > damage)
+			{
+				damage2 = 0;
+				victim->CurrentShield -= damage;
+			}
+			else if (victim->CurrentShield < damage)
+			{
+				damage2 -= victim->CurrentShield;
+				victim->CurrentShield = 0;
+			}
+			else
+			{
+				damage2 = 0;
+				victim->CurrentShield = 0;
+			}
+			if (victim->CurrentShield == 0)
+			{
+				for (int32 i = 0; i < victim->Buffs.Num(); ++i)
+				{
+					victim->Buffs[i]->OnShieldBreak(attacker, victim);
+				}
+			}
+		}
+		victim->CurrentHP -= damage2;
+
 		if (attacker->BuffPropertyMap[HEROP::StealHealth] > 0)
 		{
 			attacker->CurrentHP += attacker->BuffPropertyMap[HEROP::StealHealth] * FDamage;

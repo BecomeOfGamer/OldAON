@@ -166,7 +166,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	FRotator GetCurrentRotator();
-		
+
 	void OnSize();
 
 	void OnMouseMove(FVector2D pos, FVector pos3d);

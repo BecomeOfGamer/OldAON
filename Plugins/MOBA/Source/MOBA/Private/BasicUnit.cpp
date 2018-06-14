@@ -2254,4 +2254,8 @@ void ABasicUnit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLife
 	DOREPLIFETIME(ABasicUnit, IsAlive);
 	DOREPLIFETIME(ABasicUnit, CurrentAttackingBeginingTimeLength);
 	DOREPLIFETIME(ABasicUnit, CurrentAttackingEndingTimeLength);
+	DOREPLIFETIME(ABasicUnit, CurrentShield);
+	DOREPLIFETIME(ABasicUnit, CurrentShieldPhysical);
+	DOREPLIFETIME(ABasicUnit, CurrentShieldMagical);
+	
 }
