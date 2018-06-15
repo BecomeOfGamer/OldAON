@@ -13,6 +13,17 @@ enum class EDamageType : uint8
 };
 
 UENUM(BlueprintType)
+enum class EShieldType : uint8
+{
+	//通用護盾
+	SHIELD_GENERAL,
+	//物理傷害
+	SHIELD_PHYSICAL,
+	//魔法傷害
+	SHIELD_MAGICAL
+};
+
+UENUM(BlueprintType)
 enum class EHeroBuffState : uint8
 {
 	//暈炫

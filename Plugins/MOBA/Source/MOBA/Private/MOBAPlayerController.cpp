@@ -886,6 +886,47 @@ void AMOBAPlayerController::ServerAttackCompute_Implementation(ABasicUnit* attac
 	*/
 }
 
+bool AMOBAPlayerController::ServerShieldCompute_Validate(ABasicUnit* attacker, ABasicUnit* victim, float amount, EShieldType stype)
+{
+	return true;
+}
+
+void AMOBAPlayerController::ServerShieldCompute_Implementation(ABasicUnit* caster, ABasicUnit* victim, float amount, EShieldType stype)
+{
+	switch (stype)
+	{
+	case EShieldType::SHIELD_GENERAL:
+	{
+		for (int32 i = 0; i < victim->Buffs.Num(); ++i)
+		{
+			victim->Buffs[i]->OnGetShield(caster, victim, amount);
+		}
+		victim->CurrentShield += amount;
+	}
+		break;
+	case EShieldType::SHIELD_PHYSICAL:
+	{
+		for (int32 i = 0; i < victim->Buffs.Num(); ++i)
+		{
+			victim->Buffs[i]->OnGetShieldPhysical(caster, victim, amount);
+		}
+		victim->CurrentShieldPhysical += amount;
+	}
+		break;
+	case EShieldType::SHIELD_MAGICAL:
+	{
+		for (int32 i = 0; i < victim->Buffs.Num(); ++i)
+		{
+			victim->Buffs[i]->OnGetShieldMagical(caster, victim, amount);
+		}
+		victim->CurrentShieldMagical += amount;
+	}
+		break;
+	default:
+		break;
+	}
+}
+
 TArray<ABasicUnit*> AMOBAPlayerController::FindRadiusActorByLocation(ABasicUnit* hero, FVector Center,
 	float Radius, ETeamFlag flag, bool CheckAlive)
 {

@@ -94,6 +94,9 @@ public:
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerHealCompute(ABasicUnit* attacker, ABasicUnit* victim, float amount);
 
+	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
+	void ServerShieldCompute(ABasicUnit* caster, ABasicUnit* victim, float amount, EShieldType stype);
+
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	TArray<ABasicUnit*> FindRadiusActorByLocation(ABasicUnit* hero, FVector Center,
 		float Radius, ETeamFlag flag, bool CheckAlive);

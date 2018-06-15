@@ -215,7 +215,14 @@ void AMHUD::DrawHUD()
 		DrawRect(ShieldColor, headpos.X - halfHPBarLength + HPLen, headpos.Y, ShieldLen, HPBarHeight);
 		DrawRect(ShieldPhysicalColor, headpos.X - halfHPBarLength + HPLen, headpos.Y- HPBarHeight, ShieldPhysicalLen, HPBarHeight);
 		DrawRect(ShieldMagicalColor, headpos.X - halfHPBarLength + HPLen, headpos.Y+ HPBarHeight, ShieldMagicalLen, HPBarHeight);
-		float maxhp = EachHero->CurrentMaxHP;
+
+		//畫角色名字
+		DrawText(EachHero->UnitName, FLinearColor(1, 1, 1), footpos.X - EachHero->UnitName.Len()*.5f * 15, footpos.Y, NULL, EachHero->UnitNameDrawSize);
+		headpos.Y += HPBarHeight + 1;
+		//畫MP
+		DrawRect(MPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
+		DrawRect(MPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetMPPercent(), HPBarHeight);
+		float maxhp = EachHero->CurrentMaxHP + EachHero->CurrentShield;
 		if(maxhp < 1500)
 		{
 			for(float i = 100; i < maxhp; i += 100)
@@ -230,14 +237,9 @@ void AMHUD::DrawHUD()
 			{
 				float xpos = headpos.X - halfHPBarLength + hpBarLength * (i / maxhp);
 				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, HPBarBackColor);
+				DrawLine(xpos, headpos.Y, xpos+1, headpos.Y + HPBarHeight, HPBarBackColor);
 			}
 		}
-		//畫角色名字
-		DrawText(EachHero->UnitName, FLinearColor(1, 1, 1), footpos.X - EachHero->UnitName.Len()*.5f * 15, footpos.Y, NULL, EachHero->UnitNameDrawSize);
-		headpos.Y += HPBarHeight + 1;
-		//畫MP
-		DrawRect(MPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
-		DrawRect(MPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetMPPercent(), HPBarHeight);
 		float maxmp = EachHero->CurrentMaxMP;
 		if (maxmp < 1500)
 		{
@@ -253,6 +255,7 @@ void AMHUD::DrawHUD()
 			{
 				float xpos = headpos.X - halfHPBarLength + hpBarLength * (i / maxmp);
 				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, MPBarBackColor);
+				DrawLine(xpos, headpos.Y, xpos+1, headpos.Y + HPBarHeight, MPBarBackColor);
 			}
 		}
 	}
