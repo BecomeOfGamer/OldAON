@@ -85,6 +85,7 @@ void AMHUD::Tick(float DeltaSeconds)
 	FString JsonString = GetUIRegion();
 	TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(*JsonString);
 	TSharedPtr<FJsonObject> JsonObj;
+	float s = 1.0 / ViewportScale;
 	if (FJsonSerializer::Deserialize(Reader, JsonObj) && JsonObj.IsValid())
 	{
 		TArray <TSharedPtr<FJsonValue>> zonesJs = JsonObj->GetArrayField("data");
@@ -97,7 +98,7 @@ void AMHUD::Tick(float DeltaSeconds)
 			temp->TryGetNumberField(FString(TEXT("y")), y);
 			temp->TryGetNumberField(FString(TEXT("w")), w);
 			temp->TryGetNumberField(FString(TEXT("h")), h);
-			MOBA_AddHitBox(FVector2D(x, y), FVector2D(w, h), id, 0, false);
+			MOBA_AddHitBox(FVector2D(x*s, y*s), FVector2D(w*s, h*s), id, 0, false);
 		}
 	}
 	OnSize();
