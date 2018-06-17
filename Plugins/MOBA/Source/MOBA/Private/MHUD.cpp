@@ -215,14 +215,11 @@ void AMHUD::DrawHUD()
 		//畫通用護盾
 		DrawRect(ShieldColor, headpos.X - halfHPBarLength + HPLen, headpos.Y, ShieldLen, HPBarHeight);
 		DrawRect(ShieldPhysicalColor, headpos.X - halfHPBarLength + HPLen, headpos.Y- HPBarHeight, ShieldPhysicalLen, HPBarHeight);
-		DrawRect(ShieldMagicalColor, headpos.X - halfHPBarLength + HPLen, headpos.Y+ HPBarHeight, ShieldMagicalLen, HPBarHeight);
+		DrawRect(ShieldMagicalColor, headpos.X - halfHPBarLength + HPLen, headpos.Y- HPBarHeight*2, ShieldMagicalLen, HPBarHeight);
 
 		//畫角色名字
 		DrawText(EachHero->UnitName, FLinearColor(1, 1, 1), footpos.X - EachHero->UnitName.Len()*.5f * 15, footpos.Y, NULL, EachHero->UnitNameDrawSize);
-		headpos.Y += HPBarHeight + 1;
-		//畫MP
-		DrawRect(MPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
-		DrawRect(MPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetMPPercent(), HPBarHeight);
+		
 		float maxhp = EachHero->CurrentMaxHP + EachHero->CurrentShield;
 		if(maxhp < 1500)
 		{
@@ -237,10 +234,14 @@ void AMHUD::DrawHUD()
 			for(float i = 500; i < maxhp; i += 500)
 			{
 				float xpos = headpos.X - halfHPBarLength + hpBarLength * (i / maxhp);
-				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, HPBarBackColor);
-				DrawLine(xpos, headpos.Y, xpos+1, headpos.Y + HPBarHeight, HPBarBackColor);
+				DrawRect(HPBarBackColor, xpos, headpos.Y, 3, HPBarHeight);
 			}
 		}
+
+		//畫MP
+		headpos.Y += HPBarHeight + 1;
+		DrawRect(MPBarBackColor, headpos.X - halfHPBarLength - 1, headpos.Y - 1, hpBarLength + 2, HPBarHeight + 2);
+		DrawRect(MPBarForeColor, headpos.X - halfHPBarLength, headpos.Y, hpBarLength * EachHero->GetMPPercent(), HPBarHeight);
 		float maxmp = EachHero->CurrentMaxMP;
 		if (maxmp < 1500)
 		{
@@ -255,8 +256,7 @@ void AMHUD::DrawHUD()
 			for (float i = 500; i < maxmp; i += 500)
 			{
 				float xpos = headpos.X - halfHPBarLength + hpBarLength * (i / maxmp);
-				DrawLine(xpos, headpos.Y, xpos, headpos.Y + HPBarHeight, MPBarBackColor);
-				DrawLine(xpos, headpos.Y, xpos+1, headpos.Y + HPBarHeight, MPBarBackColor);
+				DrawRect(MPBarBackColor, xpos, headpos.Y, 3, HPBarHeight);
 			}
 		}
 	}
@@ -289,6 +289,7 @@ void AMHUD::ClearAllSelection()
 		}
 	}
 	CurrentSelection.Empty();
+	LostFocusUnit();
 }
 
 FMHitBox* AMHUD::FindHitBoxByName(const FString& name)
@@ -882,8 +883,6 @@ void AMHUD::OnLMouseReleased(FVector2D pos)
 			if(CurrentSelection.Num() > 0 && IsValid(CurrentSelection[0]))
 			{
 				SelectedHero(CurrentSelection[0]);
-				// 網路連線設定 owner
-				//CurrentSelection[0]->SetOwner(localController);
 			}
 		}
 	}

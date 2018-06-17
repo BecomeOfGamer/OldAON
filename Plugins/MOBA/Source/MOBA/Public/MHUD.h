@@ -102,6 +102,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
 	void UpdateHeroData(ABasicUnit* hero);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void FocusUnit(UWebInterfaceJsonValue* hero);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "MOBA")
+	void LostFocusUnit();
+
 	// 加入一個可以被點選的按鈕
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void MOBA_AddHitBox(FVector2D Position, FVector2D Size, const FString& Name, 

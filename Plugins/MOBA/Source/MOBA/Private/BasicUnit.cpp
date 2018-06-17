@@ -727,8 +727,9 @@ void ABasicUnit::SelectionOn()
 	if (hud)
 	{
 		hud->CurrentSelection.Add(this);
+		hud->FocusUnit(hud->CurrentSelection[0]->BuildJsonValue());
 	}
-
+	
 }
 
 void ABasicUnit::SelectionOff()
