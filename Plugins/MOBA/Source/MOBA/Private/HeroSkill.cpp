@@ -243,7 +243,19 @@ void AHeroSkill::SetDisplay(bool value)
 
 FString AHeroSkill::GetDescription()
 {
-	return Description;
+	TMap<FString, FStringFormatArg> FormatMap;
+	int ShowIndex = CurrentLevel - 1;
+	if (ShowIndex < 0)
+	{
+		ShowIndex = 0;
+	}
+	for (auto& Elem : VariableMap)
+	{
+		FString value = FString::Printf(TEXT("%.0f"), Elem.Value[ShowIndex]);
+		FormatMap.Add(Elem.Key, FStringFormatArg(value));
+	}
+	FString Text = FString::Format(*Description, FormatMap);
+	return Text;
 }
 
 #if WITH_EDITOR
