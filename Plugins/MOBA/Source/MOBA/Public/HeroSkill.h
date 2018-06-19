@@ -72,7 +72,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	double GetAttributesConvert(AHeroCharacter * hero, const FString& name, double v);
+
 	//被動技發動
 	//發動時機：CD ready時，剛點技能時，CD中則不發動
 	UFUNCTION(BlueprintImplementableEvent)
@@ -250,7 +252,7 @@ public:
 	//與指定部隊交換位置並且造成(50/100/150/200)點傷害，並且讓敵人暈頭轉向暈眩(1/1.5/2/2.5)秒，施展距離(600/700/800/900)。
 	//與指定部隊交換位置並且造成{Damage}點傷害，並且讓敵人暈頭轉向暈眩{Duration}秒，施展距離{CastRange}。
 	//然後像是CD跟法力消耗有固定的，沒有固定的就從Variable Map中去找，抓不到值就填 -999
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA", meta = (MultiLine = "true"))
 	FString Description;
 
 	//技能圖片

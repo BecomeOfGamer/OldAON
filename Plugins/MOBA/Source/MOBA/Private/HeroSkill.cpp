@@ -36,6 +36,7 @@ void AHeroSkill::BeginPlay()
 	ChannellingCounting = ChannellingTime;
 }
 
+
 bool AHeroSkill::ReadySpell()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan,
@@ -241,6 +242,56 @@ void AHeroSkill::SetDisplay(bool value)
 	Display = value;
 }
 
+double AHeroSkill::GetAttributesConvert(AHeroCharacter * hero, const FString& name, double v)
+{
+	//力量參數
+	if (name == TEXT("str"))
+	{
+		return v * hero->Strength;
+	}
+	else if (name == TEXT("astr"))
+	{
+		return v * hero->AdditionStrength;
+	}
+	else if (name == TEXT("agi"))
+	{
+		return v * hero->Agility;
+	}
+	else if (name == TEXT("aagi"))
+	{
+		return v * hero->AdditionAgility;
+	}
+	else if (name == TEXT("int"))
+	{
+		return v * hero->Intelligence;
+	}
+	else if (name == TEXT("aint"))
+	{
+		return v * hero->AdditionIntelligence;
+	}
+	else if (name == TEXT("atk"))
+	{
+		return v * hero->CurrentAttack;
+	}
+	else if (name == TEXT("batk"))
+	{
+		return v * hero->BaseAttack;
+	}
+	else if (name == TEXT("move"))
+	{
+		return v * hero->CurrentMoveSpeed;
+	}
+	else if (name == TEXT("armor"))
+	{
+		return v * hero->CurrentArmor;
+	}
+	else if (name == TEXT("barmor"))
+	{
+		return v * hero->BaseArmor;
+	}
+	return v;
+}
+
 FString AHeroSkill::GetDescription()
 {
 	TMap<FString, FStringFormatArg> FormatMap;
@@ -249,9 +300,30 @@ FString AHeroSkill::GetDescription()
 	{
 		ShowIndex = 0;
 	}
+	AHeroCharacter * hero = Cast<AHeroCharacter>(Caster);
 	for (auto& Elem : VariableMap)
 	{
-		FString value = FString::Printf(TEXT("%.0f"), Elem.Value[ShowIndex]);
+		double v = Elem.Value[ShowIndex];
+		if (IsValid(hero))
+		{
+			v = GetAttributesConvert(hero, Elem.Key, v);
+		}
+		double m1 = v - floor(v);
+		double m01 = v - floor(v * 10)*0.1;
+		FString value;
+		if (m1 < 0.01)
+		{
+			value = FString::Printf(TEXT("%.f"), v);
+			
+		}
+		else if (m01 < 0.01)
+		{
+			value = FString::Printf(TEXT("%.1f"), v);
+		}
+		else
+		{
+			value = FString::Printf(TEXT("%.2f"), v);
+		}
 		FormatMap.Add(Elem.Key, FStringFormatArg(value));
 	}
 	FString Text = FString::Format(*Description, FormatMap);

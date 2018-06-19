@@ -39,6 +39,10 @@
 			"Name": "WebBrowserExtension",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/277c943e8fcc48bdb53607cae4505aa8"
+		},
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
 		}
 	]
 }
