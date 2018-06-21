@@ -683,7 +683,6 @@ void ABasicUnit::RemoveFriendlyBuff(ABasicUnit* caster)
 				!buff->BuffUniqueMap.Contains(HEROU::AuraRadiusEnemy))
 			{
 				Buffs[i]->OnRemoveBuff(caster, this, buff);
-				buff->Destroy();
 			}
 			Buffs.RemoveAt(i);
 			i--;
@@ -703,7 +702,6 @@ void ABasicUnit::RemoveUnfriendlyBuff(ABasicUnit* caster)
 				!buff->BuffUniqueMap.Contains(HEROU::AuraRadiusEnemy))
 			{
 				Buffs[i]->OnRemoveBuff(caster, this, buff);
-				buff->Destroy();
 			}
 			Buffs.RemoveAt(i);
 			i--;
@@ -2071,6 +2069,13 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 			SpellingCounting = 0;
 			BodyStatus = EHeroBodyStatus::SpellBegining;
 			ServerPlayAttack(CurrentSpellingAnimationTimeLength, CurrentSpellingRate);
+			if (Role == ROLE_Authority)
+			{
+				for (int32 i = 0; i < Buffs.Num(); ++i)
+				{
+					Buffs[i]->OnAbilityStart(this, TargetActor, TargetActor->GetActorLocation());
+				}
+			}
 		}
 		// 播放攻擊動畫
 		// ...
@@ -2083,8 +2088,7 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 			if (LastUseSkillAction != CurrentAction)
 			{
 				BodyStatus = EHeroBodyStatus::SpellEnding;
-				LastUseSkillAction = CurrentAction;
-				LastUseSkill = this->Skills[CurrentAction.TargetIndex1];
+				SpellingCounting = 0;
 				if (IsValid(localPC))
 				{
 					//確認是否被禁止指定技
@@ -2092,6 +2096,15 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 					{
 						localPC->ServerHeroUseSkill(this, CurrentAction.ActionStatus, CurrentAction.TargetIndex1,
 							CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
+					}
+				}
+				LastUseSkillAction = CurrentAction;
+				LastUseSkill = this->Skills[CurrentAction.TargetIndex1];
+				if (Role == ROLE_Authority)
+				{
+					for (int32 i = 0; i < Buffs.Num(); ++i)
+					{
+						Buffs[i]->OnAbilityExecuted(this, TargetActor, TargetActor->GetActorLocation());
 					}
 				}
 			}
@@ -2166,6 +2179,13 @@ void ABasicUnit::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 		{
 			BodyStatus = EHeroBodyStatus::SpellBegining;
 			SpellingCounting = 0;
+			if (Role == ROLE_Authority)
+			{
+				for (int32 i = 0; i < Buffs.Num(); ++i)
+				{
+					Buffs[i]->OnAbilityStart(this, NULL, CurrentAction.TargetVec1);
+				}
+			}
 		}
 	}
 	break;
@@ -2186,6 +2206,13 @@ void ABasicUnit::DoAction_SpellToDirection(const FHeroAction& CurrentAction)
 					}
 					LastUseSkillAction = CurrentAction;
 					LastUseSkill = this->Skills[CurrentAction.TargetIndex1];
+					if (Role == ROLE_Authority)
+					{
+						for (int32 i = 0; i < Buffs.Num(); ++i)
+						{
+							Buffs[i]->OnAbilityExecuted(this, NULL, CurrentAction.TargetVec1);
+						}
+					}
 				}
 			}
 		}
