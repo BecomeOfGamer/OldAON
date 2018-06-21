@@ -28,7 +28,7 @@ void AHeroSkill::BeginPlay()
 		}
 		if (ManaCost.Num() > CurrentLevel - 1)
 		{
-			CurrnetManaCost = ManaCost[CurrentLevel];
+			CurrnetManaCost = ManaCost[CurrentLevel - 1];
 		}
 		CurrentCD = MaxCD;
 	}
@@ -106,11 +106,15 @@ void AHeroSkill::CheckCD(float DeltaTime)
 			if (IntervalCounting > ChannellingInterval)
 			{
 				IntervalCounting -= ChannellingInterval;
-				if (SkillBehavior[HEROB::UnitTarget] || SkillBehavior[HEROB::UnitTargetFriends] || SkillBehavior[HEROB::UnitTargetEnemy])
+				if (SkillBehavior[HEROB::UnitTarget] || 
+					SkillBehavior[HEROB::UnitTargetFriends] || 
+					SkillBehavior[HEROB::UnitTargetEnemy])
 				{
 					BP_ChannellingActorInterval(Victim);
 				}
-				if (SkillBehavior[HEROB::NoTarget] || SkillBehavior[HEROB::Aoe] || SkillBehavior[HEROB::Directional])
+				if (SkillBehavior[HEROB::NoTarget] || 
+					SkillBehavior[HEROB::Aoe] || 
+					SkillBehavior[HEROB::Directional])
 				{
 					BP_ChannellingInterval(CastPoint);
 				}

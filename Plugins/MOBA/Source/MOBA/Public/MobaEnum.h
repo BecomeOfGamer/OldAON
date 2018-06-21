@@ -62,6 +62,10 @@ enum class EHeroBuffState : uint8
 	Rebirth,
 	//無視負面狀態
 	IgnoreUnfriendly,
+	//被嘲諷中
+	BeTaunt,
+	//無法控制
+	UnableToControl,
 	//結束列舉
 	EndBuffKind,
 };
