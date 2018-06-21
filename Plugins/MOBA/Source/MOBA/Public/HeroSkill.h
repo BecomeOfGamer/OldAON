@@ -129,7 +129,7 @@ public:
 	//參數： 被指定的人
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_ChannellingEnd(FVector Pos);
-
+	
 	//技能準備好可以施放了
 	UFUNCTION(BlueprintCallable, Category = "MOBA|Skill")
 	bool ReadySpell();

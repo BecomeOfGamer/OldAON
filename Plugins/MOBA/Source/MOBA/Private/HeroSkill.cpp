@@ -123,6 +123,8 @@ void AHeroSkill::CheckCD(float DeltaTime)
 		else
 		{
 			IsChannelling = false;
+			BP_ChannellingEnd(CastPoint);
+			BP_ChannellingActorEnd(Victim);
 		}
 	}
 	if (CDing)

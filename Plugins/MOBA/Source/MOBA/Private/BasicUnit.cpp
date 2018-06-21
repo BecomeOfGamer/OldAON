@@ -2066,7 +2066,6 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 		break;
 	case EHeroBodyStatus::SpellWating:
 	{
-
 		if (SpellingCounting >= CurrentSpellingWatingTimeLength)
 		{
 			SpellingCounting = 0;
@@ -2083,6 +2082,9 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 		{
 			if (LastUseSkillAction != CurrentAction)
 			{
+				BodyStatus = EHeroBodyStatus::SpellEnding;
+				LastUseSkillAction = CurrentAction;
+				LastUseSkill = this->Skills[CurrentAction.TargetIndex1];
 				if (IsValid(localPC))
 				{
 					//確認是否被禁止指定技
@@ -2092,9 +2094,6 @@ void ABasicUnit::DoAction_SpellToActor(const FHeroAction& CurrentAction)
 							CurrentAction.TargetVec1, CurrentAction.TargetVec2, CurrentAction.TargetActor);
 					}
 				}
-				BodyStatus = EHeroBodyStatus::SpellEnding;
-				LastUseSkillAction = CurrentAction;
-				LastUseSkill = this->Skills[CurrentAction.TargetIndex1];
 			}
 		}
 	}
