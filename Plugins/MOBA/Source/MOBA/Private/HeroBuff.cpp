@@ -116,22 +116,38 @@ void AHeroBuff::Tick(float DeltaTime)
 						{
 							if (AuraFollowActor)
 							{
+								UParticleSystemComponent* emitter = NULL;
 								switch (AuraFollowPosition)
 								{
 								case EBuffPosition::Head:
-									UGameplayStatics::SpawnEmitterAttached(
+								{
+									emitter = UGameplayStatics::SpawnEmitterAttached(
 										AuraParticle, hero->PositionOnHead);
+								}	
 									break;
 								case EBuffPosition::Foot:
-									UGameplayStatics::SpawnEmitterAttached(
+								{
+									emitter = UGameplayStatics::SpawnEmitterAttached(
 										AuraParticle, hero->PositionUnderFoot);
+								}
 									break;
 								case EBuffPosition::Root:
-									UGameplayStatics::SpawnEmitterAttached(
+								{
+									emitter = UGameplayStatics::SpawnEmitterAttached(
 										AuraParticle, hero->GetRootComponent());
+								}
 									break;
 								default:
 									break;
+								}
+								if (hero->AuraParticles.Contains(Name))
+								{
+									hero->AuraParticles[Name]->DestroyComponent();
+									hero->AuraParticles.Remove(Name);
+								}
+								if (IsValid(emitter))
+								{
+									hero->AuraParticles.Add(Name, emitter);
 								}
 							}
 							else
@@ -148,6 +164,11 @@ void AHeroBuff::Tick(float DeltaTime)
 					if (!tmp.Contains(hero))
 					{
 						hero->RemoveBuff(this, BuffTargetOne);
+						if (hero->AuraParticles.Contains(Name))
+						{
+							hero->AuraParticles[Name]->DestroyComponent();
+							hero->AuraParticles.Remove(Name);
+						}
 					}
 				}
 				BuffTarget = tmp;

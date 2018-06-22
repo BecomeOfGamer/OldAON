@@ -18,6 +18,7 @@ class ASkillHintActor;
 class AMOBAPlayerController;
 class UWebInterfaceJsonValue;
 class UWebInterfaceJsonObject;
+class UParticleSystemComponent;
 
 UCLASS()
 class MOBA_API ABasicUnit : public ACharacter
@@ -576,6 +577,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	AHeroSkill* LastUseSkill;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOBA|Current")
+	TMap<FString, UParticleSystemComponent*> AuraParticles;
 
 	static AMOBAPlayerController* localPC;
 };
