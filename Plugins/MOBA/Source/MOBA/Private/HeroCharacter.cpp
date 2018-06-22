@@ -51,6 +51,7 @@ void AHeroCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (Frame % 7 == 0)
 	{
+		UpdateSAI();
 		if (EXPIncreaseArray.Num() == 0)
 		{
 			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
@@ -199,30 +200,55 @@ void AHeroCharacter::UpdateHPMPAS()
 
 void AHeroCharacter::UpdateSAI()
 {
-	if(CurrentLevel <= LevelProperty_Strength.Num())
+	if (LevelProperty_Strength.Num() > 0)
 	{
-		Strength = BaseStrength + LevelProperty_Strength[CurrentLevel - 1] + BuffPropertyMap[HEROP::Strength];
+		if (CurrentLevel <= LevelProperty_Strength.Num())
+		{
+			Strength = BaseStrength + LevelProperty_Strength[CurrentLevel - 1] + BuffPropertyMap[HEROP::Strength];
+		}
+		else if (LevelProperty_Strength.Num() > 0)
+		{
+			Strength = BaseStrength + LevelProperty_Strength.Last() + BuffPropertyMap[HEROP::Strength];
+		}
 	}
-	else if(LevelProperty_Strength.Num() > 0)
+	else
 	{
-		Strength = BaseStrength + LevelProperty_Strength.Last() + BuffPropertyMap[HEROP::Strength];
+		Strength = BaseStrength + BuffPropertyMap[HEROP::Strength];
 	}
-	if(CurrentLevel <= LevelProperty_Agility.Num())
+	if (LevelProperty_Agility.Num() > 0)
 	{
-		Agility = BaseAgility + LevelProperty_Agility[CurrentLevel - 1] + BuffPropertyMap[HEROP::Agile];
+		if(CurrentLevel <= LevelProperty_Agility.Num())
+		{
+			Agility = BaseAgility + LevelProperty_Agility[CurrentLevel - 1] + BuffPropertyMap[HEROP::Agility];
+		}
+		else if(LevelProperty_Agility.Num() > 0)
+		{
+			Agility = BaseAgility + LevelProperty_Agility.Last() + BuffPropertyMap[HEROP::Agility];
+		}
 	}
-	else if(LevelProperty_Intelligence.Num() > 0)
+	else
 	{
-		Agility = BaseAgility + LevelProperty_Agility.Last() + BuffPropertyMap[HEROP::Agile];
+		Agility = BaseAgility + BuffPropertyMap[HEROP::Agility];
 	}
-	if(CurrentLevel <= LevelProperty_Intelligence.Num())
+
+	if (LevelProperty_Intelligence.Num() > 0)
 	{
-		Intelligence = BaseIntelligence + LevelProperty_Intelligence[CurrentLevel - 1] + BuffPropertyMap[HEROP::Intelligence];
+		if (CurrentLevel <= LevelProperty_Intelligence.Num())
+		{
+			Intelligence = BaseIntelligence + LevelProperty_Intelligence[CurrentLevel - 1] + BuffPropertyMap[HEROP::Intelligence];
+		}
+		else if (LevelProperty_Intelligence.Num() > 0)
+		{
+			Intelligence = BaseIntelligence + LevelProperty_Intelligence.Last() + BuffPropertyMap[HEROP::Intelligence];
+		}
 	}
-	else if(LevelProperty_Intelligence.Num() > 0)
+	else
 	{
-		Intelligence = BaseIntelligence + LevelProperty_Intelligence.Last() + BuffPropertyMap[HEROP::Intelligence];
+		Intelligence = BaseIntelligence + BuffPropertyMap[HEROP::Intelligence];
 	}
+	AdditionStrength = BuffPropertyMap[HEROP::Strength];
+	AdditionAgility = BuffPropertyMap[HEROP::Agility];
+	AdditionIntelligence = BuffPropertyMap[HEROP::Intelligence];
 }
 
 

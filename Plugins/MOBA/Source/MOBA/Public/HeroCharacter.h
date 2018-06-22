@@ -84,13 +84,13 @@ public:
 	float BaseIntelligence;
 	
 	//力量
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float Strength;
 	//敏捷
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float Agility;
 	//智力
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	float Intelligence;
 
 	//每個提升的XXX不累加

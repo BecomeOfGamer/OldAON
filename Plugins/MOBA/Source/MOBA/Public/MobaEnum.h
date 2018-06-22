@@ -158,7 +158,7 @@ enum class EHeroBuffProperty : uint8
 	//力量 EX. 1.5 就加1.5的力量
 	Strength,
 	//敏捷 EX. 2.5 就加2.5的敏捷
-	Agile,
+	Agility,
 	//智慧 EX. 3.5 就加3.5的智慧
 	Intelligence,
 	// 結束列舉
