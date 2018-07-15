@@ -1038,6 +1038,8 @@ UWebInterfaceJsonObject* ABasicUnit::BuildJsonObject()
 			wjo->SetString(FString::Printf(TEXT("Skill%d_Name"), i + 1), this->Skills[i]->Name);
 			//是否啟用
 			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_Enabled"), i + 1), this->Skills[i]->IsEnable());
+			//是否開關
+			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_Toggle"), i + 1), this->Skills[i]->Toggle);
 			//是否顯示
 			wjo->SetBoolean(FString::Printf(TEXT("Skill%d_Display"), i + 1), this->Skills[i]->IsDisplay());
 			//圖片路徑
