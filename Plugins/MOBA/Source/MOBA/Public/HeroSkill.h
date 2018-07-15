@@ -100,6 +100,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_SpellToActor(FVector VFaceTo, FVector Pos, ABasicUnit* victim);
 
+	//開關技
+	//參數： 技能打開或關掉
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_Toggle(bool ToggleEnable);
+
 	//指定技的持續施法的計時事件
 	//參數： 被指定的人
 	UFUNCTION(BlueprintImplementableEvent)
@@ -232,9 +237,12 @@ public:
 	bool Enable = true;
 
 	//是否顯示
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current")
 	bool Display = true;
-
+	
+	//是否啟用特效，給持續技專用毒箭、火箭等等
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current", Replicated)
+	bool Toggle = false;
 
 	//最大施法距離
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")

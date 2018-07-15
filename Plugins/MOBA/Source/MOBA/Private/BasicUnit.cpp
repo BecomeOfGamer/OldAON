@@ -759,13 +759,17 @@ bool ABasicUnit::TriggerSkill(int32 index, FVector Pos, ABasicUnit* CurrentTarge
 		// 不需指定或智能施法
 		else if (!hs->CDing && hs->CurrnetManaCost <= CurrentMP)
 		{
+			AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			FVector dir = Pos - GetActorLocation();
+			dir.Z = 0;
+			dir.Normalize();
+			//開關技
+			if (hs->SkillBehavior[EHeroBehavior::Toggle])
+			{
+				localPC->ServerHeroUseSkill(this, EHeroActionStatus::ToggleSkill, index, dir, Pos, CurrentTarget);
+			}
 			if (hs->SkillBehavior[EHeroBehavior::NoTarget] || hs->SmartCast)
 			{
-				AMOBAGameState* ags = Cast<AMOBAGameState>(UGameplayStatics::GetGameState(GetWorld()));
-				FVector dir = Pos - GetActorLocation();
-				dir.Z = 0;
-				dir.Normalize();
-				AMOBAPlayerController* PC = Cast<AMOBAPlayerController>(GetController());
 				if (hs->SkillBehavior[EHeroBehavior::NoTarget])
 				{
 					localPC->ServerHeroUseSkill(this, EHeroActionStatus::SpellNow, index, dir, Pos, CurrentTarget);
@@ -1150,6 +1154,11 @@ bool ABasicUnit::UseSkill(EHeroActionStatus SpellType, int32 index, FVector VFac
 		case EHeroActionStatus::SpellToActor:
 			hs->Victim = victim;
 			hs->BP_SpellToActor(VFaceTo, Pos, victim);
+			break;
+		case EHeroActionStatus::ToggleSkill:
+			hs->CastPoint = Pos;
+			hs->Toggle = !hs->Toggle;
+			hs->BP_Toggle(hs->Toggle);
 			break;
 		default:
 			break;

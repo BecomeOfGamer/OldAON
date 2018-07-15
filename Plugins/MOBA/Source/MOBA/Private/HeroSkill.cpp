@@ -365,5 +365,6 @@ void AHeroSkill::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLife
 	DOREPLIFETIME(AHeroSkill, CurrentLevel);
 	DOREPLIFETIME(AHeroSkill, CurrnetManaCost);
 	DOREPLIFETIME(AHeroSkill, Enable);
+	DOREPLIFETIME(AHeroSkill, Toggle);
 	DOREPLIFETIME(AHeroSkill, MaxCD);
 }

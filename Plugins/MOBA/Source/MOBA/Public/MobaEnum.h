@@ -290,6 +290,8 @@ enum class EHeroActionStatus : uint8
 	SpellToDirection,
 	//指定技
 	SpellToActor,
+	//開關技能
+	ToggleSkill,
 	//撿裝
 	MoveToPickup,
 	//丟裝
