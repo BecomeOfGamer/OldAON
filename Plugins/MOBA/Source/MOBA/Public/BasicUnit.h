@@ -68,7 +68,6 @@ public:
 	float GetMPPercent();
 
 	//依等級更新血魔攻速
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void UpdateHPMPAS();
 
 	//英雄選擇中

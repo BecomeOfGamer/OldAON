@@ -35,13 +35,11 @@ public:
 	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
 #endif //WITH_EDITOR
 	
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	virtual UWebInterfaceJsonValue* BuildJsonValue();
 	
 	void CheckSelf(bool res, FString msg);
 
 	//依更新血魔攻速
-	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void UpdateHPMPAS();
 
 	//依更新力敏智

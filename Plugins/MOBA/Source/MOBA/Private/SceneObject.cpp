@@ -14,7 +14,7 @@ ASceneObject::ASceneObject(const FObjectInitializer& ObjectInitializer)
 	{
 		StaticMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
 		StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-		StaticMesh->bGenerateOverlapEvents = true;
+		//StaticMesh->bGenerateOverlapEvents = true;
 	}
 	if (BodyBox)
 	{
@@ -31,7 +31,7 @@ ASceneObject::ASceneObject(const FObjectInitializer& ObjectInitializer)
 		BodyBox->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
 		BodyBox->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
 		BodyBox->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-		BodyBox->bGenerateOverlapEvents = true;
+		//BodyBox->bGenerateOverlapEvents = true;
 	}
 	CurrentHP = 10;
 	DestoryCounting = 10;

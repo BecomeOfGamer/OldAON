@@ -16,7 +16,7 @@ ASkillSplineActor::ASkillSplineActor(const FObjectInitializer& ObjectInitializer
 	CapsuleComponent->SetCollisionProfileName(TEXT("CollisionCylinder"));
 
 	CapsuleComponent->CanCharacterStepUpOn = ECB_No;
-	CapsuleComponent->bShouldUpdatePhysicsVolume = true;
+	//CapsuleComponent->bShouldUpdatePhysicsVolume = true;
 	CapsuleComponent->bCheckAsyncSceneOnMove = false;
 	CapsuleComponent->SetCanEverAffectNavigation(false);
 	CapsuleComponent->bDynamicObstacle = true;

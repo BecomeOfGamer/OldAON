@@ -15,7 +15,8 @@ AEquipment::AEquipment(const FObjectInitializer& ObjectInitializer)
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(ACharacter::CapsuleComponentName);
     CapsuleComponent->InitCapsuleSize(34.0f, 88.0f);
     CapsuleComponent->CanCharacterStepUpOn = ECB_No;
-    CapsuleComponent->bShouldUpdatePhysicsVolume = true;
+	// todo for 4.20
+    //CapsuleComponent->bShouldUpdatePhysicsVolume = true;
     CapsuleComponent->bCheckAsyncSceneOnMove = false;
     CapsuleComponent->bDynamicObstacle = true;
 

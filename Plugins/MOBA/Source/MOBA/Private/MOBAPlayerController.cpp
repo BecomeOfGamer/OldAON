@@ -1,7 +1,7 @@
 ﻿// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #include "MOBAPrivatePCH.h"
 #include "MOBAPlayerController.h"
-#include "AI/Navigation/NavigationSystem.h"
+#include "NavigationSystem.h"
 #include "MHUD.h"
 #include "HeroCharacter.h"
 #include "BasicUnit.h"
@@ -428,11 +428,13 @@ void AMOBAPlayerController::ServerCharacterMove_Implementation(ABasicUnit* hero,
 {
 	if (Role == ROLE_Authority)
 	{
-		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+		/*// todo for 4.20
+		UNavigationSystem* const NavSys = Cast<UNavigationSystem>(GetWorld()->GetNavigationSystem());
 		if (NavSys && hero->GetController())
 		{
 			NavSys->SimpleMoveToLocation(hero->GetController(), pos);
 		}
+		*/
 	}
 }
 
@@ -445,11 +447,13 @@ void AMOBAPlayerController::ServerCharacterStopMove_Implementation(ABasicUnit* h
 {
 	if (Role == ROLE_Authority)
 	{
-		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+		/*
+		UNavigationSystem* const NavSys = Cast<UNavigationSystem>(GetWorld()->GetNavigationSystem());
 		if (NavSys && hero->GetController())
 		{
 			hero->GetController()->StopMovement();
 		}
+		*/
 	}
 }
 

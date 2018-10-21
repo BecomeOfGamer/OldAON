@@ -1611,22 +1611,26 @@ void ABasicUnit::DoAction_MovingAttackToPosition(const FHeroAction& CurrentActio
 		case EHeroBodyStatus::Standing:
 		{
 			BodyStatus = EHeroBodyStatus::Moving;
+			/*// todo for 4.20
 			UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
 			if (NavSys && this->GetController())
 			{
 				NavSys->SimpleMoveToLocation(this->GetController(), MovePos);
 			}
+			*/
 		}
 		break;
 		case EHeroBodyStatus::Moving:
 		{
 			if (GetVelocity().Size() < 5)
 			{
+				/*// todo for 4.20
 				UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
 				if (NavSys && this->GetController())
 				{
 					NavSys->SimpleMoveToLocation(this->GetController(), MovePos);
 				}
+				*/
 			}
 		}
 		break;
@@ -1685,24 +1689,28 @@ void ABasicUnit::DoAction_MoveToPositionImpl(const FHeroAction& CurrentAction)
 	case EHeroBodyStatus::Standing:
 	{
 		BodyStatus = EHeroBodyStatus::Moving;
+		/*// todo for 4.20
 		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
 		if (NavSys && this->GetController())
 		{
 			NavSys->SimpleMoveToLocation(this->GetController(), CurrentAction.TargetVec1);
 			LastMoveTarget = CurrentAction.TargetVec1;
 		}
+		*/
 	}
 	break;
 	case EHeroBodyStatus::Moving:
 	{
 		if (GetVelocity().Size() < 5 || LastMoveTarget != CurrentAction.TargetVec1)
 		{
+			/*// todo for 4.20
 			UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
 			if (NavSys && this->GetController())
 			{
 				NavSys->SimpleMoveToLocation(this->GetController(), CurrentAction.TargetVec1);
 				LastMoveTarget = CurrentAction.TargetVec1;
 			}
+			*/
 		}
 	}
 	break;

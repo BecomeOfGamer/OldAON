@@ -10,7 +10,7 @@
   "DocsURL": "http://cdn.tracerinteractive.com/webui/documentation.pdf",
   "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/277c943e8fcc48bdb53607cae4505aa8",
   "SupportURL": "",
-  "EngineVersion": "4.19.0",
+  "EngineVersion": "4.20.0",
   "CanContainContent": false,
   "Installed": true,
   "Modules": [

@@ -22,7 +22,7 @@ ASkillHintActor::ASkillHintActor(const FObjectInitializer& ObjectInitializer)
         BodySprite->bOwnerNoSee = false;
         BodySprite->bAffectDynamicIndirectLighting = true;
         BodySprite->PrimaryComponentTick.TickGroup = TG_PrePhysics;
-        BodySprite->bGenerateOverlapEvents = false;
+        //BodySprite->bGenerateOverlapEvents = false;
         BodySprite->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
         BodySprite->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
         BodySprite->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
@@ -42,7 +42,7 @@ ASkillHintActor::ASkillHintActor(const FObjectInitializer& ObjectInitializer)
         HeadSprite->bOwnerNoSee = false;
         HeadSprite->bAffectDynamicIndirectLighting = true;
         HeadSprite->PrimaryComponentTick.TickGroup = TG_PrePhysics;
-        HeadSprite->bGenerateOverlapEvents = false;
+        //HeadSprite->bGenerateOverlapEvents = false;
         HeadSprite->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
         HeadSprite->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
         HeadSprite->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
@@ -62,7 +62,7 @@ ASkillHintActor::ASkillHintActor(const FObjectInitializer& ObjectInitializer)
         FootSprite->bOwnerNoSee = false;
         FootSprite->bAffectDynamicIndirectLighting = true;
         FootSprite->PrimaryComponentTick.TickGroup = TG_PrePhysics;
-        FootSprite->bGenerateOverlapEvents = false;
+        //FootSprite->bGenerateOverlapEvents = false;
         FootSprite->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
         FootSprite->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
         FootSprite->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
