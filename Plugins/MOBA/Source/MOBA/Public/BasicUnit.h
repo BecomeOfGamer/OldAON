@@ -236,7 +236,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	FString UnitName;
 
-	//英雄名/單位名
+	//英雄名/單位名 畫出的大小倍率
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA")
 	float UnitNameDrawSize = 1.f;
 

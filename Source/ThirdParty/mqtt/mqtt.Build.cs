@@ -10,11 +10,9 @@ public class mqtt : ModuleRules
 		string mqttbPath = Target.UEThirdPartySourceDirectory + "mqtt/";
 		string mqttblibPath = mqttbPath + "lib/";
 		
-		
-		PublicIncludePaths.Add(mqttbPath + "include");
-		
+		PublicIncludePaths.Add(mqttbPath + "include");		
 		if (Target.Platform == UnrealTargetPlatform.Win64)
-		{
+        {
 			if(Target.Configuration == UnrealTargetConfiguration.Debug)
 				PublicLibraryPaths.Add(mqttblibPath + "Win64/Debug");
 			else

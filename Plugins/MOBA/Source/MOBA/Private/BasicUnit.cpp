@@ -1323,7 +1323,8 @@ bool ABasicUnit::CheckCurrentActionFinish()
 				dir.Z = 0;
 				dir.Normalize();
 				// AddMovementInput will move actor with no rotation, no nav
-				//this->AddMovementInput(dir);
+				this->AddMovementInput(dir);
+				this->SetActorRotation(dir.Rotation());
 			}
 		}
 	}
