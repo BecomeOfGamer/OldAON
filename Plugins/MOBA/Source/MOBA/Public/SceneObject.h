@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "SceneObject.generated.h"
 
+class UBoxComponent;
+
 UCLASS()
 class MOBA_API ASceneObject : public AActor
 {

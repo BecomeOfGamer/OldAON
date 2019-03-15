@@ -4,6 +4,7 @@
 #include "FlannActor.h"
 #include "BasicUnit.h"
 #include "Algo/Reverse.h"
+#include "lz4.h"
 
 // Sets default values
 AFlannActor::AFlannActor()
@@ -13,23 +14,24 @@ AFlannActor::AFlannActor()
 	PrimaryActorTick.TickInterval = 0.05;
 	rdata.SetNumZeroed(MaxActor * 2);
 	qdata1.SetNumZeroed(2);
-	query1 = flann::Matrix<float>(qdata1.GetData(), 1, 2);
+	//query1 = flann::Matrix<float>(qdata1.GetData(), 1, 2);
 }
 
 // Called when the game starts or when spawned
 void AFlannActor::BeginPlay()
 {
-	Super::BeginPlay();
+	//Super::BeginPlay();
 	
 }
 
 // Called every frame
 void AFlannActor::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	//Super::Tick(DeltaTime);
 	int32 row = 0;
 	FindArray.Empty();
 	rdata.SetNumZeroed(MaxActor * 2);
+	/*
 	for (TActorIterator<ABasicUnit> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		ABasicUnit* hero = *ActorItr;
@@ -43,12 +45,13 @@ void AFlannActor::Tick(float DeltaTime)
 			break;
 		}
 	}
+	*/
 	if (row > 1)
 	{
-		dataset = flann::Matrix<float>(rdata.GetData(), row, 2);
-		index = std::shared_ptr<flann::Index<flann::L2<float>>>(
-			new flann::Index<flann::L2<float>>(dataset, flann::KDTreeIndexParams(1)));
-		index->buildIndex();
+		//dataset = flann::Matrix<float>(rdata.GetData(), row, 2);
+		//index = std::shared_ptr<flann::Index<flann::L2<float>>>(
+		//	new flann::Index<flann::L2<float>>(dataset, flann::KDTreeIndexParams(1)));
+		//index->buildIndex();
 	}
 	
 	CurrnetRow = row;
@@ -60,13 +63,13 @@ TArray<ABasicUnit*> AFlannActor::FindRadiusActorByLocation(ABasicUnit* hero, FVe
 	Radius = Radius * Radius;
 	TArray<ABasicUnit*> res;
 	qdata1.SetNumZeroed(2);
-	query1 = flann::Matrix<float>(qdata1.GetData(), 1, 2);
+	//query1 = flann::Matrix<float>(qdata1.GetData(), 1, 2);
 
 	if (CurrnetRow > 1)
 	{
 		qdata1[0] = Center.X;
 		qdata1[1] = Center.Y;
-		index->radiusSearch(query1, indices, dists, Radius, flann::SearchParams(32, 0, true));
+		//index->radiusSearch(query1, indices, dists, Radius, flann::SearchParams(32, 0, true));
 		for (int& idx : indices[0])
 		{
 			ABasicUnit* target = FindArray[idx];

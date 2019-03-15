@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "flann/ext/lz4.h"
 #include <memory>
 namespace Packet
 {

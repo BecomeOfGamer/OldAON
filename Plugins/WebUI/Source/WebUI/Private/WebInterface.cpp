@@ -115,17 +115,23 @@ FString UWebInterface::GetURL() const
 
 void UWebInterface::SetMouseDownCallback(std::function< void(FKey) > _LButton)
 {
+#if !UE_SERVER
 	WebInterfaceWidget->SetMouseDownCallback(_LButton);
+#endif
 }
 
 void UWebInterface::SetMouseUpCallback(std::function< void(FKey) > _LButton)
 {
+#if !UE_SERVER
 	WebInterfaceWidget->SetMouseUpCallback(_LButton);
+#endif
 }
 
 void UWebInterface::SetMouseWheelCallback(std::function< void(FKey) > _LMutton)
 {
+#if !UE_SERVER
 	WebInterfaceWidget->SetMouseWheelCallback(_LMutton);
+#endif
 }
 
 void UWebInterface::ReleaseSlateResources( bool bReleaseChildren )

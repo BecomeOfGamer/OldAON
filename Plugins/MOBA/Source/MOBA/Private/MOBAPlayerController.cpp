@@ -12,7 +12,6 @@
 #include "Engine.h"
 #include "Equipment.h"
 #include "MOBAGameState.h"
-#include <flann/flann.hpp> 
 #include "Kismet/GameplayStatics.h"
 #include "WidgetLayoutLibrary.h"
 #include "WebInterface.h"
@@ -33,17 +32,7 @@ void AMOBAPlayerController::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
 			FString::Printf(TEXT("FlannActor is Null")));
 	}
-	//RoomActor = GetWorld()->SpawnActor<AMqttRoomActor>(SubAMqttRoomActor);
-	//if (RoomActor == nullptr)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
-	//		FString::Printf(TEXT("RoomActor is Null")));
-	//}
-	//else
-	//{
-	//	RoomActor->LocalController = this;
-	//	RoomActor->m_pAMHUD = Hud;
-	//}	bMouseRButton = false;
+	
 	bMouseLButton = false;
 	bShowMouseCursor = false;
 }
@@ -250,9 +239,9 @@ void AMOBAPlayerController::PlayerTick(float DeltaTime)
 
 			KeyMapping.Add(EKeys::One, EKeyBehavior::KEY_SELECT_OWNED_HERO);
 			KeyMapping.Add(EKeys::F1, EKeyBehavior::KEY_SELECT_OWNED_HERO);
-			if (RoomActor)
+			//if (RoomActor)
 			{
-				RoomActor->m_pAMHUD = Hud;
+				//RoomActor->m_pAMHUD = Hud;
 			}
 		}
 	}

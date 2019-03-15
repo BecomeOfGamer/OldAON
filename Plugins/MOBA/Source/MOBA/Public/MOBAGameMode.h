@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "MqttRoomActor.h"
 #include "MOBAPlayerController.h"
 #include "MOBAGameMode.generated.h"
 
@@ -22,10 +21,4 @@ public:
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
 	void ServerSetHeroAction(AHeroCharacter* hero, const FHeroAction& action);
 
-private:
-	AMqttRoomActor * RoomActor = nullptr;
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SubClass")
-	TSubclassOf<AMqttRoomActor> SubAMqttRoomActor;
 };

@@ -14,16 +14,6 @@ void AMOBAGameMode::InitGame(const FString& MapName, const FString& Options, FSt
 		
 	}
 	AMOBAPlayerController* pMOBAControler = Cast<AMOBAPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	RoomActor = GetWorld()->SpawnActor<AMqttRoomActor>(SubAMqttRoomActor);
-	if (RoomActor == nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan,
-			FString::Printf(TEXT("RoomActor is Null")));
-	}
-	else
-	{
-		RoomActor->m_pAMOBAGameMode = this;
-	}	
 }
 
 bool AMOBAGameMode::ServerSetHeroAction_Validate(AHeroCharacter* hero, const FHeroAction& action)

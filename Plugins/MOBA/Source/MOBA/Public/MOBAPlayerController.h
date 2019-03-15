@@ -11,6 +11,7 @@ class AHeroCharacter;
 class AEquipment;
 class UWebInterface;
 
+
 UCLASS()
 class AMOBAPlayerController : public APlayerController
 {
@@ -56,7 +57,6 @@ public:
 	TMap<FKey, EKeyBehavior> KeyMapping;
 
 	AFlannActor* FlannActor = nullptr;
-	AMqttRoomActor *RoomActor = nullptr;
 
 	/** Navigate player to the given world location. */	
 	UFUNCTION(Server, WithValidation, Reliable, BlueprintCallable, Category = "MOBA")
@@ -118,7 +118,4 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MOBA")
 	void SetWebUICallback(UWebInterface* wi);
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SubClass")
-	TSubclassOf<AMqttRoomActor> SubAMqttRoomActor;
 };

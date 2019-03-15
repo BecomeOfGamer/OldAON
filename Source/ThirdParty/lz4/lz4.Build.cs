@@ -17,6 +17,12 @@ public class lz4 : ModuleRules
 			PublicLibraryPaths.Add(LibPath);
 			PublicAdditionalLibraries.Add("liblz4_static.lib");
         }
+        else if(Target.Platform == UnrealTargetPlatform.Linux)
+		{
+            string LibPath = lz4Path + "/lib/Linux64";
+			PublicLibraryPaths.Add(LibPath);
+            PublicAdditionalLibraries.Add(LibPath + "/liblz4.a");
+		}
         else
         {
             string Err = string.Format("{0} dedicated server is made to depend on {1}. We want to avoid this, please correct module dependencies.", Target.Platform.ToString(), this.ToString());

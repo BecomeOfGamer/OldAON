@@ -11,8 +11,6 @@ public class MOBA : ModuleRules
 			new string[]
 			{
 				"Core",
-                "flann",
-                "mqtt",
                 "lz4",
 				// ... add      other public dependencies that you statically link with here ...
 			}

@@ -2,6 +2,7 @@
 #include "MOBAPrivatePCH.h"
 #include "MOBA.h"
 #include "DataPacket.h"
+#include "lz4.h"
 
 namespace Packet
 {
@@ -68,7 +69,7 @@ namespace Packet
 				Out_Buf.reset(pDeCompressBuffer);
 			else
 			{
-				delete pDeCompressBuffer;
+				delete [] pDeCompressBuffer;
 				bRet = false;
 			}
 		}

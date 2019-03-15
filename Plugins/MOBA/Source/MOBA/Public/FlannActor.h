@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "HeroCharacter.h"
-#include <flann/flann.hpp>
 #include <memory>
+#include <vector>
 #include "FlannActor.generated.h"
 
 
@@ -37,11 +37,9 @@ public:
 	// Sets default values for this actor's properties
 	AFlannActor();
 
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -59,10 +57,10 @@ private:
 	int32 MaxQuery = 1000;
 	int32 CurrnetRow = 0;
 
-	flann::Matrix<float> dataset;
-	flann::Matrix<float> query1;
+	//flann::Matrix<float> dataset;
+	//flann::Matrix<float> query1;
 	std::vector<std::vector<int>> indices;
-	std::shared_ptr<flann::Index<flann::L2<float>>> index;
+	//std::shared_ptr<flann::Index<flann::L2<float>>> index;
 
 	TArray<float>	rdata;
 	TArray<float>	qdata1;
