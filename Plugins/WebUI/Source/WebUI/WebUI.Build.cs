@@ -5,6 +5,7 @@ namespace UnrealBuildTool.Rules
 	{
 		public WebUI(ReadOnlyTargetRules Target) : base(Target)
 		{
+			PrivatePCHHeaderFile = "Private/WebUIPrivatePCH.h";
 			PublicDependencyModuleNames.AddRange(
 				new string[]
 				{

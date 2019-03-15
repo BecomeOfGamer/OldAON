@@ -7,6 +7,7 @@ public class WebBrowserExtension : ModuleRules
 {
 	public WebBrowserExtension(ReadOnlyTargetRules Target) : base(Target)
 	{
+		PrivatePCHHeaderFile = "Private/EWebPrivatePCH.h";
         PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{

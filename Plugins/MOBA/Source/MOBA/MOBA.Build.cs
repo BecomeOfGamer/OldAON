@@ -6,23 +6,7 @@ public class MOBA : ModuleRules
 {
 	public MOBA(ReadOnlyTargetRules Target) : base(Target)
     {
-		
-		PublicIncludePaths.AddRange(
-			new string[] {
-				"MOBA/Public"
-				// ... add public include paths required here ...
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				"MOBA/Private",
-				// ... add other private include paths required here ...
-			}
-			);
-			
-		
+		PrivatePCHHeaderFile = "Private/MOBAPrivatePCH.h";
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{

@@ -15,6 +15,6 @@ public class AON : ModuleRules
         {
             PublicDependencyModuleNames.AddRange(new string[] { "UnrealEd", "MOBA_Editor" });
         }
-        Definitions.AddRange(new string[] { "_USE_MATH_DEFINES" });
+        PublicDefinitions.AddRange(new string[] { "_USE_MATH_DEFINES" });
     }
 }
