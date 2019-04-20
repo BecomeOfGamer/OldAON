@@ -1,5 +1,4 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
-#include "../EWebPrivatePCH.h"
+
 #include "CEF/CEFBrowserByteResource.h"
 
 #if WITH_CEF3

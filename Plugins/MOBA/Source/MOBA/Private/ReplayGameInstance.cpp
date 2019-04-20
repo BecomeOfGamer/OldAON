@@ -1,10 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MOBAPrivatePCH.h"
+#include "ReplayGameInstance.h"
 #include "MOBA.h"
 #include "Runtime/NetworkReplayStreaming/NullNetworkReplayStreaming/Public/NullNetworkReplayStreaming.h"
 #include "NetworkVersion.h"
-#include "ReplayGameInstance.h"
 #include "MOBAPlayerController.h"
 
 

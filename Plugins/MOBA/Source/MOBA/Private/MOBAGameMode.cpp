@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-#include "MOBAPrivatePCH.h"
-#include "MOBA.h"
 #include "MOBAGameMode.h"
+#include "MOBA.h"
+
 
 
 void AMOBAGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)

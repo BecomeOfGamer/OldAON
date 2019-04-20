@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-#include "MOBAPrivatePCH.h"
-#include "MOBA.h"
 #include "BasicUnit.h"
+#include "MOBA.h"
 #include "MOBAGameState.h"
 #include "MHUD.h"
 #include "Equipment.h"

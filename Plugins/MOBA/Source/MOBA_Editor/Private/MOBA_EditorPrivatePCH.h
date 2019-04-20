@@ -6,6 +6,5 @@
 // add includes for headers that are used in most of your module's source files though.
 
 #include "Engine.h"
-#include "MOBA_Editor.h"
 
 

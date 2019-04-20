@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-#include "MOBAPrivatePCH.h"
-#include "MOBA.h"
 #include "DataPacket.h"
+#include "MOBA.h"
 #include "lz4.h"
 
 namespace Packet

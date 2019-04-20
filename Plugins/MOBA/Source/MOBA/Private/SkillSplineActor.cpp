@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MOBAPrivatePCH.h"
+
 #include "SkillSplineActor.h"
 #include "HeroCharacter.h"
 #include "MOBAPlayerController.h"

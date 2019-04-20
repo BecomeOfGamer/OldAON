@@ -7,6 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "AIController.h"
 #include "HeroAction.h"
+#include <Components/AudioComponent.h>
 #include "BasicUnit.generated.h"
 
 class ABulletActor;

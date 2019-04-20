@@ -1,6 +1,6 @@
 ﻿// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
-#include "MOBA_EditorPrivatePCH.h"
+#include "MOBA_Editor.h"
 
 #define LOCTEXT_NAMESPACE "FMOBA_EditorModule"
 
