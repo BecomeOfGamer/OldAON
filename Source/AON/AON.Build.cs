@@ -10,10 +10,10 @@ public class AON : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay",
             "Paper2D", "UMG", "RHI", "Networking", "AIModule",
-            "MOBA"});
+            "Json", "WebUI"});
         if (Target.bBuildEditor)
         {
-            PublicDependencyModuleNames.AddRange(new string[] { "UnrealEd", "MOBA_Editor" });
+            PublicDependencyModuleNames.AddRange(new string[] { "UnrealEd" });
         }
         PublicDefinitions.AddRange(new string[] { "_USE_MATH_DEFINES" });
     }

@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{C3FFC0EF-422C-689A-A504-87ACC6FA9C38}",
+	"EngineAssociation": "4.21",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -25,10 +25,6 @@
 		{
 			"Name": "CodeLiteSourceCodeAccess",
 			"Enabled": false
-		},
-		{
-			"Name": "MOBA",
-			"Enabled": true
 		},
 		{
 			"Name": "WebUI",
