@@ -3,6 +3,7 @@
 #include "HeroCharacter.h"
 #include "MOBAPlayerController.h"
 #include "UnrealNetwork.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ABulletActor::ABulletActor(const FObjectInitializer& ObjectInitializer)
     : Super(FObjectInitializer::Get())

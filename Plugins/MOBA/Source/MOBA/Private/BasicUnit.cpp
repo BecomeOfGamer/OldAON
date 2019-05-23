@@ -16,6 +16,11 @@
 #include "WebInterfaceJSON.h"
 #include "WebInterfaceObject.h"
 #include "WebInterfaceHelpers.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/DecalComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "DamageEffect.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AMOBAPlayerController* ABasicUnit::localPC = 0;
 
@@ -45,7 +50,6 @@ ABasicUnit::ABasicUnit(const FObjectInitializer& ObjectInitializer)
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	BodyStatus = EHeroBodyStatus::Standing;
 	GetMesh()->SetWorldRotation(FQuat(FRotator(0, -90, 0)));
-	
 	// set for mouse click
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);

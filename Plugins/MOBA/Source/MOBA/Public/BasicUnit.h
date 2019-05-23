@@ -544,10 +544,7 @@ public:
 	//所有的buff
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
 	TArray<AHeroBuff*> Buffs;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current", Replicated)
-	TArray<float> BuffDuration;
-
+	
 	//當前法球
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MOBA|Current")
 	AHeroBuff* CurrentOrb;

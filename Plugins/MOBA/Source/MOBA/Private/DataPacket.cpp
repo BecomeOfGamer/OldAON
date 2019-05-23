@@ -1,14 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "DataPacket.h"
 #include "MOBA.h"
-#include "lz4.h"
+//#include "lz4.h"
 
 namespace Packet
 {
 	bool CreateCompressPacket(CompressPacket &InOut_CompressPacket, const char *pSrcBuf, std::shared_ptr<char> &Out_Buf)
 	{
 		bool bRet(true);
-
+		/*
 		if (InOut_CompressPacket.u32_DecompressSize)
 		{
 			if (InOut_CompressPacket.u32_DecompressSize < 200)
@@ -51,14 +51,14 @@ namespace Packet
 		}
 		else
 			bRet = false;
-		
+		*/
 		return bRet;
 	}
 
 	bool DeCompressFromPacket(const CompressPacket &In_CompressPacket, const char *pSrcBuf, std::shared_ptr<char> &Out_Buf)
 	{
 		bool bRet(true);
-
+		/*
 		if (In_CompressPacket.u32_StartCode == PACKET_START_CODE && In_CompressPacket.u16_CompressType != eCompressType::RAW
 			&&In_CompressPacket.u32_CompressSize && In_CompressPacket.u32_DecompressSize)
 		{
@@ -74,7 +74,7 @@ namespace Packet
 		}
 		else
 			bRet = false;
-
+		*/
 		return bRet;
 	}
 }
